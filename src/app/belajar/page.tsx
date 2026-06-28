@@ -12,7 +12,7 @@ export default function TopikSelectionPage() {
     {
       id: "lingkungan",
       title: "Lingkungan Hidup",
-      // icon: "🌱",
+      icon: "🌱",
       description:
         "Analisis problem solving seputar krisis ekosistem, pencemaran wilayah, hingga manajemen limbah industri makro.",
       totalStages: 5,
@@ -25,7 +25,7 @@ export default function TopikSelectionPage() {
     {
       id: "sosial-tata-kota",
       title: "Sosial & Tata Kota",
-      // icon: "🏙️",
+      icon: "🏙️",
       description:
         "Eksplorasi pemecahan konflik lahan publik, dinamika interaksi komunal, dan problem populasi urban.",
       totalStages: 5,
@@ -38,7 +38,7 @@ export default function TopikSelectionPage() {
     {
       id: "politik",
       title: "Tema Politik & Kebijakan",
-      // icon: "⚖️",
+      icon: "⚖️",
       description:
         "Tantangan analisis kritis berskala tinggi seperti isu politik dinasti hingga perumusan regulasi pemerintahan.",
       totalStages: 5,
@@ -51,7 +51,7 @@ export default function TopikSelectionPage() {
     {
       id: "future-topic",
       title: "Topik Baru (Future Updates)",
-      // icon: "⚙️",
+      icon: "⚙️",
       description:
         "Materi tema analisis tambahan akan segera dirilis pada pembaruan sistem berikutnya untuk memperluas ruang lingkup.",
       totalStages: 0,

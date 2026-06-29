@@ -136,7 +136,7 @@ export default function DaftarKasusPage() {
               Urai dan Pecahkan Studi Kasus Global
             </h2>
             <p className="text-xs text-slate-400 font-medium">
-              Cari topik studi kasus yang dibuat oleh analis lain, atau ajukan problem benang kusut barumu sendiri.
+              Cari topik studi kasus yang dibuat oleh analis lain atau ajukan problem benang kusut barumu sendiri.
             </p>
           </div>
           <button
@@ -240,10 +240,6 @@ export default function DaftarKasusPage() {
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      💬 Diskusi Aktif
-                    </span>
-
                     <Link
                       href={`/diskusi/${kasus.id}`}
                       className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-400 text-slate-600 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors"

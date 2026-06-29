@@ -222,21 +222,15 @@ export default function DetailKasusPage() {
         
         {/* SISI KIRI: DETAIL KASUS & SETTING PRIVASI JAWABAN (5 Kolom) */}
         <section className="lg:col-span-5 space-y-6">
-          <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
-            ← Kembali ke Forum
-          </Link>
           
           {/* KARTU PENGATURAN PRIVASI JAWABAN (Sesuai Wireframe Lofi) */}
           <div className="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm space-y-4">
             <div className="space-y-1">
-              <span className="text-[9px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 inline-block">
-                Pengaturan Visibilitas
-              </span>
               <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mt-1">
                 Visibilitas Lembar Jawaban
               </h3>
               <p className="text-[11px] font-medium text-slate-400 leading-relaxed">
-                Pilih apakah kelompok lain boleh melihat draf pemecahan masalah Anda.
+                Pilih apakah analis lain boleh melihat draf pemecahan masalah Anda.
               </p>
             </div>
 
@@ -251,7 +245,7 @@ export default function DetailKasusPage() {
                     : "text-slate-400 hover:text-slate-600 disabled:hover:text-slate-400"
                 }`}
               >
-                🌐 Public
+              Public
               </button>
               <button
                 type="button"
@@ -263,18 +257,18 @@ export default function DetailKasusPage() {
                     : "text-slate-400 hover:text-slate-600 disabled:hover:text-slate-400"
                 }`}
               >
-                🔒 Private
+              Private
               </button>
             </div>
 
             <div className="text-[10px] font-medium leading-relaxed p-3 bg-slate-50/50 border border-slate-100 rounded-xl">
               {isPublic ? (
                 <p className="text-slate-500">
-                  <span className="font-bold text-indigo-600">🌐 Publik aktif:</span> Jawaban Anda dapat diulas oleh komunitas lain di forum dan akan muncul pada draf portofolio profil publik kelompok Anda.
+                  <span className="font-bold text-indigo-600">Publik aktif:</span> Jawaban Anda dapat diulas oleh komunitas lain di forum dan akan muncul pada draf portofolio profil publik Anda.
                 </p>
               ) : (
                 <p className="text-slate-500">
-                  <span className="font-bold text-slate-700">🔒 Privat aktif:</span> Anda tetap dapat melihat jawaban kelompok lain, tetapi tanggapan Anda disembunyikan dari forum publik dan tidak terlihat di profil kelompok oleh pengguna lain.
+                  <span className="font-bold text-slate-700">Privat aktif:</span> Anda tetap dapat melihat jawaban analis lain, tetapi tanggapan Anda disembunyikan dari forum publik dan tidak terlihat di profil Anda oleh pengguna lain.
                 </p>
               )}
             </div>
@@ -285,7 +279,7 @@ export default function DetailKasusPage() {
         <section className="lg:col-span-7 space-y-4">
           <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
             <div className="space-y-1">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Uraikan Argumen Kelompok</h3>
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Uraikan Argumen Anda</h3>
               <p className="text-[11px] font-medium text-slate-400 leading-relaxed">
                 Bedah kasus ini ke dalam format analisis 3 pilar objektif khas Unravel sebelum disiarkan ke server global.
               </p>
@@ -329,7 +323,7 @@ export default function DetailKasusPage() {
                   value={acInput}
                   onChange={(e) => setAcInput(e.target.value)}
                   rows={3}
-                  placeholder="Langkah strategis operasional kelompok..."
+                  placeholder="Langkah strategis operasional menurut anda..."
                   className="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed disabled:opacity-75 disabled:cursor-not-allowed"
                 />
               </div>

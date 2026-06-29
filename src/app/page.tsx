@@ -1,12 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 // Import player Lottie resmi
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Mengecek apakah cookie token tersedia di browser saat landing page dimuat
+    const cookies = document.cookie.split(";");
+    const hasToken = cookies.some((item) => item.trim().startsWith("token="));
+    setIsLoggedIn(hasToken);
+  }, []);
+
+  const handleLogout = () => {
+    // Menghapus cookie token dengan mengatur masa kedaluwarsa ke masa lalu
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    setIsLoggedIn(false);
+    window.location.reload(); // Refresh halaman untuk membersihkan state global global
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -48,7 +63,7 @@ export default function LandingPage() {
     },
     {
       q: "Bagaimana cara kerja sistem penilaian skornya?",
-      a: "Setiap kali kamu berhasil menempatkan kartu kata kunci analisis di kotak yang tepat pada permainan drag-and-drop, kamu akan mendapatkan poin XP dinamis yang langsung menaikkan peringkatmu di leaderboard.",
+      a: "Setiap kali kamu berhasil menempatkan kartu kata kunci analisis di kotak yang tepat pada permainan drag-and-drop, kamu akan mendapatkan poin Points dinamis yang langsung menaikkan peringkatmu di leaderboard.",
     },
     {
       q: "Apakah jalur petualangan belajarnya harus berurutan?",
@@ -86,27 +101,46 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* SISI KANAN: AUTH ACTIONS (Menghemat space ruang pada layar mobile) */}
+          {/* SISI KANAN: AUTH ACTIONS DINAMIS */}
           <div className="flex items-center gap-3 sm:gap-6 text-[11px] font-black uppercase tracking-wider z-10">
-            <Link
-              href="/login"
-              className="text-slate-500 hover:text-indigo-600 transition-colors py-2 hidden sm:inline-block"
-            >
-              Masuk
-            </Link>
-            <Link
-              href="/signup"
-              className="px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-bold normal-case shrink-0"
-            >
-              Mulai Sekarang
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <button
+                  onClick={handleLogout}
+                  className="text-slate-500 hover:text-red-500 transition-colors py-2 hidden sm:inline-block cursor-pointer"
+                >
+                  Keluar
+                </button>
+                <Link
+                  href="/belajar"
+                  className="px-4 sm:px-5 py-2 sm:py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"
+                >
+                  Dashboard Anda
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-slate-500 hover:text-indigo-600 transition-colors py-2 hidden sm:inline-block"
+                >
+                  Masuk
+                </Link>
+                <Link
+                  href="/signup"
+                  className="px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-bold normal-case shrink-0"
+                >
+                  Mulai Sekarang
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
 
       <main className="max-w-6xl mx-auto px-6 space-y-24 py-12">
         
-        {/* 2. HERO SECTION - Menggunakan font-serif (Fraunces) pada komponen heading */}
+        {/* 2. HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8">
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             <h1 className="text-4xl md:text-5xl font-serif font-black text-slate-900 leading-tight tracking-tight">
@@ -126,7 +160,7 @@ export default function LandingPage() {
                 href="/belajar"
                 className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.4)] hover:-translate-y-0.5 transition-all"
               >
-                Masuk Mode Belajar
+                {isLoggedIn ? "Lanjutkan Belajar" : "Masuk Mode Belajar"}
               </Link>
               <Link
                 href="/diskusi"
@@ -148,7 +182,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* 3. FEATURES SECTION - Menggunakan font-serif untuk sub-judul seksi */}
+        {/* 3. FEATURES SECTION */}
         <section id="features" className="space-y-12 pt-8">
           <div className="text-center space-y-2">
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 tracking-tight">

@@ -3,10 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/utils/api";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -14,16 +17,34 @@ export default function LoginPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Integrasi REST API Golang tim kamu nanti di sini
-    console.log("Login Submitted:", formData, { rememberMe });
-    router.push("/belajar");
+    setError("");
+    loading || setLoading(true);
+
+    try {
+      const data = await apiFetch("/login", {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+
+        // Alihkan ke halaman beranda utama dan segarkan state
+        router.push("/");
+        router.refresh();
+      }
+    } catch (err: any) {
+      setError(err.message || "Username atau password salah.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] flex items-stretch text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
-      {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET (Sesuai Kotak Catur Wireframe) ================= */}
+      {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET ================= */}
       <section className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-50 to-slate-50 border-r-2 border-slate-100 p-12 flex-col items-center justify-center relative overflow-hidden shadow-inner">
         <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
 
@@ -38,13 +59,12 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* ================= SISI KANAN: FORM LOGIN VERTIKAL UTUH (Sesuai Sisi Kanan Wireframe) ================= */}
+      {/* ================= SISI KANAN: FORM LOGIN VERTIKAL UTUH ================= */}
       <section className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 bg-white">
         <div className="w-full max-w-md space-y-8">
           {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              {/* Tombol Back / Home Interaktif */}
               <button
                 type="button"
                 onClick={() => router.push("/")}
@@ -68,20 +88,27 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* NOTIFIKASI ERROR JIKA LOGIN GAGAL */}
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium">
+              ⚠️ {error}
+            </div>
+          )}
+
           {/* FORM ISIAN UTAMA */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* INPUT EMAIL */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            {/* INPUT USERNAME (DISESUAIKAN DENGAN STRUKTUR BE GOLANG) */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Email
+                Username
               </label>
               <input
-                type="email"
-                name="email"
+                type="text"
+                name="username"
                 required
-                value={formData.email}
+                value={formData.username}
                 onChange={handleChange}
-                placeholder="nama@mahasiswa.id"
+                placeholder="Isi Username Anda"
                 className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
               />
             </div>
@@ -105,7 +132,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                  className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors text-sm"
                 >
                   {showPassword ? "👁️‍🗨️" : "👁️"}
                 </button>
@@ -134,9 +161,14 @@ export default function LoginPage() {
             {/* TOMBOL SUBMIT UTAMA */}
             <button
               type="submit"
-              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-md hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 transition-all mt-4"
+              disabled={loading}
+              className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-md transition-all mt-4 ${
+                loading
+                  ? "bg-indigo-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] hover:-translate-y-0.5"
+              }`}
             >
-              Masuk Sekarang
+              {loading ? "Memverifikasi..." : "Masuk Sekarang"}
             </button>
           </form>
 

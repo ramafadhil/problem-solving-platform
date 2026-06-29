@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
-// Interface disesuaikan agar cocok dengan struktur asli dari BE Azure
+// 1. Interface diselaraskan penuh sesuai dokumentasi kontrak REST API Backend Golang Azure
 interface LogicBlock {
   category: string;
   content: string;
@@ -18,10 +18,6 @@ interface StudiKasus {
   description: string;
   type: "learning" | "general";
   logic_blocks?: LogicBlock[];
-  // Fallback properti opsional untuk kompatibilitas data/UI lokal
-  category?: string;
-  author?: string;
-  totalReplies?: number;
 }
 
 export default function DaftarKasusPage() {
@@ -31,7 +27,7 @@ export default function DaftarKasusPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const router = useRouter();
 
-  // Opsi Filter & Bookmark
+  // Opsi Filter & Bookmark Lokal
   const [filterType, setFilterType] = useState<"terbaru" | "populer" | "disimpan">("terbaru");
   const [savedKasusIds, setSavedKasusIds] = useState<string[]>([]);
 
@@ -41,11 +37,11 @@ export default function DaftarKasusPage() {
         setLoading(true);
         setError("");
 
-        // 🌟 Hubungkan langsung ke endpoint asli Azure BE
+        // Menembak endpoint GET /api/cases asli dari Azure BE
         const data = await apiFetch("/cases");
         setKasusList(data || []);
 
-        // Memuat data bookmark lokal sementara
+        // Memuat data bookmark lokal sementara dari localStorage jika ada
         const savedBookmarks = localStorage.getItem("unravel_saved_cases");
         if (savedBookmarks) {
           setSavedKasusIds(JSON.parse(savedBookmarks));
@@ -73,21 +69,19 @@ export default function DaftarKasusPage() {
     localStorage.setItem("unravel_saved_cases", JSON.stringify(updatedSaved));
   };
 
-  // Proses Data: Pencarian, Pengurutan Populer, dan Filter Bookmark
+  // PROSES DATA: Pencarian teks, filter tipe, dan filter bookmark
   const getProcessedKasus = () => {
     let result = kasusList.filter((kasus) => {
       const matchesTitle = kasus.title.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDesc = kasus.description.toLowerCase().includes(searchQuery.toLowerCase());
-      // Proteksi jika properti type atau category bernilai undefined
       const matchesType = (kasus.type || "").toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = (kasus.category || "").toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesTitle || matchesDesc || matchesType || matchesCategory;
+      return matchesTitle || matchesDesc || matchesType;
     });
 
     if (filterType === "populer") {
-      // Urutkan desc berdasarkan totalReplies (fallback ke 0 jika kosong)
-      result = [...result].sort((a, b) => (b.totalReplies || 0) - (a.totalReplies || 0));
+      // Catatan: Karena BE tidak mengirim dataReplies, pengurutan populer menggunakan panjang logic_blocks sebagai bobot kompleksitas kasus
+      result = [...result].sort((a, b) => (b.logic_blocks?.length || 0) - (a.logic_blocks?.length || 0));
     } else if (filterType === "disimpan") {
       result = result.filter((kasus) => savedKasusIds.includes(kasus.id));
     }
@@ -143,7 +137,7 @@ export default function DaftarKasusPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari kasus (ex: limbah pabrik, debat etika ai, lingkungan)..."
+              placeholder="Cari kasus berdasarkan judul, deskripsi, atau tipe (ex: learning, general)..."
               className="w-full bg-transparent outline-none text-xs font-semibold text-slate-700 placeholder-slate-400"
             />
           </div>
@@ -155,7 +149,7 @@ export default function DaftarKasusPage() {
               className="px-4 py-3 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-2xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors focus:outline-none cursor-pointer shadow-sm min-w-[150px]"
             >
               <option value="terbaru">Terbaru</option>
-              <option value="populer">Paling Populer</option>
+              <option value="populer">Tingkat Kompleksitas</option>
               <option value="disimpan">Kasus Disimpan</option>
             </select>
           </div>
@@ -190,6 +184,10 @@ export default function DaftarKasusPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
             {processedKasus.map((kasus) => {
               const isSaved = savedKasusIds.includes(kasus.id);
+              
+              // Pemetaan label kategori berdasarkan tipe response asli Backend Azure
+              const displayCategory = kasus.type === "learning" ? "Modul Belajar" : "Diskusi Umum";
+
               return (
                 <div
                   key={kasus.id}
@@ -202,10 +200,10 @@ export default function DaftarKasusPage() {
                           ? "bg-emerald-50 border-emerald-100 text-emerald-600"
                           : "bg-blue-50 border-blue-100 text-blue-600"
                       }`}>
-                        {kasus.category || kasus.type}
+                        {displayCategory}
                       </span>
                       <span className="text-[10px] font-bold text-slate-400">
-                        @{kasus.author || "admin"}
+                        @{kasus.type === "learning" ? "system" : "analis"}
                       </span>
                     </div>
 
@@ -233,9 +231,10 @@ export default function DaftarKasusPage() {
 
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      💬 {kasus.totalReplies || 0} Jawaban
+                      📋 {kasus.logic_blocks?.length || 0} Blok Logika
                     </span>
 
+                    {/* Rute dialihkan langsung ke halaman detail kasus utama /api/cases/{id} */}
                     <Link
                       href={`/diskusi/${kasus.id}`}
                       className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-400 text-slate-600 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors"

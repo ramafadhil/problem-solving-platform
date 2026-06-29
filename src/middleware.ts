@@ -13,20 +13,20 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
-//   // 1. PROTEKSI RUTE UTAMA: Jika mencoba akses rute terproteksi tapi TIDAK punya token
-//   const isMatchingProtected = protectedRoutes.some((route) => pathname.startsWith(route));
-//   if (isMatchingProtected && !token) {
-//     const loginUrl = new URL('/login', request.url);
-//     // Simpan rute asal agar setelah login sukses bisa diarahkan kembali ke halaman ini
-//     loginUrl.searchParams.set('callbackUrl', pathname);
-//     return NextResponse.redirect(loginUrl);
-//   }
+  // 1. PROTEKSI RUTE UTAMA: Jika mencoba akses rute terproteksi tapi TIDAK punya token
+  const isMatchingProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  if (isMatchingProtected && !token) {
+    const loginUrl = new URL('/login', request.url);
+    // Simpan rute asal agar setelah login sukses bisa diarahkan kembali ke halaman ini
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
-//   // 2. PROTEKSI RUTE AUTH: Jika SUDAH punya token tapi mencoba akses /login atau /signup
-//   const isMatchingAuth = authRoutes.some((route) => pathname.startsWith(route));
-//   if (isMatchingAuth && token) {
-//     return NextResponse.redirect(new URL('/', request.url));
-//   }
+  // 2. PROTEKSI RUTE AUTH: Jika SUDAH punya token tapi mencoba akses /login atau /signup
+  const isMatchingAuth = authRoutes.some((route) => pathname.startsWith(route));
+  if (isMatchingAuth && token) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
 
   return NextResponse.next();
 }

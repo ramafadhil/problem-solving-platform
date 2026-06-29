@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/request';
+// 🌟 PERBAIKAN: NextRequest di-import dari 'next/server'
+import type { NextRequest } from 'next/server';
 
 // Daftarkan rute-rute yang WAJIB login untuk bisa diakses
 const protectedRoutes = ['/belajar', '/diskusi'];
@@ -8,7 +9,7 @@ const protectedRoutes = ['/belajar', '/diskusi'];
 const authRoutes = ['/login', '/signup'];
 
 export function middleware(request: NextRequest) {
-  // Ambil token dari cookie (Next.js Middleware berjalan di sisi server, jadi tidak bisa membaca localStorage)
+  // Ambil token dari cookie
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 

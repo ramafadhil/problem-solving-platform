@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
+interface ToastState {
+  show: boolean;
+  message: string;
+  type: "success" | "error";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -12,6 +18,21 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  // State untuk manajemen status Toast Notifikasi
+  const [toast, setToast] = useState<ToastState>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToastNotification = (message: string, type: "success" | "error") => {
+    setToast({ show: true, message, type });
+    // Menyembunyikan toast secara otomatis setelah 3 detik
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,6 +50,9 @@ export default function LoginPage() {
       });
 
       if (data?.token) {
+        // Pemicu Toast Sukses
+        showToastNotification("✓ Login Berhasil! Menyiapkan lingkungan analisis Anda...", "success");
+
         // 1. Simpan token ke localStorage untuk client fetching
         localStorage.setItem("token", data.token);
         
@@ -40,18 +64,38 @@ export default function LoginPage() {
         const searchParams = new URLSearchParams(window.location.search);
         const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-        router.push(callbackUrl);
-        router.refresh();
+        // Beri sedikit jeda agar user sempat melihat pesan sukses toast sebelum pindah halaman
+        setTimeout(() => {
+          router.push(callbackUrl);
+          router.refresh();
+        }, 1000);
       }
     } catch (err: any) {
-      setError(err.message || "Username atau password salah.");
+      const errMsg = err.message || "Username atau password salah.";
+      setError(errMsg);
+      // Pemicu Toast Gagal
+      showToastNotification(`⚠️ Gagal Masuk: ${errMsg}`, "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] flex items-stretch text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#FFFDF9] flex items-stretch text-slate-800 font-sans selection:bg-indigo-500 selection:text-white relative">
+      
+      {/* ================= COMPONENT TOAST FLOATING NOTIFICATION ================= */}
+      {toast.show && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-bold uppercase tracking-wider ${
+            toast.type === "success"
+              ? "bg-emerald-50 border-emerald-400 text-emerald-800"
+              : "bg-red-50 border-red-400 text-red-800"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
+
       {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET ================= */}
       <section className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-50 to-slate-50 border-r-2 border-slate-100 p-12 flex-col items-center justify-center relative overflow-hidden shadow-inner">
         <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
@@ -96,7 +140,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* NOTIFIKASI ERROR JIKA LOGIN GAGAL */}
+          {/* NOTIFIKASI ERROR STATIC JIKA LOGIN GAGAL */}
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium">
               ⚠️ {error}
@@ -114,10 +158,11 @@ export default function LoginPage() {
                 type="text"
                 name="username"
                 required
+                disabled={loading}
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Isi Username Anda"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
               />
             </div>
 
@@ -131,10 +176,11 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
+                  disabled={loading}
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-10 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-3 pr-10 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
                 />
                 {/* Tombol Mata / Intip Password */}
                 <button
@@ -153,6 +199,7 @@ export default function LoginPage() {
                 <input
                   type="checkbox"
                   checked={rememberMe}
+                  disabled={loading}
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4 rounded-md border-2 border-slate-300 accent-indigo-600 cursor-pointer"
                 />

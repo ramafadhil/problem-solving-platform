@@ -69,18 +69,21 @@ export default function DaftarKasusPage() {
     localStorage.setItem("unravel_saved_cases", JSON.stringify(updatedSaved));
   };
 
-  // PROSES DATA: Pencarian teks, filter tipe, dan filter bookmark
+  // PROSES DATA: Memastikan forum diskusi publik HANYA menampilkan tipe "general"
   const getProcessedKasus = () => {
-    let result = kasusList.filter((kasus) => {
+    // 🌟 1. Filter awal: Singkirkan tipe 'learning', ambil yang murni 'general'
+    let result = kasusList.filter((kasus) => kasus.type === "general");
+
+    // 2. Jalankan pencarian teks keyword judul dan deskripsi
+    result = result.filter((kasus) => {
       const matchesTitle = kasus.title.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDesc = kasus.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = (kasus.type || "").toLowerCase().includes(searchQuery.toLowerCase());
-
-      return matchesTitle || matchesDesc || matchesType;
+      return matchesTitle || matchesDesc;
     });
 
+    // 3. Klasifikasi berdasarkan tab filter dropdown aktif
     if (filterType === "populer") {
-      // Catatan: Karena BE tidak mengirim dataReplies, pengurutan populer menggunakan panjang logic_blocks sebagai bobot kompleksitas kasus
+      // Mengurutkan berdasarkan kompleksitas internal blok data pendukung bawaan
       result = [...result].sort((a, b) => (b.logic_blocks?.length || 0) - (a.logic_blocks?.length || 0));
     } else if (filterType === "disimpan") {
       result = result.filter((kasus) => savedKasusIds.includes(kasus.id));
@@ -137,7 +140,7 @@ export default function DaftarKasusPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari kasus berdasarkan judul, deskripsi, atau tipe (ex: learning, general)..."
+              placeholder="Cari studi kasus publik (ex: krisis air bersih, limbah urban, etika)..."
               className="w-full bg-transparent outline-none text-xs font-semibold text-slate-700 placeholder-slate-400"
             />
           </div>
@@ -149,7 +152,7 @@ export default function DaftarKasusPage() {
               className="px-4 py-3 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-2xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors focus:outline-none cursor-pointer shadow-sm min-w-[150px]"
             >
               <option value="terbaru">Terbaru</option>
-              <option value="populer">Tingkat Kompleksitas</option>
+              <option value="populer">Paling Kompleks</option>
               <option value="disimpan">Kasus Disimpan</option>
             </select>
           </div>
@@ -184,9 +187,6 @@ export default function DaftarKasusPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
             {processedKasus.map((kasus) => {
               const isSaved = savedKasusIds.includes(kasus.id);
-              
-              // Pemetaan label kategori berdasarkan tipe response asli Backend Azure
-              const displayCategory = kasus.type === "learning" ? "Modul Belajar" : "Diskusi Umum";
 
               return (
                 <div
@@ -195,15 +195,11 @@ export default function DaftarKasusPage() {
                 >
                   <div className="space-y-2">
                     <div className="flex justify-between items-center pr-6">
-                      <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-sm ${
-                        kasus.type === "learning"
-                          ? "bg-emerald-50 border-emerald-100 text-emerald-600"
-                          : "bg-blue-50 border-blue-100 text-blue-600"
-                      }`}>
-                        {displayCategory}
+                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-sm bg-blue-50 border-blue-100 text-blue-600">
+                        Diskusi Umum
                       </span>
                       <span className="text-[10px] font-bold text-slate-400">
-                        @{kasus.type === "learning" ? "system" : "analis"}
+                        @analis
                       </span>
                     </div>
 
@@ -231,7 +227,7 @@ export default function DaftarKasusPage() {
 
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                      📋 {kasus.logic_blocks?.length || 0} Blok Logika
+                      💬 Diskusi Aktif
                     </span>
 
                     {/* Rute dialihkan langsung ke halaman detail kasus utama /api/cases/{id} */}

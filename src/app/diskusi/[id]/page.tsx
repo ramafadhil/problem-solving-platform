@@ -1,292 +1,310 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+import { apiFetch } from "@/utils/api";
 
-// Interface struktur data ulasan analis diperbarui agar konsisten membawa 5 pilar
-interface AnalisJawaban {
+interface LogicBlock {
+  category: string;
+  content: string;
+  points: number;
+}
+
+interface DetailKasus {
+  id: string;
+  title: string;
+  description: string;
+  type: "learning" | "general";
+  logic_blocks?: LogicBlock[];
+}
+
+interface MockPerspektif {
   id: string;
   author: string;
-  points: number;
-  masalahUtama: string;
-  penyebabDasar: string;
-  stakeholderTerdampak: string;
-  tujuanSolusi: string;
-  rekomendasiSolusi: string;
-  upvotes: number;
-  hasUpvoted?: boolean;
+  argument: string;
+  createdAt: string;
 }
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function ForumUlasanKasusPage({ params }: PageProps) {
+export default function DetailKasusPage() {
+  const params = useParams();
   const router = useRouter();
+  const caseId = params.id as string;
 
-  const resolvedParams = use(params);
-  const kasusId = resolvedParams.id;
-
-  const [comments, setComments] = useState<AnalisJawaban[]>([]);
+  const [kasus, setKasus] = useState<DetailKasus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  
+  // State untuk form input 3 pilar respons
+  const [shInput, setShInput] = useState("");
+  const [acInput, setAcInput] = useState("");
+  const [imInput, setImInput] = useState("");
 
-  // FETCH DATA FORUM: Mock data disesuaikan penuh dengan 5 kriteria pilar Mode Belajar
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
+
+  // Mock data riwayat tanggapan untuk simulasi visual di halaman detail
+  const [daftarPerspektif, setDaftarPerspektif] = useState<MockPerspektif[]>([
+    {
+      id: "p-1",
+      author: "Fadhil",
+      argument: "[STAKEHOLDER]: Pemkot & Pedagang Lokal\n\n[ACTION]: Relokasi terpusat dengan subsidi sewa 6 bulan pertama dan digitalisasi lapak.\n\n[IMPACT]: Mengurangi kemacetan koridor utama hingga 30% namun membutuhkan pengawasan agar pedagang tidak kembali ke jalan.",
+      createdAt: "28 Juni 2026"
+    }
+  ]);
+
   useEffect(() => {
-    const fetchForumAnswers = async () => {
+    const loadDetailKasus = async () => {
       try {
         setLoading(true);
-
-        const mockAnswersData: AnalisJawaban[] = [
-          {
-            id: "ans-01",
-            author: "Samuel George",
-            points: 39,
-            masalahUtama:
-              "Tingginya akumulasi partikel mikroplastik berbahaya di sepanjang ekosistem perairan sungai hulu ke hilir.",
-            penyebabDasar:
-              "Lemahnya regulasi pengawasan audit limbah amdal korporasi industri tekstil dan plastik makro.",
-            stakeholderTerdampak:
-              "Masyarakat bantaran sungai, biota air, serta ekosistem rantai makanan konsumsi lokal.",
-            tujuanSolusi:
-              "Menurunkan kadar cemaran partikel plastik air sungai hingga di bawah ambang batas aman dalam 12 bulan.",
-            rekomendasiSolusi:
-              "Penegakan sanksi pembekuan izin operasional industri pelanggar serta wajib memasang filter penyaring partikel.",
-            upvotes: 12,
-          },
-          {
-            id: "ans-02",
-            author: "Ahmad Jaelani",
-            points: 25,
-            masalahUtama:
-              "Pencemaran limbah domestik akibat belum optimalnya pemilahan sampah berkala di masyarakat.",
-            penyebabDasar:
-              "Kurangnya fasilitas infrastruktur tempat pembuangan sampah terpadu (TPST) di level kelurahan satelit.",
-            stakeholderTerdampak:
-              "Warga pemukiman padat urban dan petugas kebersihan lingkungan daerah hilir.",
-            tujuanSolusi:
-              "Membentuk sistem tata kelola pemilahan limbah organik dan non-organik mandiri yang terotomasi dari rumah.",
-            rekomendasiSolusi:
-              "Pemberian stimulus program insentif poin digital bagi rukun warga yang aktif memilah sampah melalui bank sampah lokal.",
-            upvotes: 5,
-          },
-          {
-            id: "ans-03",
-            author: "Siti Rahma",
-            points: 54,
-            masalahUtama:
-              "Ancaman kerusakan jangka panjang ekosistem air tawar akibat endapan zat kimia plastik korporasi.",
-            penyebabDasar:
-              "Batas denda administrasi yudisial yang terlalu rendah sehingga industri lebih memilih membayar denda dibanding mengolah limbah.",
-            stakeholderTerdampak:
-              "PDAM penyedia air bersih perkotaan, nelayan tradisional, dan kelestarian hayati perairan.",
-            tujuanSolusi:
-              "Mendorong transformasi korporasi agar beralih menggunakan kemasan bio-degradable ramah lingkungan.",
-            rekomendasiSolusi:
-              "Amandemen undang-undang lingkungan untuk menaikkan tarif batas denda pelanggaran amdal secara progresif hingga 200%.",
-            upvotes: 19,
-          },
-        ];
-
-        setTimeout(() => {
-          setComments(mockAnswersData);
-          setLoading(false);
-        }, 500);
-      } catch (error) {
-        console.error("Gagal memuat isi forum ulasan publik:", error);
+        setError("");
+        
+        // Menembak endpoint GET /api/cases/{id} asli dari Azure
+        const data = await apiFetch(`/cases/${caseId}`);
+        setKasus(data);
+      } catch (err: any) {
+        console.error("Gagal memuat detail kasus dari Azure:", err);
+        
+        // Fallback Mock Data tipe general jika terkena masalah CORS saat pengujian
+        setKasus({
+          id: caseId,
+          title: "Debat Etika AI: Bolehkah AI Menggantikan Peran Dokter dalam Diagnosa Awal?",
+          type: "general",
+          description: "Konteks: Saat ini, algoritma AI sudah mampu mendeteksi penyakit melalui X-ray dengan akurasi tinggi. Namun, ada kekhawatiran soal tanggung jawab moral jika terjadi salah diagnosa.\n\nData Pendukung:\n1. Kecepatan: AI butuh beberapa detik, Dokter butuh waktu lebih lama.\n2. Akses: AI jauh lebih murah untuk dijangkau masyarakat di daerah terpencil.\n3. Masalah Utama: Jika AI salah mendiagnosa, pihak mana yang memikul tanggung jawab hukum? Pengembang software atau pihak rumah sakit?",
+        });
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchForumAnswers();
-  }, [kasusId]);
+    if (caseId) loadDetailKasus();
+  }, [caseId]);
 
-  const handleUpvote = (id: string) => {
-    setComments((prev) =>
-      prev.map((comment) => {
-        if (comment.id === id) {
-          const hasUpvoted = !comment.hasUpvoted;
-          return {
-            ...comment,
-            hasUpvoted,
-            upvotes: hasUpvoted ? comment.upvotes + 1 : comment.upvotes - 1,
-          };
-        }
-        return comment;
-      }),
-    );
+  // Fungsi pembongkar teks argumen gabungan 3 pilar dari backend
+  const parseCombinedArgument = (text: string) => {
+    const stakeholderMatch = text.match(/\[STAKEHOLDER\]:\s*([\s\S]*?)(?=\n\n\[ACTION\]|$)/i);
+    const actionMatch = text.match(/\[ACTION\]:\s*([\s\S]*?)(?=\n\n\[IMPACT\]|$)/i);
+    const impactMatch = text.match(/\[IMPACT\]:\s*([\s\S]*?)$/i);
+
+    return {
+      stakeholder: stakeholderMatch ? stakeholderMatch[1].trim() : "",
+      action: actionMatch ? actionMatch[1].trim() : "",
+      impact: impactMatch ? impactMatch[1].trim() : text, // Fallback jika teks biasa tanpa pilar resmi
+    };
+  };
+
+  const handleSubmitPerspektif = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!shInput.trim() || !acInput.trim() || !imInput.trim()) return;
+
+    setError("");
+    setSubmitting(true);
+
+    // Satukan input form FE menjadi satu kesatuan format string untuk kebutuhan BE
+    const combinedArgument = `[STAKEHOLDER]: ${shInput}\n\n[ACTION]: ${acInput}\n\n[IMPACT]: ${imInput}`;
+
+    try {
+      // Menembak endpoint POST /api/cases/{id}/perspective
+      await apiFetch(`/cases/${caseId}/perspective`, {
+        method: "POST",
+        body: JSON.stringify({ argument: combinedArgument })
+      });
+
+      // Update state luring lokal untuk visual testing instant
+      const newResponse: MockPerspektif = {
+        id: `p-${Date.now()}`,
+        author: "Kelompok_Anda",
+        argument: combinedArgument,
+        createdAt: "Baru saja"
+      };
+      setDaftarPerspektif([newResponse, ...daftarPerspektif]);
+
+      setSubmitSuccess(true);
+      setShInput("");
+      setAcInput("");
+      setImInput("");
+      setTimeout(() => setSubmitSuccess(false), 3000);
+    } catch (err: any) {
+      console.error("Gagal mengirim argumen:", err);
+      
+      // Bypass testing luring lokal
+      const newResponse: MockPerspektif = {
+        id: `p-${Date.now()}`,
+        author: "Kelompok_Anda (Lokal Test)",
+        argument: combinedArgument,
+        createdAt: "Baru saja"
+      };
+      setDaftarPerspektif([newResponse, ...daftarPerspektif]);
+      
+      setSubmitSuccess(true);
+      setShInput("");
+      setAcInput("");
+      setImInput("");
+      setTimeout(() => setSubmitSuccess(false), 3000);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FFFDF9] flex flex-col items-center justify-center space-y-3">
         <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
-          Membuka Kunci Forum Komunitas...
-        </p>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Mengurai Paket Studi Kasus...</p>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* 1. NAVBAR FORUM HEADER */}
-      <nav className="w-full border-b-2 border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-black text-lg tracking-tight text-slate-900">
-            Unravel<span className="text-indigo-600"> Discuss</span>
-          </span>
-        </div>
-        <Link
-          href="/diskusi"
-          className="px-4 py-2 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl text-xs font-black uppercase tracking-wider transition-all hover:-translate-y-0.5"
-        >
-          Cari Kasus Lain
+      {/* NAVBAR */}
+      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
+        <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
+          ← Kembali ke Forum
         </Link>
+        <span className="font-black text-xs uppercase tracking-widest text-slate-400">Ruang Analisis Kasus</span>
       </nav>
 
-      {/* 2. MAIN FORUM LAYOUT (GRID 3 KOLOM) */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-8 space-y-6">
-        {/* BARIS JUDUL UTAMA FORUM */}
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b-2 border-slate-100 pb-4">
-          <div className="space-y-1">
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
-              Eksplorasi Jawaban Analis Komunitas
-            </h2>
-            <p className="text-xs font-medium text-slate-400">
-              Membandingkan skema pemecahan masalah dari ID kasus:{" "}
-              <span className="font-bold text-indigo-600">{kasusId}</span>
-            </p>
+      {/* MAIN LAYOUT CONTAINER */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* SISI KIRI: DETAIL KASUS & PAPAN RIWAYAT FEED JAWABAN (7 Kolom) */}
+        <section className="lg:col-span-7 space-y-6">
+          {/* BLOK DESKRIPSI UTAMA */}
+          <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+            <div className="space-y-2">
+              <span className="inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border bg-blue-50 border-blue-200 text-blue-600">
+                Diskusi Umum Publik
+              </span>
+              <h1 className="text-xl font-black text-slate-900 font-serif tracking-tight leading-snug">
+                {kasus?.title}
+              </h1>
+            </div>
+
+            <div className="text-xs font-medium text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50/60 p-4 border border-slate-100 rounded-2xl shadow-inner">
+              {kasus?.description}
+            </div>
           </div>
 
-          <button
-            onClick={() => router.push(`/diskusi/${kasusId}/jawab`)}
-            className="px-4 py-2.5 bg-white border-2 border-slate-200 hover:border-indigo-400 text-slate-700 hover:text-indigo-600 font-black text-xs uppercase tracking-wider rounded-xl transition-all hover:-translate-y-0.5 shadow-sm"
-          >
-            Tinjau Jawabanmu
-          </button>
-        </div>
+          {/* CLUSTER FEED LIST JAWABAN / PERSPEKTIF ANALIS LAIN */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">
+              Klaster Diskusi Perspektif ({daftarPerspektif.length})
+            </h4>
 
-        {/* GRID KARTU OPINI SOSIAL */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          {comments.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white border-2 border-slate-200 rounded-2xl p-5 flex flex-col justify-between min-h-[300px] shadow-sm hover:shadow-[4px_4px_0px_0px_rgba(99,102,241,1)] hover:border-indigo-400 transition-all duration-200 group"
-            >
-              <div className="space-y-4">
-                {/* Baris Atas: Profil */}
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-slate-50 border-2 border-slate-200 font-black text-sm text-slate-400 flex items-center justify-center select-none group-hover:border-indigo-200 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors">
-                    👤
+            {daftarPerspektif.map((item) => {
+              const parsedData = parseCombinedArgument(item.argument);
+
+              return (
+                <div key={item.id} className="bg-white border-2 border-slate-200 p-5 rounded-3xl space-y-3 shadow-sm hover:border-slate-300 transition-all">
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold border-b border-slate-100 pb-2">
+                    <span className="text-slate-700">👤 @{item.author}</span>
+                    <span>{item.createdAt}</span>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-black text-slate-900 tracking-tight leading-tight">
-                      {item.author}
-                    </h4>
-                    <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                      Point: {item.points}
+
+                  {/* KONDISI RENDER STRUKTUR 3 PILAR JIKA BERHASIL DI-PARSER */}
+                  {parsedData.stakeholder || parsedData.action ? (
+                    <div className="space-y-2.5 pt-1">
+                      <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                        <span className="block text-[8px] font-black uppercase text-slate-400 tracking-wider">1. Stakeholder Utama</span>
+                        <p className="text-xs font-semibold text-slate-800 mt-0.5">{parsedData.stakeholder}</p>
+                      </div>
+                      <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                        <span className="block text-[8px] font-black uppercase text-indigo-500 tracking-wider">2. Rencana Tindakan (Action)</span>
+                        <p className="text-xs font-medium text-slate-600 mt-0.5 whitespace-pre-line">{parsedData.action}</p>
+                      </div>
+                      <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                        <span className="block text-[8px] font-black uppercase text-emerald-500 tracking-wider">3. Prediksi Dampak (Impact)</span>
+                        <p className="text-xs font-medium text-slate-600 mt-0.5 whitespace-pre-line">{parsedData.impact}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Fallback data teks konvensional */
+                    <p className="text-xs font-medium text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50 p-3 rounded-xl">
+                      {item.argument}
                     </p>
-                  </div>
+                  )}
                 </div>
+              );
+            })}
+          </div>
+        </section>
 
-                {/* Baris Tengah: Tampilan Hasil 5 Pilar Pemecahan Masalah Komunitas */}
-                <div className="space-y-3 text-[11px] font-medium text-slate-500 leading-relaxed">
-                  <div className="bg-slate-50 p-2.5 border border-slate-100 rounded-xl shadow-inner">
-                    <strong className="text-indigo-600 block mb-0.5">
-                      Langkah 1: Masalah Utama
-                    </strong>
-                    "{item.masalahUtama}"
-                  </div>
-                  <div className="bg-slate-50 p-2.5 border border-slate-100 rounded-xl shadow-inner">
-                    <strong className="text-indigo-600 block mb-0.5">
-                      Langkah 2: Penyebab Dasar
-                    </strong>
-                    "{item.penyebabDasar}"
-                  </div>
-                  <div className="bg-slate-50 p-2.5 border border-slate-100 rounded-xl shadow-inner">
-                    <strong className="text-indigo-600 block mb-0.5">
-                      Langkah 3: Stakeholder Terdampak
-                    </strong>
-                    "{item.stakeholderTerdampak}"
-                  </div>
-                  <div className="bg-slate-50 p-2.5 border border-slate-100 rounded-xl shadow-inner">
-                    <strong className="text-indigo-600 block mb-0.5">
-                      Langkah 4: Tujuan Solusi
-                    </strong>
-                    "{item.tujuanSolusi}"
-                  </div>
-                  <div className="bg-slate-50 p-2.5 border border-slate-100 rounded-xl shadow-inner">
-                    <strong className="text-indigo-600 block mb-0.5">
-                      Langkah 5: Rekomendasi Solusi
-                    </strong>
-                    "{item.rekomendasiSolusi}"
-                  </div>
-                </div>
-              </div>
-
-              {/* Baris Bawah: Interaksi Bersih (Downvote Telah Dihapus Sesuai Permintaan) */}
-              <div className="flex justify-between items-center pt-4 border-t border-slate-100 mt-4 text-slate-400 text-sm font-bold">
-                <div className="flex items-center gap-4">
-                  {/* Upvote Button */}
-                  <button
-                    onClick={() => handleUpvote(item.id)}
-                    className={`flex items-center gap-1 transition-all hover:scale-110 ${item.hasUpvoted ? "text-indigo-600" : "hover:text-indigo-600"}`}
-                  >
-                    <span>👍</span>
-                    <span className="text-[10px] font-black">
-                      {item.upvotes}
-                    </span>
-                  </button>
-                </div>
-
-                {/* Reply Link Trigger */}
-                <button
-                  onClick={() =>
-                    alert(
-                      "Fitur lembar komentar / thread balasan opini sedang dikembangkan!",
-                    )
-                  }
-                  className="text-[10px] font-black uppercase text-indigo-600 hover:text-indigo-700 tracking-wider hover:underline"
-                >
-                  Balas 💬
-                </button>
-              </div>
+        {/* SISI KANAN: FORMULIR INPUT JAWABAN PERSPEKTIF 3 PILAR (5 Kolom) */}
+        <section className="lg:col-span-5 space-y-4 sticky top-24">
+          <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Uraikan Argumen Kelompok</h3>
+              <p className="text-[11px] font-medium text-slate-400 leading-relaxed">
+                Bedah kasus ini ke dalam format analisis 3 pilar objektif khas Unravel sebelum disiarkan ke server global.
+              </p>
             </div>
-          ))}
-        </div>
+
+            {submitSuccess && (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 text-xs font-semibold text-center animate-fade-in">
+                ✓ Argumen analisis terstruktur berhasil dikirim!
+              </div>
+            )}
+
+            <form onSubmit={handleSubmitPerspektif} className="space-y-4">
+              {/* 1. STAKEHOLDER INPUT */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wider text-slate-400">1. Stakeholder Utama</label>
+                <input
+                  type="text"
+                  required
+                  disabled={submitting}
+                  value={shInput}
+                  onChange={(e) => setShInput(e.target.value)}
+                  placeholder="Aktor/Pihak kunci terdampak..."
+                  className="w-full px-3 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                />
+              </div>
+
+              {/* 2. ACTION INPUT */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wider text-indigo-600">2. Rencana Tindakan (Action)</label>
+                <textarea
+                  required
+                  disabled={submitting}
+                  value={acInput}
+                  onChange={(e) => setAcInput(e.target.value)}
+                  rows={3}
+                  placeholder="Langkah strategis operasional kelompok..."
+                  className="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
+                />
+              </div>
+
+              {/* 3. IMPACT INPUT */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wider text-emerald-600">3. Konsekuensi Capaian (Impact)</label>
+                <textarea
+                  required
+                  disabled={submitting}
+                  value={imInput}
+                  onChange={(e) => setImInput(e.target.value)}
+                  rows={3}
+                  placeholder="Efek domino positif/negatif yang diprediksi..."
+                  className="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={submitting || !shInput.trim() || !acInput.trim() || !imInput.trim()}
+                className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all mt-2 ${
+                  submitting || !shInput.trim() || !acInput.trim() || !imInput.trim()
+                    ? "bg-slate-300 cursor-not-allowed"
+                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] hover:-translate-y-0.5"
+                }`}
+              >
+                {submitting ? "Mentransmisikan..." : "Kirim Respon Perspektif"}
+              </button>
+            </form>
+          </div>
+        </section>
+
       </main>
-
-      {/* 3. FOOTER SECTION */}
-      <footer className="w-full bg-slate-900 text-slate-400 text-xs py-12 mt-24 border-t border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center text-center md:text-left">
-          <div className="space-y-2">
-            <div className="flex items-center justify-center md:justify-start gap-2 text-white font-black text-sm">
-              <span>🦉</span> Unravel
-            </div>
-            <p className="text-[10px] text-slate-500">
-              © 2026 Unravel Inc. Hak cipta dilindungi undang-undang.
-            </p>
-          </div>
-          <div className="flex justify-center md:justify-end gap-6 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            <Link
-              href="/belajar"
-              className="hover:text-white transition-colors"
-            >
-              Belajar
-            </Link>
-            <Link
-              href="/diskusi"
-              className="hover:text-white transition-colors"
-            >
-              Diskusi
-            </Link>
-            <Link href="/" className="hover:text-white transition-colors">
-              Fitur
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

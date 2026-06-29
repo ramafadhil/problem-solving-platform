@@ -20,7 +20,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    loading || setLoading(true);
+    setLoading(true);
 
     try {
       const data = await apiFetch("/login", {
@@ -28,11 +28,19 @@ export default function LoginPage() {
         body: JSON.stringify(formData),
       });
 
-      if (data.token) {
+      if (data?.token) {
+        // 1. Simpan token ke localStorage untuk client fetching
         localStorage.setItem("token", data.token);
+        
+        // 2. Simpan di Cookies agar dibaca oleh Next.js Middleware (berlaku selama 7 hari)
+        const maxAge = 7 * 24 * 60 * 60;
+        document.cookie = `token=${data.token}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
 
-        // Alihkan ke halaman beranda utama dan segarkan state
-        router.push("/");
+        // 3. Cek rute asal (callbackUrl) setelah kena proteksi rute middleware
+        const searchParams = new URLSearchParams(window.location.search);
+        const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch (err: any) {
@@ -97,7 +105,7 @@ export default function LoginPage() {
 
           {/* FORM ISIAN UTAMA */}
           <form onSubmit={handleLogin} className="space-y-4">
-            {/* INPUT USERNAME (DISESUAIKAN DENGAN STRUKTUR BE GOLANG) */}
+            {/* INPUT USERNAME */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Username

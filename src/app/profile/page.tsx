@@ -195,6 +195,14 @@ export default function ProfilePage() {
                     <h2 className="text-lg font-black tracking-tight text-slate-900 font-serif">{profile?.name || "Analis"}</h2>
                     <p className="text-xs font-semibold text-slate-400">@{profile?.username || "username"}</p>
                   </div>
+                  {profile?.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      className="w-full text-center py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors mt-2"
+                    >
+                    Panel Admin
+                    </Link>
+                  )}
                 </div>
               </div>
 

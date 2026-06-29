@@ -33,6 +33,11 @@ export default function ProfilePage() {
   // 🌟 SINKRONISASI BE: State awal diset null/kosong, tidak di-hardcode lagi
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [riwayatDiskusi, setRiwayatDiskusi] = useState<RiwayatJawaban[]>([]);
+  const [stats, setStats] = useState({
+    casesSolved: 0,
+    casesCreated: 0,
+    totalXp: 0
+  });
 
   useEffect(() => {
     const getProfileData = async () => {
@@ -42,20 +47,86 @@ export default function ProfilePage() {
 
         // 1. Ambil data profil user yang sedang login dari endpoint BE
         // (Sesuaikan dengan endpoint asli temanmu, biasanya /user/profile atau /profile)
-        const userRes = await apiFetch("/user/profile"); 
+        const userRes = await apiFetch("/me"); 
         
         // 2. Ambil data riwayat jawaban diskusi user
-        const riwayatRes = await apiFetch("/user/responses");
+        let riwayatRes = null;
+        let casesCreatedCount = 0;
+        try {
+          const casesRes = await apiFetch("/cases");
+          const casesList = Array.isArray(casesRes) ? casesRes : (casesRes?.cases || casesRes?.data || []);
+          
+          if (userRes && Array.isArray(casesList)) {
+            const userData = userRes.data || userRes;
+            const userId = userData?.id;
+            const userPerspectives = [];
+            
+            // Hitung jumlah kasus yang dibuat oleh user saat ini
+            casesCreatedCount = casesList.filter((c: any) => c.user_id === userId).length;
+            
+            for (const c of casesList) {
+              try {
+                const perspectives = await apiFetch(`/cases/${c.id}/perspectives`);
+                if (Array.isArray(perspectives)) {
+                  const myPerspective = perspectives.find((p: any) => p.UserID === userId);
+                  if (myPerspective) {
+                    const category = c.topics && c.topics.length > 0 ? c.topics[0].name : "Umum";
+                    
+                    const dateObj = new Date(myPerspective.created_at);
+                    const formattedDate = dateObj.toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric"
+                    });
+                    
+                    const stakeholderDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Stakeholder" || d.pillar_category === "Teknis");
+                    const actionDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
+                    const impactDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Impact");
+                    
+                    const sh = stakeholderDetail?.text_content || myPerspective.details?.[0]?.text_content || "";
+                    const ac = actionDetail?.text_content || myPerspective.details?.[1]?.text_content || "";
+                    const im = impactDetail?.text_content || myPerspective.details?.[2]?.text_content || "";
+                    
+                    const detailsText = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+                    
+                    userPerspectives.push({
+                      id: String(myPerspective.ID),
+                      caseId: String(c.id),
+                      caseTitle: c.title,
+                      category: category,
+                      answeredAt: formattedDate,
+                      snippetArgument: detailsText
+                    });
+                  }
+                }
+              } catch (err) {
+                console.error(`Gagal mengambil perspektif kasus ${c.id}:`, err);
+              }
+            }
+            riwayatRes = userPerspectives;
+          }
+        } catch (e) {
+          console.error("Gagal mengambil riwayat kasus:", e);
+        }
 
         if (userRes) {
-          setProfile(userRes);
+          setProfile(userRes.data || userRes);
         }
         
-        if (Array.isArray(riwayatRes)) {
+        if (riwayatRes) {
           setRiwayatDiskusi(riwayatRes);
-        } else if (riwayatRes && Array.isArray(riwayatRes.data)) {
-          setRiwayatDiskusi(riwayatRes.data);
         }
+
+        // Kalkulasi dinamis statistik pencapaian analis
+        const solvedCount = riwayatRes ? riwayatRes.length : 0;
+        const createdCount = casesCreatedCount;
+        const calculatedXp = (solvedCount * 100) + (createdCount * 50);
+        
+        setStats({
+          casesSolved: solvedCount,
+          casesCreated: createdCount,
+          totalXp: calculatedXp
+        });
 
       } catch (err: any) {
         console.error("Gagal memuat data profil dari BE:", err);
@@ -132,16 +203,16 @@ export default function ProfilePage() {
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Papan Pencapaian Analis</h4>
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-3 text-center">
-                    <span className="block text-xl font-black text-indigo-600 font-serif">{profile?.stats?.casesSolved || 0}</span>
+                    <span className="block text-xl font-black text-indigo-600 font-serif">{stats.casesSolved}</span>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Kasus Dijawab</span>
                   </div>
                   <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-3 text-center">
-                    <span className="block text-xl font-black text-emerald-600 font-serif">{profile?.stats?.casesCreated || 0}</span>
+                    <span className="block text-xl font-black text-emerald-600 font-serif">{stats.casesCreated}</span>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Kasus Dibuat</span>
                   </div>
                 </div>
                 <div className="w-full bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  Total Skor: <span className="text-indigo-600 font-black">{profile?.stats?.totalXp || 0} Points</span>
+                  Total Skor: <span className="text-indigo-600 font-black">{stats.totalXp} Points</span>
                 </div>
               </div>
             </section>

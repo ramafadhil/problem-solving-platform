@@ -39,14 +39,30 @@ export default function BuatKasusPage() {
         }),
       });
 
-      const createdCaseId = newCase?.id;
+      // SINKRONISASI BE: Mengambil ID kasus dari properti data.id atau root.id
+      const createdCaseId = newCase?.data?.id || newCase?.id;
 
-      // Langkah 2: Langsung tembak argumen gabungan ke endpoint perspektif
+      // Langkah 2: Langsung tembak argumen gabungan ke endpoint perspektif baru
       if (createdCaseId) {
-        await apiFetch(`/cases/${createdCaseId}/perspective`, {
+        await apiFetch("/perspectives", {
           method: "POST",
           body: JSON.stringify({
-            argument: combinedArgument,
+            case_id: createdCaseId,
+            is_public: true, // Perspektif pembuat kasus otomatis publik di awal
+            details: [
+              {
+                pillar_category: "Stakeholder",
+                text_content: stakeholder
+              },
+              {
+                pillar_category: "Action",
+                text_content: action
+              },
+              {
+                pillar_category: "Impact",
+                text_content: impact
+              }
+            ]
           }),
         });
       }

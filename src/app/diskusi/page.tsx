@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
 interface LogicBlock {
-  category: string;
+  category?: string;
+  pillar_category?: string;
   content: string;
   points: number;
 }

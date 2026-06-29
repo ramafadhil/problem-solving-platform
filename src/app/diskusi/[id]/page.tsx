@@ -6,7 +6,8 @@ import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
 interface LogicBlock {
-  category: string;
+  category?: string;
+  pillar_category?: string;
   content: string;
   points: number;
 }
@@ -113,32 +114,41 @@ export default function DetailKasusPage() {
 
       // 2. Jika tidak ada di localStorage, cek dari backend
       try {
-        const responses = await apiFetch("/user/responses");
-        const matchingResponse = (Array.isArray(responses) ? responses : responses?.data || []).find(
-          (res: any) => String(res.caseId) === String(caseId) || String(res.case_id) === String(caseId)
-        );
+        const profile = await apiFetch("/me");
+        const userId = profile?.data?.id || profile?.id;
+        
+        if (userId) {
+          const perspectives = await apiFetch(`/cases/${caseId}/perspectives`);
+          const matchingResponse = Array.isArray(perspectives) 
+            ? perspectives.find((p: any) => p.UserID === userId)
+            : null;
 
-        if (matchingResponse) {
-          setHasSubmitted(true);
-          const fullArg = matchingResponse.argument || matchingResponse.snippetArgument || "";
-          const responseIsPublic = matchingResponse.isPublic !== undefined ? matchingResponse.isPublic : (matchingResponse.is_public !== undefined ? matchingResponse.is_public : true);
-          setIsPublic(responseIsPublic);
-          
-          if (typeof window !== "undefined") {
-            localStorage.setItem(`submitted_case_${caseId}`, "true");
-            localStorage.setItem(`submitted_is_public_${caseId}`, String(responseIsPublic));
-            if (fullArg) {
+          if (matchingResponse) {
+            setHasSubmitted(true);
+            
+            const stakeholderDetail = matchingResponse.details?.find((d: any) => d.pillar_category === "Stakeholder" || d.pillar_category === "Teknis");
+            const actionDetail = matchingResponse.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
+            const impactDetail = matchingResponse.details?.find((d: any) => d.pillar_category === "Impact");
+            
+            const sh = stakeholderDetail?.text_content || matchingResponse.details?.[0]?.text_content || "";
+            const ac = actionDetail?.text_content || matchingResponse.details?.[1]?.text_content || "";
+            const im = impactDetail?.text_content || matchingResponse.details?.[2]?.text_content || "";
+            
+            const fullArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+            const responseIsPublic = matchingResponse.is_public !== undefined ? matchingResponse.is_public : true;
+            setIsPublic(responseIsPublic);
+            
+            if (typeof window !== "undefined") {
+              localStorage.setItem(`submitted_case_${caseId}`, "true");
+              localStorage.setItem(`submitted_is_public_${caseId}`, String(responseIsPublic));
               localStorage.setItem(`submitted_argument_${caseId}`, fullArg);
             }
-          }
 
-          if (fullArg) {
-            const parsed = parseCombinedArgument(fullArg);
-            setShInput(parsed.stakeholder);
-            setAcInput(parsed.action);
-            setImInput(parsed.impact);
+            setShInput(sh);
+            setAcInput(ac);
+            setImInput(im);
+            router.push(`/diskusi/${caseId}/jawaban`);
           }
-          router.push(`/diskusi/${caseId}/jawaban`);
         }
       } catch (err) {
         console.error("Gagal memuat status pengiriman dari backend:", err);
@@ -159,13 +169,26 @@ export default function DetailKasusPage() {
     const combinedArgument = `[STAKEHOLDER]: ${shInput}\n\n[ACTION]: ${acInput}\n\n[IMPACT]: ${imInput}`;
 
     try {
-      // Menembak endpoint POST /api/cases/{id}/perspective
-      await apiFetch(`/cases/${caseId}/perspective`, {
+      // Menembak endpoint POST /api/perspectives
+      await apiFetch("/perspectives", {
         method: "POST",
         body: JSON.stringify({ 
-          argument: combinedArgument,
-          isPublic: isPublic,
-          is_public: isPublic
+          case_id: parseInt(caseId, 10),
+          is_public: isPublic,
+          details: [
+            {
+              pillar_category: "Stakeholder",
+              text_content: shInput
+            },
+            {
+              pillar_category: "Action",
+              text_content: acInput
+            },
+            {
+              pillar_category: "Impact",
+              text_content: imInput
+            }
+          ]
         })
       });
 
@@ -182,18 +205,7 @@ export default function DetailKasusPage() {
       }, 1000);
     } catch (err: any) {
       console.error("Gagal mengirim argumen:", err);
-      
-      setSubmitSuccess(true);
-      setHasSubmitted(true);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(`submitted_case_${caseId}`, "true");
-        localStorage.setItem(`submitted_argument_${caseId}`, combinedArgument);
-        localStorage.setItem(`submitted_is_public_${caseId}`, String(isPublic));
-      }
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        router.push(`/diskusi/${caseId}/jawaban`);
-      }, 1000);
+      setError(err.message || "Gagal mengirimkan respon perspektif ke server.");
     } finally {
       setSubmitting(false);
     }

@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
 interface LogicBlock {
-  category: string;
+  category?: string;
+  pillar_category?: string;
   content: string;
   points: number;
 }
@@ -70,24 +71,38 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         }
 
         // 2. Verifikasi status dari API responses
-        let userResponses: any = [];
+        let userId: any = null;
         try {
-          userResponses = await apiFetch("/user/responses");
+          const profile = await apiFetch("/me");
+          userId = profile?.data?.id || profile?.id;
         } catch (e) {
-          console.error("Gagal memanggil API responses:", e);
+          console.error("Gagal mengambil data profile:", e);
         }
 
-        const userResponse = (Array.isArray(userResponses) ? userResponses : userResponses?.data || []).find(
-          (res: any) => String(res.caseId) === String(caseId) || String(res.case_id) === String(caseId)
-        );
+        let perspectivesList: any[] = [];
+        try {
+          perspectivesList = await apiFetch(`/cases/${caseId}/perspectives`);
+        } catch (e) {
+          console.error("Gagal mengambil data perspektif dari server:", e);
+        }
 
-        if (userResponse) {
+        const myPerspective = Array.isArray(perspectivesList) && userId
+          ? perspectivesList.find((p: any) => p.UserID === userId)
+          : null;
+
+        if (myPerspective) {
           submitted = true;
-          const fullArg = userResponse.argument || userResponse.snippetArgument || "";
-          if (fullArg) {
-            localArg = fullArg;
-          }
-          localIsPublic = userResponse.isPublic !== undefined ? userResponse.isPublic : (userResponse.is_public !== undefined ? userResponse.is_public : true);
+          
+          const stakeholderDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Stakeholder" || d.pillar_category === "Teknis");
+          const actionDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
+          const impactDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Impact");
+          
+          const sh = stakeholderDetail?.text_content || myPerspective.details?.[0]?.text_content || "";
+          const ac = actionDetail?.text_content || myPerspective.details?.[1]?.text_content || "";
+          const im = impactDetail?.text_content || myPerspective.details?.[2]?.text_content || "";
+          
+          localArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+          localIsPublic = myPerspective.is_public !== undefined ? myPerspective.is_public : true;
           
           if (typeof window !== "undefined") {
             localStorage.setItem(`submitted_case_${caseId}`, "true");
@@ -118,10 +133,40 @@ export default function JawabanUlasanPage({ params }: PageProps) {
           });
         }
 
-        // 4. Siapkan feed list ulasan
-        const mockAnswers: MockPerspektif[] = [];
+        // 4. Siapkan feed list ulasan secara dinamis dari database
+        const otherAnswers: MockPerspektif[] = [];
+        if (Array.isArray(perspectivesList)) {
+          perspectivesList.forEach((p: any) => {
+            // Kita skip perspective milik user sendiri karena akan ditambahkan paling atas
+            if (p.UserID === userId) return;
 
-        // Masukkan jawaban user ke daftar lokal agar user bisa melihat jawabannya sendiri paling atas
+            // Hanya tampilkan jika public
+            if (p.is_public) {
+              const stakeholderDetail = p.details?.find((d: any) => d.pillar_category === "Stakeholder" || d.pillar_category === "Teknis");
+              const actionDetail = p.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
+              const impactDetail = p.details?.find((d: any) => d.pillar_category === "Impact");
+              
+              const sh = stakeholderDetail?.text_content || p.details?.[0]?.text_content || "";
+              const ac = actionDetail?.text_content || p.details?.[1]?.text_content || "";
+              const im = impactDetail?.text_content || p.details?.[2]?.text_content || "";
+              
+              const pArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+              const formattedDate = new Date(p.created_at).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+              });
+
+              otherAnswers.push({
+                id: String(p.ID),
+                author: `Analis #${p.UserID}`,
+                argument: pArg,
+                createdAt: formattedDate
+              });
+            }
+          });
+        }
+
         if (localArg) {
           const userOwnResponse: MockPerspektif = {
             id: "p-user-own",
@@ -129,9 +174,9 @@ export default function JawabanUlasanPage({ params }: PageProps) {
             argument: localArg,
             createdAt: "Baru saja"
           };
-          setDaftarPerspektif([userOwnResponse, ...mockAnswers]);
+          setDaftarPerspektif([userOwnResponse, ...otherAnswers]);
         } else {
-          setDaftarPerspektif(mockAnswers);
+          setDaftarPerspektif(otherAnswers);
         }
 
       } catch (err) {

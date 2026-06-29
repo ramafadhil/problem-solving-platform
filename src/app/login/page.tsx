@@ -71,10 +71,22 @@ export default function LoginPage() {
         }, 1000);
       }
     } catch (err: any) {
-      const errMsg = err.message || "Username atau password salah.";
-      setError(errMsg);
-      // Pemicu Toast Gagal
-      showToastNotification(`⚠️ Gagal Masuk: ${errMsg}`, "error");
+      // 🌟 PERBAIKAN 1: Bersihkan pesan error mentah dari HTTP Status menjadi kalimat yang ramah
+      let friendlyMsg = "Username atau password salah.";
+      
+      // if (err.message && err.message.includes("401")) {
+      //   friendlyMsg = "Kredensial salah. Silakan periksa kembali username dan password kelompokmu.";
+      // } else if (err.message && err.message.includes("Fetch")) {
+      //   friendlyMsg = "Gagal terhubung ke server. Periksa koneksi internetmu.";
+      // } else if (err.message) {
+      //   friendlyMsg = err.message;
+      // }
+
+      setError(friendlyMsg);
+      
+      // 🌟 PERBAIKAN 2: Buat pesan Toast berbeda (singkat) agar tidak duplikat identik dengan kotak merah di bawah
+      showToastNotification("⚠️ Autentikasi Gagal", "error");
+      
     } finally {
       setLoading(false);
     }

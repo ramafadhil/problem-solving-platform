@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
+interface ToastState {
+  show: boolean;
+  message: string;
+  type: "success" | "error";
+}
+
 export default function SignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -16,6 +22,20 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // State untuk manajemen status Toast Notifikasi
+  const [toast, setToast] = useState<ToastState>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToastNotification = (message: string, type: "success" | "error") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,17 +52,53 @@ export default function SignupPage() {
         body: JSON.stringify(formData),
       });
 
-      // Jika pendaftaran berhasil, alihkan user ke halaman masuk
-      router.push("/login");
+      // Pemicu Toast Sukses
+      showToastNotification("✓ Registrasi Berhasil! Mengalihkan ke halaman masuk...", "success");
+
+      // Beri sedikit jeda agar user sempat melihat pesan sukses sebelum dialihkan
+      setTimeout(() => {
+        router.push("/login");
+      }, 1200);
+
     } catch (err: any) {
-      setError(err.message || "Registrasi gagal. Silakan coba lagi.");
+      // 🌟 PERBAIKAN 1: Saring pesan error mentah dari HTTP Status menjadi kalimat yang ramah
+      let friendlyMsg = "Registrasi gagal. Silakan coba lagi.";
+      
+      // Biasanya jika email atau username sudah terdaftar, backend mengirim status 400 atau 409
+      if (err.message && (err.message.includes("400") || err.message.includes("409"))) {
+        friendlyMsg = "Username atau email sudah digunakan oleh orang lain.";
+      } else if (err.message && err.message.includes("Fetch")) {
+        friendlyMsg = "Gagal terhubung ke server. Periksa koneksi internetmu.";
+      } else if (err.message) {
+        friendlyMsg = err.message;
+      }
+
+      setError(friendlyMsg);
+      
+      // 🌟 PERBAIKAN 2: Buat pesan Toast menjadi ringkas sebagai indikator cepat saja
+      showToastNotification("⚠️ Registrasi Gagal", "error");
+      
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] flex items-stretch text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#FFFDF9] flex items-stretch text-slate-800 font-sans selection:bg-indigo-500 selection:text-white relative">
+      
+      {/* ================= COMPONENT TOAST FLOATING NOTIFICATION ================= */}
+      {toast.show && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-bold uppercase tracking-wider ${
+            toast.type === "success"
+              ? "bg-emerald-50 border-emerald-400 text-emerald-800"
+              : "bg-red-50 border-red-400 text-red-800"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
+
       {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET ================= */}
       <section className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-50 to-slate-50 border-r-2 border-slate-100 p-12 flex-col items-center justify-center relative overflow-hidden shadow-inner">
         <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
@@ -87,7 +143,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* NOTIFIKASI ERROR JIKA RESPONSE BE GAGAL */}
+          {/* NOTIFIKASI ERROR STATIC JIKA RESPONSE BE GAGAL */}
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium">
               ⚠️ {error}
@@ -105,10 +161,11 @@ export default function SignupPage() {
                 type="text"
                 name="name"
                 required
+                disabled={loading}
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Isi Nama Lengkap Kamu"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
               />
             </div>
 
@@ -121,10 +178,11 @@ export default function SignupPage() {
                 type="text"
                 name="username"
                 required
+                disabled={loading}
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Isi Username Unik Kamu"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
               />
             </div>
 
@@ -137,10 +195,11 @@ export default function SignupPage() {
                 type="email"
                 name="email"
                 required
+                disabled={loading}
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="nama@mahasiswa.id"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
               />
             </div>
 
@@ -154,10 +213,11 @@ export default function SignupPage() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
+                  disabled={loading}
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-10 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-3 pr-10 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
                 />
                 {/* Tombol Mata / Intip Password */}
                 <button
@@ -176,6 +236,7 @@ export default function SignupPage() {
                 <input
                   type="checkbox"
                   required
+                  disabled={loading}
                   className="w-4 h-4 rounded-md border-2 border-slate-300 accent-indigo-600 cursor-pointer"
                 />
                 <span className="text-[11px]">

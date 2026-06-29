@@ -54,23 +54,6 @@ const repoStudiKasus: Record<
       "Kesetaraan Hak Politik": "impact",
     },
   },
-  "sosial-tata-kota": {
-    judul: "Alih Fungsi Lahan Trotoar Pedagang",
-    narasi: [
-      "Trotoar jalan protokol beralih fungsi menjadi area lapak dagang permanen, memicu kemacetan parah serta mengancam keselamatan pejalan kaki. Penertiban sering kali berujung pada bentrokan fisik karena minimnya alternatif lokasi relokasi.",
-      "Pemerintah kota dituntut merumuskan penataan kawasan niaga terpadu yang inklusif tanpa mematikan sektor ekonomi informal.",
-    ],
-    pilihanKataKunci: [
-      "Pedagang Kaki Lima",
-      "Kawasan Niaga Inklusif",
-      "Ketertiban Fasilitas Publik",
-    ],
-    kunciJawaban: {
-      "Pedagang Kaki Lima": "stakeholder",
-      "Kawasan Niaga Inklusif": "action",
-      "Ketertiban Fasilitas Publik": "impact",
-    },
-  },
   pendidikan: {
     judul: "Ketimpangan Digital SMK Pelosok",
     narasi: [
@@ -154,11 +137,13 @@ function DroppableZone({
   );
 }
 
-// HALAMAN UTAMA STAGE 1
-export default function StageOnePage() {
+// HALAMAN UTAMA STAGE DINAMIS
+export default function DynamicStagePage() {
   const router = useRouter();
   const params = useParams();
   const temaKey = (params?.topicId as string) || "teknologi";
+  const stageId = (params?.stageId as string) || "stage-1";
+  const levelNum = parseInt(stageId.replace("stage-", ""), 10) || 1;
 
   // Membaca data repositori sesuai tema aktif (mock)
   const kontenKasus = repoStudiKasus[temaKey] || repoStudiKasus["teknologi"];
@@ -191,14 +176,14 @@ export default function StageOnePage() {
     if (!caseTopics || !Array.isArray(caseTopics)) return false;
     return caseTopics.some(t => {
       const name = (t.name || "").toLowerCase();
-      if (topicKey === "lingkungan") return name.includes("lingkungan");
+      if (topicKey === "teknologi") return name.includes("teknologi");
       if (topicKey === "politik") return name.includes("politik");
-      if (topicKey === "sosial-tata-kota") return name.includes("sosial") || name.includes("kota");
+      if (topicKey === "pendidikan") return name.includes("pendidikan");
       return name.includes(topicKey.toLowerCase());
     });
   };
 
-  // Mengambil data studi kasus learning dari API untuk Stage 1
+  // Mengambil data studi kasus learning dari API untuk Stage terpilih (LevelNum)
   useEffect(() => {
     const fetchStageCase = async () => {
       try {
@@ -207,9 +192,11 @@ export default function StageOnePage() {
         if (Array.isArray(casesList)) {
           const filtered = casesList.filter((c: any) => c.type === "learning" && matchTopic(c.topics, temaKey));
           if (filtered.length > 0) {
-            // Urutkan berdasarkan ID
+            // Urutkan berdasarkan ID secara ascending (Opsi A)
             filtered.sort((a, b) => Number(a.id) - Number(b.id));
-            const activeCase = filtered[0]; // Level 1 (index 0)
+            
+            // Dapatkan kasus pada indeks levelNum - 1
+            const activeCase = filtered[levelNum - 1] || filtered[0];
             
             const logicBlocks = activeCase.logic_blocks || [];
             const keywords = logicBlocks.map((b: any) => b.content);
@@ -241,7 +228,7 @@ export default function StageOnePage() {
     };
 
     fetchStageCase();
-  }, [temaKey, kontenKasus]);
+  }, [temaKey, levelNum, kontenKasus]);
 
   // Memasukkan pilihan kata kunci secara dinamis setelah client mounted dan data dimuat
   useEffect(() => {
@@ -326,7 +313,14 @@ export default function StageOnePage() {
     setShowModal(true);
 
     if (totalScore > 0) {
-      localStorage.setItem(`progress_${temaKey}`, "1"); // Tandai level 1 telah selesai
+      // Dapatkan progres saat ini
+      const savedProgress = localStorage.getItem(`progress_${temaKey}`);
+      const currentProgressInt = savedProgress ? parseInt(savedProgress, 10) : 0;
+      
+      // Update progres jika level yang diselesaikan lebih tinggi
+      if (levelNum > currentProgressInt) {
+        localStorage.setItem(`progress_${temaKey}`, String(levelNum));
+      }
     }
   };
 
@@ -352,7 +346,7 @@ export default function StageOnePage() {
         <section className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-6">
           <div>
             <span className="text-xs font-bold text-indigo-600 tracking-wider uppercase">
-              Level 1 - Eksplorasi
+              Level {levelNum} - Eksplorasi
             </span>
             <h2 className="text-2xl font-extrabold text-slate-900 mt-1">
               {dynamicCase?.judul}
@@ -392,7 +386,7 @@ export default function StageOnePage() {
               {[1, 2, 3, 4, 5].map((lvl) => (
                 <div
                   key={lvl}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${lvl === 1 ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400"}`}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${lvl === levelNum ? "bg-indigo-600 text-white" : lvl < levelNum ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-400"}`}
                 >
                   {lvl}
                 </div>
@@ -422,7 +416,7 @@ export default function StageOnePage() {
             onClick={handleVerification}
             className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all text-sm transform hover:-translate-y-0.5"
           >
-            Verifikasi Analisis Level 1
+            Verifikasi Analisis Level {levelNum}
           </button>
         </section>
 

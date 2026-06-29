@@ -10,11 +10,11 @@ export default function TopikSelectionPage() {
   // Matriks Data Induk Tema Utama Modul Pemecahan Masalah
   const temaList = [
     {
-      id: "lingkungan",
-      title: "Lingkungan Hidup",
-      icon: "🌱",
+      id: "teknologi",
+      title: "Teknologi",
+      icon: "💻",
       description:
-        "Analisis problem solving seputar krisis ekosistem, pencemaran wilayah, hingga manajemen limbah industri makro.",
+        "Analisis problem solving seputar keamanan siber, integrasi IoT, dan etika implementasi kecerdasan buatan.",
       totalStages: 5,
       gradient: "from-emerald-50 to-teal-50",
       borderColor: "hover:border-emerald-400",
@@ -23,11 +23,11 @@ export default function TopikSelectionPage() {
       shadowColor: "hover:shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]",
     },
     {
-      id: "sosial-tata-kota",
-      title: "Sosial & Tata Kota",
-      icon: "🏙️",
+      id: "pendidikan",
+      title: "Pendidikan",
+      icon: "🎓",
       description:
-        "Eksplorasi pemecahan konflik lahan publik, dinamika interaksi komunal, dan problem populasi urban.",
+        "Eksplorasi pemecahan masalah aksesibilitas belajar, kurikulum digital, dan pemerataan sarana edukasi.",
       totalStages: 5,
       gradient: "from-blue-50 to-indigo-50",
       borderColor: "hover:border-blue-400",
@@ -37,7 +37,7 @@ export default function TopikSelectionPage() {
     },
     {
       id: "politik",
-      title: "Tema Politik & Kebijakan",
+      title: "Tema Politik",
       icon: "⚖️",
       description:
         "Tantangan analisis kritis berskala tinggi seperti isu politik dinasti hingga perumusan regulasi pemerintahan.",

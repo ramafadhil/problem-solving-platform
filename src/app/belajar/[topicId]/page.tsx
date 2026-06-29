@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { apiFetch } from "@/utils/api";
 
 // 1. MOCK API CONTRACT: Cetak Biru Struktur Data dari Database (BE)
 const dataTemaKasus: Record<
@@ -11,8 +12,8 @@ const dataTemaKasus: Record<
     listStage: { id: number; name: string; xpReward: number; type: string }[];
   }
 > = {
-  lingkungan: {
-    namaTema: "Lingkungan Hidup",
+  teknologi: {
+    namaTema: "Teknologi",
     listStage: [
       {
         id: 1,
@@ -46,8 +47,43 @@ const dataTemaKasus: Record<
       },
     ],
   },
+  pendidikan: {
+    namaTema: "Pendidikan",
+    listStage: [
+      {
+        id: 1,
+        name: "Pemerataan Akses Internet Sekolah (Mudah)",
+        xpReward: 50,
+        type: "start",
+      },
+      {
+        id: 2,
+        name: "Implementasi Kurikulum Digital Terpadu",
+        xpReward: 50,
+        type: "node",
+      },
+      {
+        id: 3,
+        name: "Kesenjangan Kualitas Pengajar Daerah",
+        xpReward: 100,
+        type: "challenge",
+      },
+      {
+        id: 4,
+        name: "Dilema Digitalisasi Bahan Ajar",
+        xpReward: 50,
+        type: "node",
+      },
+      {
+        id: 5,
+        name: "Standardisasi Fasilitas Lab Komputer (Sulit)",
+        xpReward: 150,
+        type: "finish",
+      },
+    ],
+  },
   politik: {
-    namaTema: "Politik & Kebijakan",
+    namaTema: "Politik",
     listStage: [
       {
         id: 1,
@@ -95,45 +131,91 @@ const initialUsersDatabase = [
 export default function LearningDashboardPage() {
   const router = useRouter();
   const params = useParams();
-  const temaKey = (params?.caseId as string) || "lingkungan";
-  const temaAktif = dataTemaKasus[temaKey] || dataTemaKasus["lingkungan"];
+  const temaKey = (params?.topicId as string) || "teknologi";
+  const temaAktif = dataTemaKasus[temaKey] || dataTemaKasus["teknologi"];
 
   // 3. DINAMIS STATE: State ini yang nantinya akan diisi oleh fungsi fetch() ke Database
   const [highestCompletedStage, setHighestCompletedStage] = useState<number>(0);
   const [leaderboard, setLeaderboard] = useState<typeof initialUsersDatabase>(
     [],
   );
+  const [stagesList, setStagesList] = useState<{ id: number; name: string; xpReward: number; type: string }[]>([]);
 
-  // Simulasi Ambil Data saat Halaman di-load (Fetching Simulation)
+  // Fungsi pencocokan topik dari API dengan URL parameter
+  const matchTopic = (caseTopics: any[], topicKey: string) => {
+    if (!caseTopics || !Array.isArray(caseTopics)) return false;
+    return caseTopics.some(t => {
+      const name = (t.name || "").toLowerCase();
+      if (topicKey === "lingkungan") return name.includes("lingkungan");
+      if (topicKey === "politik") return name.includes("politik");
+      if (topicKey === "sosial-tata-kota") return name.includes("sosial") || name.includes("kota");
+      return name.includes(topicKey.toLowerCase());
+    });
+  };
+
+  // Ambil data studi kasus learning dari API
   useEffect(() => {
-    // Membaca progres yang disimpan sementara di localStorage (fitur auto-save progress)
+    const fetchLearningCases = async () => {
+      try {
+        const casesRes = await apiFetch("/cases");
+        const casesList = Array.isArray(casesRes) ? casesRes : (casesRes?.cases || casesRes?.data || []);
+        if (Array.isArray(casesList)) {
+          const filtered = casesList.filter((c: any) => c.type === "learning" && matchTopic(c.topics, temaKey));
+          if (filtered.length > 0) {
+            // Urutkan berdasarkan ID agar berurutan stage-nya
+            filtered.sort((a, b) => Number(a.id) - Number(b.id));
+            const mappedStages = filtered.map((c: any, index: number) => {
+              const types = ["start", "node", "challenge", "node", "finish"];
+              const reward = c.logic_blocks && c.logic_blocks.length > 0 
+                ? c.logic_blocks.reduce((acc: number, b: any) => acc + (b.points || 0), 0)
+                : 50;
+              return {
+                id: index + 1,
+                name: c.title,
+                xpReward: reward,
+                type: types[index % types.length],
+              };
+            });
+            setStagesList(mappedStages);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Gagal memuat learning cases dari API:", err);
+      }
+      
+      // Fallback ke data mock lokal jika API tidak mengembalikan data apa pun
+      setStagesList(temaAktif.listStage);
+    };
+
+    fetchLearningCases();
+  }, [temaKey, temaAktif]);
+
+  // Membaca progres dan mengupdate leaderboard berdasarkan total level yang selesai
+  useEffect(() => {
     const savedProgress = localStorage.getItem(`progress_${temaKey}`);
-    if (savedProgress) {
+    if (savedProgress && stagesList.length > 0) {
       const progressInt = parseInt(savedProgress, 10);
       setHighestCompletedStage(progressInt);
 
-      // Kalkulasi dinamis poin Rama berdasarkan jumlah level yang berhasil diselesaikan
       let totalXPEarned = 0;
       for (let i = 0; i < progressInt; i++) {
-        totalXPEarned += temaAktif.listStage[i]?.xpReward || 0;
+        totalXPEarned += stagesList[i]?.xpReward || 0;
       }
 
-      // Update nilai XP Rama di tabel leaderboard secara dinamis
       const updatedLeaderboard = initialUsersDatabase.map((user) =>
         user.isCurrentUser ? { ...user, xp: totalXPEarned } : user,
       );
 
-      // Urutkan leaderboard secara otomatis berdasarkan XP tertinggi (Sorting Dinamis)
       updatedLeaderboard.sort((a, b) => b.xp - a.xp);
       setLeaderboard(updatedLeaderboard);
     } else {
-      // Jika belum ada progres, tampilkan susunan default terurut
       const defaultSorted = [...initialUsersDatabase].sort(
         (a, b) => b.xp - a.xp,
       );
       setLeaderboard(defaultSorted);
     }
-  }, [temaKey, temaAktif]);
+  }, [temaKey, stagesList]);
 
   const handleStageClick = (stageId: number) => {
     if (stageId > highestCompletedStage + 1) {
@@ -173,7 +255,7 @@ export default function LearningDashboardPage() {
         <div className="absolute w-1 bg-dashed border-l-4 border-dashed border-amber-300 h-[50%] top-[30%] z-0 pointer-events-none" />
 
         <div className="flex flex-col gap-12 w-full max-w-sm z-10">
-          {temaAktif.listStage.map((stage, index) => {
+          {stagesList.map((stage, index) => {
             const isCompleted = stage.id <= highestCompletedStage;
             const isActive = stage.id === highestCompletedStage + 1;
             const alignmentClass =

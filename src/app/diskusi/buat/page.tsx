@@ -80,15 +80,15 @@ export default function BuatKasusPage() {
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">
         <div className="bg-white border-2 border-slate-200 p-6 md:p-8 rounded-3xl shadow-sm space-y-6">
           <div className="space-y-1">
-            <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">Ajukan Masalah Benang Kusut Baru</h2>
+            <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">Ajukan Studi Kasus Baru!</h2>
             <p className="text-xs font-medium text-slate-400 leading-relaxed">
-              Tuliskan studi kasus riil beserta analisis kerangka terstruktur awal dari kelompokmu untuk memantik diskusi kritis.
+              Tuliskan studi kasus beserta analisis kerangka terstruktur awal untuk memantik diskusi kritis.
             </p>
           </div>
 
           {success && (
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 text-xs font-semibold text-center">
-              ✓ Kasus & argumen 3 pilar berhasil diterbitkan!
+            Studi Kasus & argumen berhasil diterbitkan!
             </div>
           )}
 
@@ -123,7 +123,7 @@ export default function BuatKasusPage() {
 
             {/* AREA 3 PILAR ARGUMEN STRUKTUR FE */}
             <div className="pt-4 border-t border-slate-100 space-y-4">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Kerangka Analisis Awal Kelompok (Wajib 3 Pilar)</h4>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Kerangka Analisis Awal</h4>
               
               {/* 1. STAKEHOLDER */}
               <div className="space-y-1.5">
@@ -148,7 +148,7 @@ export default function BuatKasusPage() {
                   value={action}
                   onChange={(e) => setAction(e.target.value)}
                   rows={3}
-                  placeholder="Langkah nyata atau rumusan regulasi apa yang kelompokmu ajukan?"
+                  placeholder="Langkah nyata atau rumusan regulasi apa yang kamu ajukan?"
                   className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
                 />
               </div>

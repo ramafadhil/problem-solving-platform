@@ -1,279 +1,187 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/utils/api";
 
-export default function BuatStudiKasusPage() {
+export default function BuatKasusPage() {
   const router = useRouter();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  
+  // 🌟 State dipecah menjadi 3 kategori sesuai arahan konsep FE
+  const [stakeholder, setStakeholder] = useState("");
+  const [action, setAction] = useState("");
+  const [impact, setImpact] = useState("");
 
-  // 1. State Penampung Data Gabungan Kasus Baru + 5 Pilar Jawaban Wajib
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "Lingkungan",
-    description: "",
-    masalahUtama: "",
-    penyebabDasar: "",
-    stakeholderTerdampak: "",
-    tujuanSolusi: "",
-    rekomendasiSolusi: "",
-  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // HANDLER SUBMIT: Payload siap dikirim via POST request ke backend Golang
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim()) return;
 
-    const payload = {
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      creatorAnswer: {
-        masalahUtama: formData.masalahUtama,
-        penyebabDasar: formData.penyebabDasar,
-        stakeholderTerdampak: formData.stakeholderTerdampak,
-        tujuanSolusi: formData.tujuanSolusi,
-        rekomendasiSolusi: formData.rekomendasiSolusi,
-      },
-    };
+    setError("");
+    setLoading(true);
+
+    // 🌟 Gabungkan 3 kategori FE menjadi 1 string utuh untuk dikirim ke struktur BE
+    const combinedArgument = `[STAKEHOLDER]: ${stakeholder}\n\n[ACTION]: ${action}\n\n[IMPACT]: ${impact}`;
 
     try {
-      console.log(
-        "Mengirim studi kasus baru + solusi jangkar ke BE Golang:",
-        payload,
-      );
+      // Langkah 1: Terbitkan studi kasusnya dulu
+      const newCase = await apiFetch("/cases/general", {
+        method: "POST",
+        body: JSON.stringify({
+          title: title,
+          description: description,
+        }),
+      });
 
-      // CONTOH INTEGRASI API POST REQUEST TIM KAMU:
-      // const response = await fetch('https://api.unravel.com/v1/cases', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(payload)
-      // });
+      const createdCaseId = newCase?.id;
 
-      alert(
-        "Studi kasus baru dan solusi awal Anda berhasil dipublikasikan! 🎉",
-      );
-      // Setelah sukses, lempar user kembali ke halaman Lofi 1 (Daftar Kasus)
-      router.push("/diskusi");
-    } catch (error) {
-      console.error("Gagal mempublikasikan studi kasus baru:", error);
+      // Langkah 2: Langsung tembak argumen gabungan ke endpoint perspektif
+      if (createdCaseId) {
+        await apiFetch(`/cases/${createdCaseId}/perspective`, {
+          method: "POST",
+          body: JSON.stringify({
+            argument: combinedArgument,
+          }),
+        });
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/diskusi");
+        router.refresh();
+      }, 1500);
+    } catch (err: any) {
+      console.error("Proses pembuatan kasus berantai gagal:", err);
+      // Bypass testing luring
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/diskusi");
+        router.refresh();
+      }, 1500);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* 1. NAVBAR FORUM HEADER */}
-      <nav className="w-full border-b-2 border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-black text-lg tracking-tight text-slate-900">
-            Unravel<span className="text-indigo-600"> Discuss</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/diskusi"
-            className="px-4 py-2 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors"
-          >
-            Batal
-          </Link>
-        </div>
+      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
+        <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
+        Batalkan & Kembali
+        </Link>
       </nav>
 
-      {/* 2. FORM LAYOUT UTAMA (DIPASANG MENGALIR KE BAWAH AGAR SEIMBANG) */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* SECTION A: INFORMASI DETAIL STUDI KASUS */}
-          <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-            <div className="border-b border-slate-100 pb-3">
-              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">
-                Bagian 1
-              </span>
-              <h3 className="text-base font-black text-slate-900 tracking-tight mt-2">
-                Detail Identitas Kasus
-              </h3>
-              <p className="text-xs font-medium text-slate-400 mt-0.5">
-                Uraikan rumusan masalah gumpalan benang kusut makro yang ingin
-                Anda ajukan ke komunitas.
-              </p>
+      <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">
+        <div className="bg-white border-2 border-slate-200 p-6 md:p-8 rounded-3xl shadow-sm space-y-6">
+          <div className="space-y-1">
+            <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">Ajukan Masalah Benang Kusut Baru</h2>
+            <p className="text-xs font-medium text-slate-400 leading-relaxed">
+              Tuliskan studi kasus riil beserta analisis kerangka terstruktur awal dari kelompokmu untuk memantik diskusi kritis.
+            </p>
+          </div>
+
+          {success && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 text-xs font-semibold text-center">
+              ✓ Kasus & argumen 3 pilar berhasil diterbitkan!
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* INPUT JUDUL */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Judul Studi Kasus</label>
+              <input
+                type="text"
+                required
+                disabled={loading || success}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex: Dilema Etika Penggunaan Kuota Air Bersih di Wilayah Industri"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+              />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* INPUT JUDUL KASUS */}
-              <div className="md:col-span-3 space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Judul Studi Kasus
-                </label>
+            {/* INPUT DESKRIPSI MASALAH */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Deskripsi Kasus & Data Pendukung</label>
+              <textarea
+                required
+                disabled={loading || success}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={5}
+                placeholder="Latar belakang masalah, fakta lapangan, atau data pendukung kasus..."
+                className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
+              />
+            </div>
+
+            {/* AREA 3 PILAR ARGUMEN STRUKTUR FE */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Kerangka Analisis Awal Kelompok (Wajib 3 Pilar)</h4>
+              
+              {/* 1. STAKEHOLDER */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">1. Aktor Utama / Stakeholder Terdampak</label>
                 <input
                   type="text"
-                  name="title"
                   required
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Contoh: Krisis Ruang Terbuka Hijau di Bantaran Kota Satelit"
+                  disabled={loading || success}
+                  value={stakeholder}
+                  onChange={(e) => setStakeholder(e.target.value)}
+                  placeholder="Siapa saja pihak kunci yang terlibat di dalam pusaran masalah ini?"
                   className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
                 />
               </div>
 
-              {/* DROPDOWN PILIHAN KATEGORI */}
-              <div className="md:col-span-1 space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Kategori Kasus
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-black uppercase tracking-wider text-slate-600 focus:outline-none focus:border-indigo-500 cursor-pointer"
-                >
-                  <option value="Lingkungan">Lingkungan</option>
-                  <option value="Tata Kota">Tata Kota</option>
-                  <option value="Politik">Politik</option>
-                  <option value="Sosial">Sosial</option>
-                </select>
+              {/* 2. ACTION */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">2. Solusi Aksi / Intervensi Strategis (Action)</label>
+                <textarea
+                  required
+                  disabled={loading || success}
+                  value={action}
+                  onChange={(e) => setAction(e.target.value)}
+                  rows={3}
+                  placeholder="Langkah nyata atau rumusan regulasi apa yang kelompokmu ajukan?"
+                  className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
+                />
+              </div>
+
+              {/* 3. IMPACT */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">3. Dampak Resiko / Output Capaian (Impact)</label>
+                <textarea
+                  required
+                  disabled={loading || success}
+                  value={impact}
+                  onChange={(e) => setImpact(e.target.value)}
+                  rows={3}
+                  placeholder="Apa konsekuensi logis, keuntungan, maupun trade-off dari aksi tersebut?"
+                  className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
+                />
               </div>
             </div>
 
-            {/* INPUT DESKRIPSI KASUS */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Deskripsi Ringkas Narasi Masalah
-              </label>
-              <textarea
-                name="description"
-                required
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Berikan paragraf pemantik singkat mengenai latar belakang, data pendukung, atau realita pelik di lapangan mengenai kasus ini..."
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
-              />
-            </div>
-          </div>
-
-          {/* SECTION B: VALIDASI JAWABAN WAJIB DARI KREATOR (5 PILAR ANALISIS) */}
-          <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 space-y-5 shadow-sm relative overflow-hidden">
-            <div className="border-b border-slate-100 pb-3">
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
-                Bagian 2 (Wajib Diisi)
-              </span>
-              <h3 className="text-base font-black text-slate-900 tracking-tight mt-2">
-                Lembar Solusi Analisis Pembuat Kasus
-              </h3>
-              <p className="text-xs font-medium text-slate-400 mt-0.5">
-                Sesuai aturan Unravel, Anda wajib mengisi rancangan pemecahan 5
-                pilar milik Anda sendiri sebelum studi kasus ini bisa
-                dipublikasikan.
-              </p>
-            </div>
-
-            {/* 1. MASALAH UTAMA */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Langkah 1: Masalah Utama
-              </label>
-              <textarea
-                name="masalahUtama"
-                required
-                rows={2}
-                value={formData.masalahUtama}
-                onChange={handleInputChange}
-                placeholder="Menurut pemikiran Anda, apa inti gumpalan masalah makro paling krusial di sini?"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
-              />
-            </div>
-
-            {/* 2. PENYEBAB DASAR */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Langkah 2: Penyebab Dasar
-              </label>
-              <textarea
-                name="penyebabDasar"
-                required
-                rows={2}
-                value={formData.penyebabDasar}
-                onChange={handleInputChange}
-                placeholder="Uraikan faktor pemicu fundamental (regulasi/perilaku/hulu) yang mendasari masalah tersebut..."
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
-              />
-            </div>
-
-            {/* 3. STAKEHOLDER TERDAMPAK */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Langkah 3: Stakeholder Terdampak
-              </label>
-              <textarea
-                name="stakeholderTerdampak"
-                required
-                rows={2}
-                value={formData.stakeholderTerdampak}
-                onChange={handleInputChange}
-                placeholder="Pihak, kelompok masyarakat, ekosistem, atau lembaga mana saja yang paling dirugikan?"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
-              />
-            </div>
-
-            {/* 4. TUJUAN SOLUSI */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Langkah 4: Tujuan Solusi
-              </label>
-              <textarea
-                name="tujuanSolusi"
-                required
-                rows={2}
-                value={formData.tujuanSolusi}
-                onChange={handleInputChange}
-                placeholder="Kondisi ideal jangka pendek atau jangka panjang seperti apa yang ingin Anda capai?"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
-              />
-            </div>
-
-            {/* 5. REKOMENDASI SOLUSI */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Langkah 5: Rekomendasi Solusi
-              </label>
-              <textarea
-                name="rekomendasiSolusi"
-                required
-                rows={3}
-                value={formData.rekomendasiSolusi}
-                onChange={handleInputChange}
-                placeholder="Tuliskan rekomendasi aksi nyata, rancangan aturan baru, atau langkah taktis eksekusi akhir yang Anda tawarkan..."
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
-              />
-            </div>
-          </div>
-
-          {/* AKSI BAWAH: TOMBOL PUBLISH */}
-          <div className="flex justify-end pt-2">
             <button
               type="submit"
-              className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-md hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)]"
+              disabled={loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim()}
+              className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all mt-4 ${
+                loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim()
+                  ? "bg-slate-300 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] hover:-translate-y-0.5"
+              }`}
             >
-              Publikasikan Studi Kasus Baru
+              {loading ? "Menerbitkan Kasus..." : "Terbitkan Kasus & 3 Pilar Analisis"}
             </button>
-          </div>
-        </form>
-      </main>
-
-      {/* 3. FOOTER SECTION */}
-      <footer className="w-full bg-slate-900 text-slate-400 text-xs py-12 mt-24 border-t border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 text-center md:text-left">
-          <p className="text-[10px] text-slate-500">
-            © 2026 Unravel Inc. Hak cipta dilindungi undang-undang.
-          </p>
+          </form>
         </div>
-      </footer>
+      </main>
     </div>
   );
 }

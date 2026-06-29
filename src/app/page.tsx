@@ -166,7 +166,7 @@ export default function LandingPage() {
                 href="/diskusi"
                 className="px-6 py-3 bg-white border-2 border-slate-200 hover:border-indigo-400 text-slate-700 font-bold rounded-xl text-sm transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(99,102,241,0.15)]"
               >
-                Masuk Ruang Diskusi
+                Masuk Mode Diskusi
               </Link>
             </div>
           </div>

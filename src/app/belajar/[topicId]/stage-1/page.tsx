@@ -26,18 +26,14 @@ const repoStudiKasus: Record<
       "Diperlukan sinergi penegakan regulasi dan upaya restorasi fisik agar fungsi aliran air kembali normal dan aman bagi lingkungan sekitar.",
     ],
     pilihanKataKunci: [
-      "Sampah Plastik Menumpuk",
-      "Limbah Industri Ilegal",
       "Warga Bantaran Sungai",
-      "Restorasi Ekosistem",
       "Regulasi Ketat Pemda",
+      "Restorasi Ekosistem",
     ],
     kunciJawaban: {
-      "Sampah Plastik Menumpuk": "masalah",
-      "Limbah Industri Ilegal": "penyebab",
       "Warga Bantaran Sungai": "stakeholder",
-      "Restorasi Ekosistem": "tujuan",
-      "Regulasi Ketat Pemda": "solusi",
+      "Regulasi Ketat Pemda": "action",
+      "Restorasi Ekosistem": "impact",
     },
   },
   politik: {
@@ -47,18 +43,14 @@ const repoStudiKasus: Record<
       "Kondisi ini memerlukan pengawasan ketat dari lembaga swadaya masyarakat dan pembenahan sistem kaderisasi internal partai.",
     ],
     pilihanKataKunci: [
-      "Monopoli Kekuasaan",
-      "Kaderisasi Internal Mandek",
       "Pengawas Pemilu",
-      "Kesetaraan Hak Politik",
       "Audit Investigatif LSM",
+      "Kesetaraan Hak Politik",
     ],
     kunciJawaban: {
-      "Monopoli Kekuasaan": "masalah",
-      "Kaderisasi Internal Mandek": "penyebab",
       "Pengawas Pemilu": "stakeholder",
-      "Kesetaraan Hak Politik": "tujuan",
-      "Audit Investigatif LSM": "solusi",
+      "Audit Investigatif LSM": "action",
+      "Kesetaraan Hak Politik": "impact",
     },
   },
   "sosial-tata-kota": {
@@ -68,18 +60,14 @@ const repoStudiKasus: Record<
       "Pemerintah kota dituntut merumuskan penataan kawasan niaga terpadu yang inklusif tanpa mematikan sektor ekonomi informal.",
     ],
     pilihanKataKunci: [
-      "Hak Pejalan Kaki Terenggut",
-      "Minimnya Area Relokasi",
       "Pedagang Kaki Lima",
-      "Ketertiban Fasilitas Publik",
       "Kawasan Niaga Inklusif",
+      "Ketertiban Fasilitas Publik",
     ],
     kunciJawaban: {
-      "Hak Pejalan Kaki Terenggut": "masalah",
-      "Minimnya Area Relokasi": "penyebab",
       "Pedagang Kaki Lima": "stakeholder",
-      "Ketertiban Fasilitas Publik": "tujuan",
-      "Kawasan Niaga Inklusif": "solusi",
+      "Kawasan Niaga Inklusif": "action",
+      "Ketertiban Fasilitas Publik": "impact",
     },
   },
   pendidikan: {
@@ -89,18 +77,14 @@ const repoStudiKasus: Record<
       "Distribusi alokasi anggaran yang belum merata menuntut adanya kolaborasi strategis dengan penyedia layanan internet lokal guna mempercepat pemerataan infrastruktur digital.",
     ],
     pilihanKataKunci: [
-      "Kesenjangan Keterampilan Kerja",
-      "Alokasi Anggaran Belum Merata",
       "Siswa Vokasi Daerah",
-      "Pemerataan Infrastruktur Digital",
       "Kemitraan Provider Lokal",
+      "Pemerataan Infrastruktur Digital",
     ],
     kunciJawaban: {
-      "Kesenjangan Keterampilan Kerja": "masalah",
-      "Alokasi Anggaran Belum Merata": "penyebab",
       "Siswa Vokasi Daerah": "stakeholder",
-      "Pemerataan Infrastruktur Digital": "tujuan",
-      "Kemitraan Provider Lokal": "solusi",
+      "Kemitraan Provider Lokal": "action",
+      "Pemerataan Infrastruktur Digital": "impact",
     },
   },
 };
@@ -188,11 +172,9 @@ export default function StageOnePage() {
   // Inisialisasi state untuk menampung pembagian zona kartu
   const [items, setItems] = useState({
     pool: [] as string[],
-    masalah: [] as string[],
-    penyebab: [] as string[],
     stakeholder: [] as string[],
-    tujuan: [] as string[],
-    solusi: [] as string[],
+    action: [] as string[],
+    impact: [] as string[],
   });
 
   // Memasukkan pilihan kata kunci secara dinamis setelah client mounted
@@ -200,11 +182,9 @@ export default function StageOnePage() {
     setItems((prev) => ({
       ...prev,
       pool: kontenKasus.pilihanKataKunci,
-      masalah: [],
-      penyebab: [],
       stakeholder: [],
-      tujuan: [],
-      solusi: [],
+      action: [],
+      impact: [],
     }));
     setIsMounted(true);
   }, [kontenKasus]);
@@ -239,14 +219,12 @@ export default function StageOnePage() {
   // Verifikasi kebenaran posisi kartu dan perhitungan poin
   const handleVerification = () => {
     const totalDitempatkan =
-      items.masalah.length +
-      items.penyebab.length +
       items.stakeholder.length +
-      items.tujuan.length +
-      items.solusi.length;
-    if (totalDitempatkan < 3) {
+      items.action.length +
+      items.impact.length;
+    if (totalDitempatkan < 2) {
       alert(
-        "⚠️ Analisis belum lengkap! Taruh minimal 3 kartu kata kunci untuk mulai verifikasi.",
+        "⚠️ Analisis belum lengkap! Taruh minimal 2 kartu kata kunci untuk mulai verifikasi.",
       );
       return;
     }
@@ -259,22 +237,23 @@ export default function StageOnePage() {
         items[zoneKey as keyof typeof items].forEach((cardName) => {
           if (kontenKasus.kunciJawaban[cardName] === zoneKey) {
             correctCount++;
-            totalScore += 10; // 10 Poin per jawaban tepat
           }
         });
       }
     });
 
+    totalScore = correctCount === 3 ? 50 : correctCount === 2 ? 30 : correctCount === 1 ? 15 : 0;
+
     let feedbackText = "";
-    if (correctCount === 5)
+    if (correctCount === 3)
       feedbackText =
-        "Luar biasa! Analisis komponen masalahmu sangat akurat dan sempurna.";
-    else if (correctCount >= 3)
+        "Luar biasa! Analisis komponen 3 pilar Anda sangat akurat dan sempurna.";
+    else if (correctCount >= 1)
       feedbackText =
-        "Analisis cukup baik, namun ada penempatan beberapa indikator yang kurang tepat.";
+        "Analisis cukup baik, namun ada penempatan beberapa pilar yang kurang tepat.";
     else
       feedbackText =
-        "Kerja bagus sudah mencoba! Coba analisis kembali struktur keterkaitan sebab-akibatnya.";
+        "Kerja bagus sudah mencoba! Coba analisis kembali struktur keterkaitan 3 pilarnya.";
 
     setScoreResult({ pointsEarned: totalScore, feedback: feedbackText });
     setShowModal(true);
@@ -356,29 +335,19 @@ export default function StageOnePage() {
 
           <div className="flex flex-col gap-3">
             <DroppableZone
-              id="masalah"
-              title="1. Masalah Utama"
-              items={items.masalah}
-            />
-            <DroppableZone
-              id="penyebab"
-              title="2. Penyebab Dasar"
-              items={items.penyebab}
-            />
-            <DroppableZone
               id="stakeholder"
-              title="3. Stakeholder Terdampak"
+              title="1. Stakeholder Utama"
               items={items.stakeholder}
             />
             <DroppableZone
-              id="tujuan"
-              title="4. Tujuan Solusi"
-              items={items.tujuan}
+              id="action"
+              title="2. Rencana Tindakan (Action)"
+              items={items.action}
             />
             <DroppableZone
-              id="solusi"
-              title="5. Rekomendasi Solusi"
-              items={items.solusi}
+              id="impact"
+              title="3. Konsekuensi Capaian (Impact)"
+              items={items.impact}
             />
           </div>
 

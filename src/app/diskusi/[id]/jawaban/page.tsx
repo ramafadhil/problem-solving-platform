@@ -70,7 +70,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         }
 
         // 2. Verifikasi status dari API responses
-        let userResponses: any[] = [];
+        let userResponses: any = [];
         try {
           userResponses = await apiFetch("/user/responses");
         } catch (e) {

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
-// 1. Interface diselaraskan penuh sesuai dokumentasi kontrak REST API Backend Golang Azure
 interface LogicBlock {
   category: string;
   content: string;
@@ -39,7 +38,17 @@ export default function DaftarKasusPage() {
 
         // Menembak endpoint GET /api/cases asli dari Azure BE
         const data = await apiFetch("/cases");
-        setKasusList(data || []);
+        
+        // 🌟 SINKRONISASI PENGAMAN DATA: Memastikan data yang disimpan ke state selalu berupa Array
+        if (Array.isArray(data)) {
+          setKasusList(data);
+        } else if (data && Array.isArray(data.cases)) {
+          setKasusList(data.cases);
+        } else if (data && Array.isArray(data.data)) {
+          setKasusList(data.data);
+        } else {
+          setKasusList([]); // Fallback array kosong jika struktur BE tidak sesuai ekspektasi
+        }
 
         // Memuat data bookmark lokal sementara dari localStorage jika ada
         const savedBookmarks = localStorage.getItem("unravel_saved_cases");
@@ -71,19 +80,21 @@ export default function DaftarKasusPage() {
 
   // PROSES DATA: Memastikan forum diskusi publik HANYA menampilkan tipe "general"
   const getProcessedKasus = () => {
-    // 🌟 1. Filter awal: Singkirkan tipe 'learning', ambil yang murni 'general'
-    let result = kasusList.filter((kasus) => kasus.type === "general");
+    // 🌟 SINKRONISASI PENGAMAN ARRAY: Double-check menghindari crash runtime di server
+    const safeList = Array.isArray(kasusList) ? kasusList : [];
+
+    // 1. Filter awal: Singkirkan tipe 'learning', ambil yang murni 'general'
+    let result = safeList.filter((kasus) => kasus && kasus.type === "general");
 
     // 2. Jalankan pencarian teks keyword judul dan deskripsi
     result = result.filter((kasus) => {
-      const matchesTitle = kasus.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesDesc = kasus.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTitle = (kasus.title || "").toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesDesc = (kasus.description || "").toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTitle || matchesDesc;
     });
 
     // 3. Klasifikasi berdasarkan tab filter dropdown aktif
     if (filterType === "populer") {
-      // Mengurutkan berdasarkan kompleksitas internal blok data pendukung bawaan
       result = [...result].sort((a, b) => (b.logic_blocks?.length || 0) - (a.logic_blocks?.length || 0));
     } else if (filterType === "disimpan") {
       result = result.filter((kasus) => savedKasusIds.includes(kasus.id));
@@ -230,7 +241,6 @@ export default function DaftarKasusPage() {
                       💬 Diskusi Aktif
                     </span>
 
-                    {/* Rute dialihkan langsung ke halaman detail kasus utama /api/cases/{id} */}
                     <Link
                       href={`/diskusi/${kasus.id}`}
                       className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-400 text-slate-600 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors"

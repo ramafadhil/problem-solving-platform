@@ -84,7 +84,7 @@ export default function ProfilePage() {
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/diskusi" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
-            Forum Diskusi
+            Mode Diskusi
           </Link>
           <Link href="/belajar" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
             Mode Belajar

@@ -158,13 +158,13 @@ export default function LandingPage() {
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
               <Link
                 href="/belajar"
-                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.4)] hover:-translate-y-0.5 transition-all"
+                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.4)] hover:-translate-y-0.5 transition-all"
               >
                 {isLoggedIn ? "Lanjutkan Belajar" : "Masuk Mode Belajar"}
               </Link>
               <Link
                 href="/diskusi"
-                className="px-6 py-3 bg-white border-2 border-slate-200 hover:border-indigo-400 text-slate-700 font-bold rounded-xl text-sm transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(99,102,241,0.15)]"
+                className="px-6 py-3 bg-white border-2 border-slate-200 hover:border-indigo-400 text-slate-700 font-bold rounded-xl text-sm transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.15)]"
               >
                 Masuk Mode Diskusi
               </Link>
@@ -197,7 +197,7 @@ export default function LandingPage() {
             {features.map((feat, idx) => (
               <div
                 key={idx}
-                className="bg-white border-2 border-slate-200 hover:border-indigo-400 p-6 rounded-2xl shadow-sm transition-all hover:shadow-[4px_4px_0px_0px_rgba(99,102,241,1)] group hover:-translate-y-0.5"
+                className="bg-white border-2 border-slate-200 hover:border-indigo-400 p-6 rounded-2xl shadow-sm transition-all hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] group hover:-translate-y-0.5"
               >
                 <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-lg mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                   {idx === 0 ? "🎮" : "🛣️"}

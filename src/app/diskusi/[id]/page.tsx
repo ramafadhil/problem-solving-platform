@@ -350,7 +350,7 @@ export default function DetailKasusPage() {
                     ? "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed"
                     : submitting || !shInput.trim() || !acInput.trim() || !imInput.trim()
                     ? "bg-slate-300 text-white cursor-not-allowed"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] hover:-translate-y-0.5"
+                    : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:-translate-y-0.5"
                 }`}
               >
                 {hasSubmitted ? "Tanggapan Terkirim" : submitting ? "Mentransmisikan..." : "Kirim Respon Perspektif"}

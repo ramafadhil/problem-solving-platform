@@ -141,7 +141,7 @@ export default function DaftarKasusPage() {
           </div>
           <button
             onClick={() => router.push("/diskusi/buat")}
-            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)] shrink-0"
+            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] shrink-0"
           >
             + Buat Studi Kasus Baru
           </button>
@@ -205,7 +205,7 @@ export default function DaftarKasusPage() {
               return (
                 <div
                   key={kasus.id}
-                  className="bg-white border-2 border-slate-200 p-5 rounded-2xl flex flex-col justify-between min-h-[180px] transition-all hover:shadow-[4px_4px_0px_0px_rgba(99,102,241,1)] hover:border-indigo-400 hover:-translate-y-0.5 group relative"
+                  className="bg-white border-2 border-slate-200 p-5 rounded-2xl flex flex-col justify-between min-h-[180px] transition-all hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:border-indigo-400 hover:-translate-y-0.5 group relative"
                 >
                   <div className="space-y-2">
                     <div className="flex justify-between items-center pr-6">

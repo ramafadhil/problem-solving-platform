@@ -119,26 +119,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         }
 
         // 4. Siapkan feed list ulasan
-        const mockAnswers: MockPerspektif[] = [
-          {
-            id: "p-1",
-            author: "Fadhil",
-            argument: "[STAKEHOLDER]: Pemkot & Pedagang Lokal\n\n[ACTION]: Relokasi terpusat dengan subsidi sewa 6 bulan pertama dan digitalisasi lapak.\n\n[IMPACT]: Mengurangi kemacetan koridor utama hingga 30% namun membutuhkan pengawasan agar pedagang tidak kembali ke jalan.",
-            createdAt: "28 Juni 2026"
-          },
-          {
-            id: "p-2",
-            author: "Radit",
-            argument: "[STAKEHOLDER]: Pihak Rumah Sakit & Dokter\n\n[ACTION]: Regulasi penggunaan AI sebagai pendamping asisten diagnosa di bawah otorisasi dokter berlisensi resmi.\n\n[IMPACT]: Mempercepat diagnosa klinis awal di puskesmas hingga 70% dan tetap mempertahankan sentuhan humanis.",
-            createdAt: "29 Juni 2026"
-          },
-          {
-            id: "p-3",
-            author: "Cipa",
-            argument: "[STAKEHOLDER]: Pengembang AI & Regulator Hukum\n\n[ACTION]: Pendirian lembaga akreditasi software medis nasional dan asuransi malpraktik algoritma terpusat.\n\n[IMPACT]: Memberikan kepastian perlindungan hukum untuk developer AI dan meningkatkan tingkat adopsi dokter.",
-            createdAt: "29 Juni 2026"
-          }
-        ];
+        const mockAnswers: MockPerspektif[] = [];
 
         // Masukkan jawaban user ke daftar lokal agar user bisa melihat jawabannya sendiri paling atas
         if (localArg) {
@@ -233,7 +214,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                             ? "bg-indigo-50 border-indigo-200 text-indigo-600" 
                             : "bg-slate-100 border-slate-200 text-slate-600"
                         }`}>
-                          {isPublic ? "🌐 Publik" : "🔒 Privat (Hanya Anda)"}
+                          {isPublic ? "Publik" : "Privat (Hanya Anda)"}
                         </span>
                       )}
                     </h4>

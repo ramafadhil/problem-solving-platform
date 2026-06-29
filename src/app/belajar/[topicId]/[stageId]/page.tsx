@@ -169,6 +169,7 @@ export default function DynamicStagePage() {
     narasi: string[];
     pilihanKataKunci: string[];
     kunciJawaban: Record<string, string>;
+    cardPoints: Record<string, number>;
   } | null>(null);
 
   // Fungsi pencocokan topik dari API dengan URL parameter
@@ -201,9 +202,11 @@ export default function DynamicStagePage() {
             const logicBlocks = activeCase.logic_blocks || [];
             const keywords = logicBlocks.map((b: any) => b.content);
             const answers: Record<string, string> = {};
+            const cardPoints: Record<string, number> = {};
             logicBlocks.forEach((b: any) => {
               const cat = (b.category || b.pillar_category || "").toLowerCase();
               answers[b.content] = cat;
+              cardPoints[b.content] = b.points || 0;
             });
 
             const paragraphs = activeCase.description
@@ -214,7 +217,8 @@ export default function DynamicStagePage() {
               judul: activeCase.title,
               narasi: paragraphs,
               pilihanKataKunci: keywords,
-              kunciJawaban: answers
+              kunciJawaban: answers,
+              cardPoints: cardPoints
             });
             return;
           }
@@ -224,7 +228,17 @@ export default function DynamicStagePage() {
       }
 
       // Fallback ke data mock jika API kosong/gagal
-      setDynamicCase(kontenKasus);
+      const mockPoints: Record<string, number> = {};
+      kontenKasus.pilihanKataKunci.forEach((k) => {
+        mockPoints[k] = 50; // Default mock XP reward
+      });
+      setDynamicCase({
+        judul: kontenKasus.judul,
+        narasi: kontenKasus.narasi,
+        pilihanKataKunci: kontenKasus.pilihanKataKunci,
+        kunciJawaban: kontenKasus.kunciJawaban,
+        cardPoints: mockPoints
+      });
     };
 
     fetchStageCase();
@@ -258,14 +272,39 @@ export default function DynamicStagePage() {
     if (!sourceZone || sourceZone === targetZone) return;
 
     setItems((prev) => {
-      const updatedSource = prev[sourceZone].filter(
-        (item) => item !== itemDragged,
-      );
-      const updatedTarget = [...prev[targetZone], itemDragged];
+      // 1. Ambil item dari source
+      const newSourceItems = prev[sourceZone].filter(item => item !== itemDragged);
+      
+      // 2. Jika target bukan pool dan sudah ada kartu lain, kembalikan kartu lama ke pool
+      let newTargetItems = [...prev[targetZone]];
+      let displacedItems: string[] = [];
+      
+      if (targetZone !== "pool" && newTargetItems.length >= 1) {
+        displacedItems = [...newTargetItems];
+        newTargetItems = [itemDragged];
+      } else {
+        newTargetItems.push(itemDragged);
+      }
+
+      // 3. Masukkan item lama yang tergeser ke pool
+      let newPool = [...prev.pool];
+      if (sourceZone === "pool") {
+        newPool = newSourceItems;
+      }
+      if (targetZone === "pool") {
+        newPool.push(itemDragged);
+      }
+      if (displacedItems.length > 0) {
+        newPool = [...newPool, ...displacedItems];
+      }
+
+      // 4. Return state terupdate secara aman
       return {
         ...prev,
-        [sourceZone]: updatedSource,
-        [targetZone]: updatedTarget,
+        pool: newPool,
+        stakeholder: sourceZone === "stakeholder" ? newSourceItems : (targetZone === "stakeholder" ? newTargetItems : prev.stakeholder),
+        action: sourceZone === "action" ? newSourceItems : (targetZone === "action" ? newTargetItems : prev.action),
+        impact: sourceZone === "impact" ? newSourceItems : (targetZone === "impact" ? newTargetItems : prev.impact),
       };
     });
   }
@@ -291,23 +330,18 @@ export default function DynamicStagePage() {
         items[zoneKey as keyof typeof items].forEach((cardName) => {
           if (dynamicCase && dynamicCase.kunciJawaban[cardName] === zoneKey) {
             correctCount++;
+            totalScore += dynamicCase.cardPoints[cardName] || 0;
           }
         });
       }
     });
 
-    totalScore = correctCount === 3 ? 50 : correctCount === 2 ? 30 : correctCount === 1 ? 15 : 0;
-
     let feedbackText = "";
-    if (correctCount === 3)
-      feedbackText =
-        "Luar biasa! Analisis komponen 3 pilar Anda sangat akurat dan sempurna.";
-    else if (correctCount >= 1)
-      feedbackText =
-        "Analisis cukup baik, namun ada penempatan beberapa pilar yang kurang tepat.";
-    else
-      feedbackText =
-        "Kerja bagus sudah mencoba! Coba analisis kembali struktur keterkaitan 3 pilarnya.";
+    if (correctCount > 0) {
+      feedbackText = `Luar biasa! Anda berhasil menempatkan ${correctCount} kartu dengan benar dan mendapatkan total +${totalScore} XP.`;
+    } else {
+      feedbackText = "Kerja bagus sudah mencoba! Coba analisis kembali struktur keterkaitan pilarnya.";
+    }
 
     setScoreResult({ pointsEarned: totalScore, feedback: feedbackText });
     setShowModal(true);

@@ -112,10 +112,10 @@ export default function LandingPage() {
                   Keluar
                 </button>
                 <Link
-                  href="/belajar"
+                  href="/profile"
                   className="px-4 sm:px-5 py-2 sm:py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"
                 >
-                  Dashboard Anda
+                  Profile
                 </Link>
               </>
             ) : (

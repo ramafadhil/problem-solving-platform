@@ -144,7 +144,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         if (localArg) {
           const userOwnResponse: MockPerspektif = {
             id: "p-user-own",
-            author: "Kelompok_Anda",
+            author: "Anda",
             argument: localArg,
             createdAt: "Baru saja"
           };
@@ -227,7 +227,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                   <div className="overflow-hidden">
                     <h4 className="text-xs font-black text-slate-800 flex items-center gap-1.5 leading-none truncate">
                       @{item.author}
-                      {item.author.includes("Kelompok_Anda") && (
+                      {item.author.includes("Anda") && (
                         <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border shrink-0 ${
                           isPublic 
                             ? "bg-indigo-50 border-indigo-200 text-indigo-600" 

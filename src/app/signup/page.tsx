@@ -108,7 +108,7 @@ export default function SignupPage() {
             Mulai Mengurai Masalah
           </h2>
           <p className="text-xs font-medium text-slate-400 leading-relaxed">
-            Daftarkan kelompokmu untuk memulai petualangan membedah studi kasus
+            Daftarkan dirimu untuk memulai petualangan membedah studi kasus
             kompleks secara bertahap di platform Unravel.
           </p>
         </div>

@@ -410,7 +410,7 @@ export default function StageOnePage() {
 
               <p className="text-xs text-slate-500 leading-relaxed px-2 mb-6">
                 {scoreResult.feedback} Progres kamu telah diperbarui di papan
-                peringkat kelompok secara *real-time*.
+                peringkat secara *real-time*.
               </p>
 
               <button

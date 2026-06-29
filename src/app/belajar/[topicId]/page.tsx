@@ -218,7 +218,7 @@ export default function LearningDashboardPage() {
       <section className="lg:col-span-4 flex flex-col gap-4">
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <h3 className="font-extrabold text-slate-800 text-base mb-4 flex items-center gap-2">
-            📊 Papan Peringkat Kelompok
+            📊 Papan Peringkat Analis
           </h3>
 
           <div className="flex flex-col gap-2.5">

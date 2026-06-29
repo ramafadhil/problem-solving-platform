@@ -75,7 +75,7 @@ export default function LoginPage() {
       let friendlyMsg = "Username atau password salah.";
       
       // if (err.message && err.message.includes("401")) {
-      //   friendlyMsg = "Kredensial salah. Silakan periksa kembali username dan password kelompokmu.";
+      //   friendlyMsg = "Kredensial salah. Silakan periksa kembali username dan password akunmu.";
       // } else if (err.message && err.message.includes("Fetch")) {
       //   friendlyMsg = "Gagal terhubung ke server. Periksa koneksi internetmu.";
       // } else if (err.message) {
@@ -117,7 +117,7 @@ export default function LoginPage() {
             Mulai Mengurai Masalah
           </h2>
           <p className="text-xs font-medium text-slate-400 leading-relaxed">
-            Masuk ke akun kelompokmu untuk melanjutkan petualangan membedah
+            Masuk ke akunmu untuk melanjutkan petualangan membedah
             studi kasus kompleks secara bertahap di platform Unravel.
           </p>
         </div>

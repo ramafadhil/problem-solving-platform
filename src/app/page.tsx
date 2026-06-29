@@ -46,8 +46,8 @@ export default function LandingPage() {
     },
     {
       name: "Radit",
-      role: "Anggota Kelompok 8",
-      text: "Fitur leaderboard dan papan skor real-time-nya bikin kompetisi belajar bareng temen kelompok jadi makin seru dan kompetitif.",
+      role: "Rekan Belajar",
+      text: "Fitur leaderboard dan papan skor real-time-nya bikin kompetisi belajar bareng rekan analis lain jadi makin seru dan kompetitif.",
     },
     {
       name: "Fadhil",
@@ -151,7 +151,7 @@ export default function LandingPage() {
             </h1>
             <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-xl mx-auto lg:mx-0">
               Uji kemampuan problem-solving secara mandiri atau diskusikan
-              analisis pemecahan masalah pelik bersama rekan kelompok belajarmu
+              analisis pemecahan masalah pelik bersama komunitas analis
               secara real-time.
             </p>
 

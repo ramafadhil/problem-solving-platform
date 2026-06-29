@@ -17,6 +17,9 @@ interface StudiKasus {
   description: string;
   type: "learning" | "general";
   logic_blocks?: LogicBlock[];
+  name?: string;
+  username?: string;
+  user_id?: number;
 }
 
 export default function DaftarKasusPage() {
@@ -210,7 +213,7 @@ export default function DaftarKasusPage() {
                         Diskusi Umum
                       </span>
                       <span className="text-[10px] font-bold text-slate-400">
-                        @analis
+                        @{kasus.name || kasus.username || "analis"}
                       </span>
                     </div>
 

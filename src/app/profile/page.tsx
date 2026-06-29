@@ -147,7 +147,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div className="w-full bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  ⚡ Total Skor: <span className="text-indigo-600 font-black">{profile.stats.totalXp} XP</span>
+                Total Skor: <span className="text-indigo-600 font-black">{profile.stats.totalXp} Points</span>
                 </div>
               </div>
             </section>

@@ -176,11 +176,10 @@ export default function DynamicStagePage() {
   const matchTopic = (caseTopics: any[], topicKey: string) => {
     if (!caseTopics || !Array.isArray(caseTopics)) return false;
     return caseTopics.some(t => {
-      const name = (t.name || "").toLowerCase();
-      if (topicKey === "teknologi") return name.includes("teknologi");
-      if (topicKey === "politik") return name.includes("politik");
-      if (topicKey === "pendidikan") return name.includes("pendidikan");
-      return name.includes(topicKey.toLowerCase());
+      const parts = (t.name || "").split("|");
+      const title = parts[0] || "";
+      const nameKey = title.toLowerCase().replace(/\s+/g, "-");
+      return nameKey === topicKey;
     });
   };
 

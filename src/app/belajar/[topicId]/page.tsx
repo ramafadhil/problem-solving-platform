@@ -136,6 +136,7 @@ export default function LearningDashboardPage() {
 
   // 3. DINAMIS STATE: State ini yang nantinya akan diisi oleh fungsi fetch() ke Database
   const [highestCompletedStage, setHighestCompletedStage] = useState<number>(0);
+  const [namaTema, setNamaTema] = useState<string>("");
   const [leaderboard, setLeaderboard] = useState<typeof initialUsersDatabase>(
     [],
   );
@@ -145,13 +146,38 @@ export default function LearningDashboardPage() {
   const matchTopic = (caseTopics: any[], topicKey: string) => {
     if (!caseTopics || !Array.isArray(caseTopics)) return false;
     return caseTopics.some(t => {
-      const name = (t.name || "").toLowerCase();
-      if (topicKey === "lingkungan") return name.includes("lingkungan");
-      if (topicKey === "politik") return name.includes("politik");
-      if (topicKey === "sosial-tata-kota") return name.includes("sosial") || name.includes("kota");
-      return name.includes(topicKey.toLowerCase());
+      const parts = (t.name || "").split("|");
+      const title = parts[0] || "";
+      const nameKey = title.toLowerCase().replace(/\s+/g, "-");
+      return nameKey === topicKey;
     });
   };
+
+  // Ambil nama topik dinamis
+  useEffect(() => {
+    const fetchTopicName = async () => {
+      try {
+        const topicsRes = await apiFetch("/topics");
+        const list = Array.isArray(topicsRes) ? topicsRes : (topicsRes?.data || []);
+        if (Array.isArray(list)) {
+          const matched = list.find(t => {
+            const parts = (t.name || "").split("|");
+            const title = parts[0] || "";
+            const key = title.toLowerCase().replace(/\s+/g, "-");
+            return key === temaKey;
+          });
+          if (matched) {
+            setNamaTema(matched.name.split("|")[0]);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Gagal memuat nama topik dinamis:", err);
+      }
+      setNamaTema(temaAktif.namaTema);
+    };
+    fetchTopicName();
+  }, [temaKey, temaAktif]);
 
   // Ambil data studi kasus learning dari API
   useEffect(() => {
@@ -242,7 +268,7 @@ export default function LearningDashboardPage() {
         <div className="w-full text-center mb-8 bg-white/60 p-4 rounded-xl border border-amber-100 backdrop-blur-sm shadow-sm">
           <h2 className="text-xl font-black text-slate-800 tracking-tight">
             Peta Jalur:{" "}
-            <span className="text-indigo-600">{temaAktif.namaTema}</span>
+            <span className="text-indigo-600">{namaTema || temaAktif.namaTema}</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
             Level Aktif:{" "}

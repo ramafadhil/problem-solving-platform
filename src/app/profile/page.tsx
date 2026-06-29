@@ -8,6 +8,7 @@ import { apiFetch } from "@/utils/api";
 interface UserProfile {
   name: string;
   username: string;
+  role?: string;
   stats?: {
     casesSolved: number;
     casesCreated: number;

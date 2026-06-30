@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+
+interface Topic {
+  id: number;
+  name: string;
+}
 
 export default function BuatKasusPage() {
   const router = useRouter();
@@ -19,9 +24,28 @@ export default function BuatKasusPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  // State untuk Topic/Tema
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [selectedTopicId, setSelectedTopicId] = useState("");
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const topicsRes = await apiFetch("/topics");
+        const list = Array.isArray(topicsRes) ? topicsRes : (topicsRes?.data || []);
+        if (Array.isArray(list)) {
+          setTopics(list);
+        }
+      } catch (err) {
+        console.error("Gagal mengambil list topik:", err);
+      }
+    };
+    fetchTopics();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim()) return;
+    if (!title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId) return;
 
     setError("");
     setLoading(true);
@@ -30,12 +54,13 @@ export default function BuatKasusPage() {
     const combinedArgument = `[STAKEHOLDER]: ${stakeholder}\n\n[ACTION]: ${action}\n\n[IMPACT]: ${impact}`;
 
     try {
-      // Langkah 1: Terbitkan studi kasusnya dulu
+      // Langkah 1: Terbitkan studi kasusnya dulu dengan menyertakan topic_ids
       const newCase = await apiFetch("/cases/general", {
         method: "POST",
         body: JSON.stringify({
           title: title,
           description: description,
+          topic_ids: [parseInt(selectedTopicId, 10)]
         }),
       });
 
@@ -52,14 +77,17 @@ export default function BuatKasusPage() {
             details: [
               {
                 pillar_category: "Stakeholder",
+                content: stakeholder,
                 text_content: stakeholder
               },
               {
                 pillar_category: "Action",
+                content: action,
                 text_content: action
               },
               {
                 pillar_category: "Impact",
+                content: impact,
                 text_content: impact
               }
             ]
@@ -109,6 +137,29 @@ export default function BuatKasusPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* INPUT TOPIK/TEMA */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tema Kategori Topik</label>
+              <select
+                required
+                disabled={loading || success}
+                value={selectedTopicId}
+                onChange={(e) => setSelectedTopicId(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all cursor-pointer"
+              >
+                <option value="">Pilih Tema Topik...</option>
+                {topics.map((t) => {
+                  const parts = t.name.split("|");
+                  const cleanName = parts[0] || "Topik";
+                  return (
+                    <option key={t.id} value={t.id}>
+                      {cleanName}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
             {/* INPUT JUDUL */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Judul Studi Kasus</label>
@@ -186,9 +237,9 @@ export default function BuatKasusPage() {
 
             <button
               type="submit"
-              disabled={loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim()}
+              disabled={loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId}
               className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all mt-4 ${
-                loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim()
+                loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId
                   ? "bg-slate-300 cursor-not-allowed"
                   : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:-translate-y-0.5"
               }`}

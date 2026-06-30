@@ -12,6 +12,11 @@ interface LogicBlock {
   points: number;
 }
 
+interface Topic {
+  id: number;
+  name: string;
+}
+
 interface StudiKasus {
   id: string;
   title: string;
@@ -21,6 +26,8 @@ interface StudiKasus {
   name?: string;
   username?: string;
   user_id?: number;
+  topics?: Topic[];
+  perspectivesCount?: number;
 }
 
 export default function DaftarKasusPage() {
@@ -34,6 +41,26 @@ export default function DaftarKasusPage() {
   const [filterType, setFilterType] = useState<"terbaru" | "populer" | "disimpan">("terbaru");
   const [savedKasusIds, setSavedKasusIds] = useState<string[]>([]);
 
+  // State untuk Filter Topik
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [selectedTopicId, setSelectedTopicId] = useState("");
+
+  // Load list topik untuk filter
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const topicsRes = await apiFetch("/topics");
+        const list = Array.isArray(topicsRes) ? topicsRes : (topicsRes?.data || []);
+        if (Array.isArray(list)) {
+          setTopics(list);
+        }
+      } catch (err) {
+        console.error("Gagal mengambil list topik:", err);
+      }
+    };
+    fetchTopics();
+  }, []);
+
   useEffect(() => {
     const fetchDaftarKasus = async () => {
       try {
@@ -43,16 +70,31 @@ export default function DaftarKasusPage() {
         // Menembak endpoint GET /api/cases asli dari Azure BE
         const data = await apiFetch("/cases");
         
+        let casesListRaw: StudiKasus[] = [];
         // 🌟 SINKRONISASI PENGAMAN DATA: Memastikan data yang disimpan ke state selalu berupa Array
         if (Array.isArray(data)) {
-          setKasusList(data);
+          casesListRaw = data;
         } else if (data && Array.isArray(data.cases)) {
-          setKasusList(data.cases);
+          casesListRaw = data.cases;
         } else if (data && Array.isArray(data.data)) {
-          setKasusList(data.data);
-        } else {
-          setKasusList([]); // Fallback array kosong jika struktur BE tidak sesuai ekspektasi
+          casesListRaw = data.data;
         }
+
+        // Ambil jumlah tanggapan (perspektif) untuk setiap kasus bertipe general secara paralel
+        const generalCases = casesListRaw.filter((c: any) => c.type === "general");
+        const casesWithCounts = await Promise.all(
+          generalCases.map(async (c) => {
+            try {
+              const perspectives = await apiFetch(`/cases/${c.id}/perspectives`);
+              const count = Array.isArray(perspectives) ? perspectives.length : 0;
+              return { ...c, perspectivesCount: count };
+            } catch {
+              return { ...c, perspectivesCount: 0 };
+            }
+          })
+        );
+
+        setKasusList(casesWithCounts);
 
         // Memuat data bookmark lokal sementara dari localStorage jika ada
         const savedBookmarks = localStorage.getItem("unravel_saved_cases");
@@ -90,16 +132,26 @@ export default function DaftarKasusPage() {
     // 1. Filter awal: Singkirkan tipe 'learning', ambil yang murni 'general'
     let result = safeList.filter((kasus) => kasus && kasus.type === "general");
 
-    // 2. Jalankan pencarian teks keyword judul dan deskripsi
+    // 2. Filter berdasarkan topik yang dipilih jika ada
+    if (selectedTopicId) {
+      result = result.filter((kasus) => {
+        if (!kasus.topics || !Array.isArray(kasus.topics)) return false;
+        return kasus.topics.some((t) => String(t.id) === selectedTopicId);
+      });
+    }
+
+    // 3. Jalankan pencarian teks keyword judul dan deskripsi
     result = result.filter((kasus) => {
       const matchesTitle = (kasus.title || "").toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDesc = (kasus.description || "").toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTitle || matchesDesc;
     });
 
-    // 3. Klasifikasi berdasarkan tab filter dropdown aktif
-    if (filterType === "populer") {
-      result = [...result].sort((a, b) => (b.logic_blocks?.length || 0) - (a.logic_blocks?.length || 0));
+    // 4. Klasifikasi berdasarkan tab filter dropdown aktif
+    if (filterType === "terbaru") {
+      result = [...result].sort((a, b) => Number(b.id) - Number(a.id));
+    } else if (filterType === "populer") {
+      result = [...result].sort((a, b) => (b.perspectivesCount || 0) - (a.perspectivesCount || 0));
     } else if (filterType === "disimpan") {
       result = result.filter((kasus) => savedKasusIds.includes(kasus.id));
     }
@@ -160,6 +212,26 @@ export default function DaftarKasusPage() {
             />
           </div>
 
+          {/* FILTER TOPIK */}
+          <div className="relative shrink-0 flex items-stretch">
+            <select
+              value={selectedTopicId}
+              onChange={(e) => setSelectedTopicId(e.target.value)}
+              className="px-4 py-3 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-2xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors focus:outline-none cursor-pointer shadow-sm min-w-[160px]"
+            >
+              <option value="">Semua Topik</option>
+              {topics.map((t) => {
+                const parts = t.name.split("|");
+                const cleanName = parts[0] || "Topik";
+                return (
+                  <option key={t.id} value={t.id}>
+                    {cleanName}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
           <div className="relative shrink-0 flex items-stretch">
             <select
               value={filterType}
@@ -167,7 +239,7 @@ export default function DaftarKasusPage() {
               className="px-4 py-3 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-2xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors focus:outline-none cursor-pointer shadow-sm min-w-[150px]"
             >
               <option value="terbaru">Terbaru</option>
-              <option value="populer">Paling Kompleks</option>
+              <option value="populer">Paling Populer</option>
               <option value="disimpan">Kasus Disimpan</option>
             </select>
           </div>
@@ -211,7 +283,9 @@ export default function DaftarKasusPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center pr-6">
                       <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-sm bg-blue-50 border-blue-100 text-blue-600">
-                        Diskusi Umum
+                        {kasus.topics && kasus.topics.length > 0
+                          ? kasus.topics[0].name.split("|")[0]
+                          : "Diskusi Umum"}
                       </span>
                       <span className="text-[10px] font-bold text-slate-400">
                         @{kasus.name || kasus.username || "analis"}
@@ -247,6 +321,9 @@ export default function DaftarKasusPage() {
                     >
                       Buka Kasus
                     </Link>
+                    <span className="text-[10px] font-black text-slate-400 flex items-center gap-1">
+                      💬 {kasus.perspectivesCount || 0} Tanggapan
+                    </span>
                   </div>
                 </div>
               );

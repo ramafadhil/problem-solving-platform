@@ -97,9 +97,9 @@ export default function JawabanUlasanPage({ params }: PageProps) {
           const actionDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
           const impactDetail = myPerspective.details?.find((d: any) => d.pillar_category === "Impact");
           
-          const sh = stakeholderDetail?.text_content || myPerspective.details?.[0]?.text_content || "";
-          const ac = actionDetail?.text_content || myPerspective.details?.[1]?.text_content || "";
-          const im = impactDetail?.text_content || myPerspective.details?.[2]?.text_content || "";
+          const sh = stakeholderDetail?.content || stakeholderDetail?.text_content || myPerspective.details?.[0]?.content || myPerspective.details?.[0]?.text_content || "";
+          const ac = actionDetail?.content || actionDetail?.text_content || myPerspective.details?.[1]?.content || myPerspective.details?.[1]?.text_content || "";
+          const im = impactDetail?.content || impactDetail?.text_content || myPerspective.details?.[2]?.content || myPerspective.details?.[2]?.text_content || "";
           
           localArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
           localIsPublic = myPerspective.is_public !== undefined ? myPerspective.is_public : true;
@@ -122,7 +122,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         // 3. Muat detail kasus
         try {
           const detail = await apiFetch(`/cases/${caseId}`);
-          setKasus(detail);
+          setKasus(detail?.data || detail);
         } catch (err) {
           console.error("Gagal memuat detail kasus dari Azure:", err);
           setKasus({
@@ -146,9 +146,9 @@ export default function JawabanUlasanPage({ params }: PageProps) {
               const actionDetail = p.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
               const impactDetail = p.details?.find((d: any) => d.pillar_category === "Impact");
               
-              const sh = stakeholderDetail?.text_content || p.details?.[0]?.text_content || "";
-              const ac = actionDetail?.text_content || p.details?.[1]?.text_content || "";
-              const im = impactDetail?.text_content || p.details?.[2]?.text_content || "";
+              const sh = stakeholderDetail?.content || stakeholderDetail?.text_content || p.details?.[0]?.content || p.details?.[0]?.text_content || "";
+              const ac = actionDetail?.content || actionDetail?.text_content || p.details?.[1]?.content || p.details?.[1]?.text_content || "";
+              const im = impactDetail?.content || impactDetail?.text_content || p.details?.[2]?.content || p.details?.[2]?.text_content || "";
               
               const pArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
               const formattedDate = new Date(p.created_at).toLocaleDateString("id-ID", {

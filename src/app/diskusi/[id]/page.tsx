@@ -67,7 +67,7 @@ export default function DetailKasusPage() {
         
         // Menembak endpoint GET /api/cases/{id} asli dari Azure
         const data = await apiFetch(`/cases/${caseId}`);
-        setKasus(data);
+        setKasus(data?.data || data);
       } catch (err: any) {
         console.error("Gagal memuat detail kasus dari Azure:", err);
         
@@ -130,9 +130,9 @@ export default function DetailKasusPage() {
             const actionDetail = matchingResponse.details?.find((d: any) => d.pillar_category === "Action" || d.pillar_category === "Etika");
             const impactDetail = matchingResponse.details?.find((d: any) => d.pillar_category === "Impact");
             
-            const sh = stakeholderDetail?.text_content || matchingResponse.details?.[0]?.text_content || "";
-            const ac = actionDetail?.text_content || matchingResponse.details?.[1]?.text_content || "";
-            const im = impactDetail?.text_content || matchingResponse.details?.[2]?.text_content || "";
+            const sh = stakeholderDetail?.content || stakeholderDetail?.text_content || matchingResponse.details?.[0]?.content || matchingResponse.details?.[0]?.text_content || "";
+            const ac = actionDetail?.content || actionDetail?.text_content || matchingResponse.details?.[1]?.content || matchingResponse.details?.[1]?.text_content || "";
+            const im = impactDetail?.content || impactDetail?.text_content || matchingResponse.details?.[2]?.content || matchingResponse.details?.[2]?.text_content || "";
             
             const fullArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
             const responseIsPublic = matchingResponse.is_public !== undefined ? matchingResponse.is_public : true;
@@ -178,14 +178,17 @@ export default function DetailKasusPage() {
           details: [
             {
               pillar_category: "Stakeholder",
+              content: shInput,
               text_content: shInput
             },
             {
               pillar_category: "Action",
+              content: acInput,
               text_content: acInput
             },
             {
               pillar_category: "Impact",
+              content: imInput,
               text_content: imInput
             }
           ]
@@ -234,6 +237,23 @@ export default function DetailKasusPage() {
         
         {/* SISI KIRI: DETAIL KASUS & SETTING PRIVASI JAWABAN (5 Kolom) */}
         <section className="lg:col-span-5 space-y-6">
+          
+          {/* KARTU DETAIL STUDI KASUS */}
+          <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+            <div className="space-y-1">
+              <span className="text-[9px] font-black uppercase text-indigo-600 tracking-wider">
+                Studi Kasus Analisis
+              </span>
+              <h2 className="text-lg font-black text-slate-900 font-serif leading-snug">
+                {kasus?.title}
+              </h2>
+            </div>
+            <div className="border-t border-slate-100 pt-3">
+              <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
+                {kasus?.description}
+              </p>
+            </div>
+          </div>
           
           {/* KARTU PENGATURAN PRIVASI JAWABAN (Sesuai Wireframe Lofi) */}
           <div className="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm space-y-4">

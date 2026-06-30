@@ -47,6 +47,7 @@ export default function AdminDashboardPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [topicId, setTopicId] = useState("");
+  const [difficultyLevel, setDifficultyLevel] = useState("1");
   
   // Form State - Topik Baru (Opsi B)
   const [newTopicName, setNewTopicName] = useState("");
@@ -199,9 +200,10 @@ export default function AdminDashboardPage() {
         title,
         description,
         type: "learning",
+        difficulty_level: parseInt(difficultyLevel, 10),
         topic_ids: [parseInt(topicId, 10)],
         logic_blocks: cards.map(c => ({
-          category: c.category,
+          pillar_category: c.category.charAt(0).toUpperCase() + c.category.slice(1),
           content: c.content.trim(),
           points: Number(c.points)
         }))
@@ -217,6 +219,7 @@ export default function AdminDashboardPage() {
       // Reset Form
       setTitle("");
       setDescription("");
+      setDifficultyLevel("1");
       setCards([
         { category: "stakeholder", content: "", points: 50 },
         { category: "action", content: "", points: 50 },
@@ -468,6 +471,20 @@ export default function AdminDashboardPage() {
                   {topics.length === 0 && (
                     <option value="">Belum ada topik terdaftar</option>
                   )}
+                </select>
+              </div>
+
+              {/* Tingkat Kesulitan */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tingkat Kesulitan (Level 1-3)</label>
+                <select
+                  value={difficultyLevel}
+                  onChange={(e) => setDifficultyLevel(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors"
+                >
+                  <option value="1">Level 1 (Eksplorasi)</option>
+                  <option value="2">Level 2 (Penerapan)</option>
+                  <option value="3">Level 3 (Analisis Mendalam)</option>
                 </select>
               </div>
 

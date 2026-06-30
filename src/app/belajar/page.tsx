@@ -176,41 +176,74 @@ export default function TopikSelectionPage() {
                 Belum ada tema analisis terdaftar di database.
               </div>
             ) : (
-              topics.map((tema) => (
+              <>
+                {topics.map((tema) => (
+                  <div
+                    key={tema.id}
+                    onClick={() => handleSelectTema(tema.id)}
+                    className={`bg-white border-2 rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] border-slate-200 cursor-pointer bg-gradient-to-br ${tema.gradient} ${tema.borderColor} ${tema.shadowColor} hover:-translate-y-0.5`}
+                  >
+                    {/* Deskripsi Ikon & Ringkasan Topik */}
+                    <div className="flex gap-4 items-center flex-1">
+                      <div
+                        className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-white shadow-md transform -rotate-3 shrink-0`}
+                      >
+                        {tema.icon}
+                      </div>
+                      <div>
+                        <h3
+                          className={`text-sm font-black tracking-tight font-serif ${tema.textColor}`}
+                        >
+                          {tema.title}
+                        </h3>
+                        <p className="text-[11px] font-medium text-slate-500 mt-0.5 leading-relaxed max-w-sm font-sans">
+                          {tema.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Badge Indikator Informasi Kasus */}
+                    <div className="shrink-0 text-right min-w-[85px] font-sans">
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="bg-white px-2 py-0.5 rounded-md border border-slate-200 text-indigo-600 shadow-sm text-[9px] font-black uppercase tracking-wider">
+                          {tema.totalStages} Kasus
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Kotak Locked (Future Updates) */}
                 <div
-                  key={tema.id}
-                  onClick={() => handleSelectTema(tema.id)}
-                  className={`bg-white border-2 rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] border-slate-200 cursor-pointer bg-gradient-to-br ${tema.gradient} ${tema.borderColor} ${tema.shadowColor} hover:-translate-y-0.5`}
+                  className="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 min-h-[95px] cursor-not-allowed opacity-80"
                 >
-                  {/* Deskripsi Ikon & Ringkasan Topik */}
                   <div className="flex gap-4 items-center flex-1">
                     <div
-                      className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-white shadow-md transform -rotate-3 shrink-0`}
+                      className="text-lg bg-slate-200 w-11 h-11 rounded-xl flex items-center justify-center border border-slate-300/40 shadow-sm shrink-0"
                     >
-                      {tema.icon}
+                      🔒
                     </div>
                     <div>
                       <h3
-                        className={`text-sm font-black tracking-tight font-serif ${tema.textColor}`}
+                        className="text-sm font-black tracking-tight font-serif text-slate-400"
                       >
-                        {tema.title}
+                        Tema Baru (Segera Hadir)
                       </h3>
-                      <p className="text-[11px] font-medium text-slate-500 mt-0.5 leading-relaxed max-w-sm font-sans">
-                        {tema.description}
+                      <p className="text-[11px] font-medium text-slate-450 mt-0.5 leading-relaxed max-w-sm font-sans text-slate-400">
+                        Petualangan dan studi kasus baru sedang dirancang oleh tim analis.
                       </p>
                     </div>
                   </div>
 
-                  {/* Badge Indikator Informasi Kasus */}
                   <div className="shrink-0 text-right min-w-[85px] font-sans">
                     <div className="flex flex-col items-end gap-0.5">
-                      <span className="bg-white px-2 py-0.5 rounded-md border border-slate-200 text-indigo-600 shadow-sm text-[9px] font-black uppercase tracking-wider">
-                        {tema.totalStages} Kasus
+                      <span className="bg-slate-100 px-2 py-0.5 rounded-md border border-slate-250 text-slate-400 text-[9px] font-black uppercase tracking-wider">
+                        Locked
                       </span>
                     </div>
                   </div>
                 </div>
-              ))
+              </>
             )}
           </div>
         </section>

@@ -69,7 +69,7 @@ export default function DetailKasusPage() {
         const data = await apiFetch(`/cases/${caseId}`);
         setKasus(data?.data || data);
       } catch (err: any) {
-        console.error("Gagal memuat detail kasus dari Azure:", err);
+        console.error("Gagal memuat detail kasus dari server:", err);
         
         // Fallback Mock Data tipe general jika terkena masalah CORS saat pengujian
         setKasus({
@@ -120,7 +120,7 @@ export default function DetailKasusPage() {
         if (userId) {
           const perspectives = await apiFetch(`/cases/${caseId}/perspectives`);
           const matchingResponse = Array.isArray(perspectives) 
-            ? perspectives.find((p: any) => (p.user_id || p.UserID) === userId)
+            ? perspectives.find((p: any) => p.UserID === userId)
             : null;
 
           if (matchingResponse) {

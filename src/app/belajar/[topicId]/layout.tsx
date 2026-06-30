@@ -20,9 +20,9 @@ export default function BelajarLayout({
       {/* 1. NAVBAR HEADER (Disesuaikan penuh dengan desain terbaru Unravel) */}
       <nav className="w-full border-b-2 border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="font-black text-lg tracking-tight text-slate-900">
+          <a href="/" className="font-black text-lg tracking-tight text-slate-900">
             Unravel<span className="text-indigo-600"> Learn</span>
-          </span>
+          </a>
         </div>
 
         {/* Detail Kasus Aktif & Profil User */}

@@ -120,7 +120,7 @@ export default function DetailKasusPage() {
         if (userId) {
           const perspectives = await apiFetch(`/cases/${caseId}/perspectives`);
           const matchingResponse = Array.isArray(perspectives) 
-            ? perspectives.find((p: any) => p.UserID === userId)
+            ? perspectives.find((p: any) => (p.user_id || p.UserID) === userId)
             : null;
 
           if (matchingResponse) {

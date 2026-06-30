@@ -102,8 +102,8 @@ export default function DaftarKasusPage() {
           setSavedKasusIds(JSON.parse(savedBookmarks));
         }
       } catch (err: any) {
-        console.error("Gagal mengambil daftar kasus dari Azure:", err);
-        setError(err.message || "Gagal mengambil data dari server Azure.");
+        console.error("Gagal mengambil daftar kasus dari server:", err);
+        setError(err.message || "Gagal mengambil data dari server.");
       } finally {
         setLoading(false);
       }
@@ -166,9 +166,9 @@ export default function DaftarKasusPage() {
       {/* 1. NAVBAR FORUM HEADER */}
       <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="font-black text-lg tracking-tight text-slate-900">
+          <a href="/" className="font-black text-lg tracking-tight text-slate-900">
             Unravel<span className="text-indigo-600"> Discuss</span>
-          </span>
+          </a>
         </div>
         <div className="flex items-center gap-3">
           <Link

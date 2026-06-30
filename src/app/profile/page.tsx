@@ -96,7 +96,7 @@ function ProfileContent() {
               try {
                 const perspectives = await apiFetch(`/cases/${c.id}/perspectives`);
                 if (Array.isArray(perspectives)) {
-                  const myPerspective = perspectives.find((p: any) => p.UserID === userId);
+                  const myPerspective = perspectives.find((p: any) => (p.user_id || p.UserID) === userId);
                   if (myPerspective) {
                     const category = c.topics && c.topics.length > 0 ? c.topics[0].name : "Umum";
                     
@@ -146,7 +146,7 @@ function ProfileContent() {
               try {
                 const perspectives = await apiFetch(`/cases/${c.id}/perspectives`);
                 if (Array.isArray(perspectives)) {
-                  const targetPerspective = perspectives.find((p: any) => p.UserID === targetUserId);
+                  const targetPerspective = perspectives.find((p: any) => (p.user_id || p.UserID) === targetUserId);
                   if (targetPerspective) {
                     if (!targetUserFound && targetPerspective.user) {
                       targetUserFound = targetPerspective.user;

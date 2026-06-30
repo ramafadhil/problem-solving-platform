@@ -89,7 +89,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         }
 
         const myPerspective = Array.isArray(perspectivesList) && userId
-          ? perspectivesList.find((p: any) => p.UserID === userId)
+          ? perspectivesList.find((p: any) => (p.user_id || p.UserID) === userId)
           : null;
 
         if (myPerspective) {
@@ -143,7 +143,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         if (Array.isArray(perspectivesList)) {
           perspectivesList.forEach((p: any) => {
             // Kita skip perspective milik user sendiri karena akan ditambahkan paling atas
-            if (p.UserID === userId) return;
+            if ((p.user_id || p.UserID) === userId) return;
 
             // Hanya tampilkan jika public
             if (p.is_public) {
@@ -162,7 +162,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                 year: "numeric"
               });
 
-              let authorName = `Analis #${p.UserID}`;
+              let authorName = `Analis #${p.user_id || p.UserID}`;
               if (p.user) {
                 if (p.user.is_private) {
                   authorName = "Analis Anonim";
@@ -171,14 +171,14 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                 }
               }
 
-              const userPoints = p.UserID === caseCreatorId ? 50 : 25;
+              const userPoints = (p.user_id || p.UserID) === caseCreatorId ? 50 : 25;
 
               otherAnswers.push({
                 id: String(p.ID),
                 author: authorName,
                 argument: pArg,
                 createdAt: formattedDate,
-                userId: p.UserID,
+                userId: p.user_id || p.UserID,
                 points: userPoints
               });
             }
@@ -225,9 +225,9 @@ export default function JawabanUlasanPage({ params }: PageProps) {
       {/* NAVBAR */}
       <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="font-black text-lg tracking-tight text-slate-900">
+          <a href="/" className="font-black text-lg tracking-tight text-slate-900">
             Unravel<span className="text-indigo-600"> Discuss</span>
-          </span>
+          </a>
         </div>
         <div className="flex items-center gap-3">
           <Link

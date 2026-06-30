@@ -44,9 +44,11 @@ export default function BelajarLayout({
           </button>
 
           {/* Avatar Lingkar User */}
+          <Link href="/profile">
           <div className="w-9 h-9 rounded-full bg-slate-50 border-2 border-slate-200 font-black text-sm text-slate-400 flex items-center justify-center select-none hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-500 transition-colors cursor-pointer shadow-sm">
             👤
           </div>
+          </Link>
         </div>
       </nav>
 

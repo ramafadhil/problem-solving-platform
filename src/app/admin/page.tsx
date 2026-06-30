@@ -554,9 +554,9 @@ export default function AdminDashboardPage() {
                           </select>
                         </div>
 
-                        {/* XP Reward */}
+                        {/* Points Reward */}
                         <div className="md:col-span-3 space-y-1">
-                          <label className="text-[9px] font-black uppercase text-slate-400 tracking-wider">XP Reward</label>
+                          <label className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Points Reward</label>
                           <input
                             type="number"
                             value={card.points}
@@ -660,7 +660,7 @@ export default function AdminDashboardPage() {
                         <div className="flex flex-wrap gap-1.5 max-w-[70%]">
                           {c.logic_blocks?.map((block, idx) => (
                             <span key={idx} className="bg-slate-100 text-slate-600 text-[8px] font-bold px-1 py-0.5 rounded border border-slate-200/50">
-                              {block.content} ({block.points} XP)
+                              {block.content} ({block.points} Points)
                             </span>
                           ))}
                         </div>

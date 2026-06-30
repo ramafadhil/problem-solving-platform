@@ -73,6 +73,8 @@ function ProfileContent() {
         let userPerspectives: RiwayatJawaban[] = [];
         let casesCreatedCount = 0;
 
+        let currentUserId = 0;
+
         const casesRes = await apiFetch("/cases");
         const casesList = Array.isArray(casesRes) ? casesRes : (casesRes?.cases || casesRes?.data || []);
 
@@ -81,6 +83,7 @@ function ProfileContent() {
           const userRes = await apiFetch("/me"); 
           const userData = userRes.data || userRes;
           activeUser = userData;
+          currentUserId = userData?.id || 0;
           setSelectedPrivacy(userData?.is_private || false);
 
           if (userData && Array.isArray(casesList)) {
@@ -132,6 +135,7 @@ function ProfileContent() {
         } else {
           // 2. Profil Orang Lain
           const targetUserId = Number(userIdParam);
+          currentUserId = targetUserId;
           let targetUserFound: any = null;
 
           if (Array.isArray(casesList)) {
@@ -206,14 +210,24 @@ function ProfileContent() {
         setProfile(activeUser);
         setRiwayatDiskusi(userPerspectives);
 
-        // Kalkulasi dinamis statistik
+        // Kalkulasi dinamis statistik dan Points (+50 jika buat & jawab, +25 jika jawab orang lain)
+        let calculatedPoints = 0;
+        userPerspectives.forEach((rp) => {
+          const correspondingCase = casesList.find((c: any) => String(c.id) === rp.caseId);
+          if (correspondingCase) {
+            const isOwnCase = correspondingCase.user_id === currentUserId;
+            calculatedPoints += isOwnCase ? 50 : 25;
+          } else {
+            calculatedPoints += 25; // fallback
+          }
+        });
+
         const solvedCount = userPerspectives.length;
-        const calculatedXp = (solvedCount * 100) + (casesCreatedCount * 50);
         
         setStats({
           casesSolved: solvedCount,
           casesCreated: casesCreatedCount,
-          totalXp: calculatedXp
+          totalXp: calculatedPoints
         });
 
       } catch (err: any) {

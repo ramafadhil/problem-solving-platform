@@ -437,7 +437,7 @@ export default function StageOnePage() {
 
               <div className="my-4 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
                 <p className="text-2xl font-black text-indigo-600">
-                  +{scoreResult.pointsEarned} XP
+                  +{scoreResult.pointsEarned} Points
                 </p>
                 <p className="text-xs text-indigo-400 font-semibold mt-0.5">
                   Poin Berhasil Didapatkan

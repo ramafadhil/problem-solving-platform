@@ -26,6 +26,7 @@ interface MockPerspektif {
   argument: string;
   createdAt: string;
   userId?: number;
+  points?: number;
 }
 
 interface PageProps {
@@ -121,9 +122,12 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         setIsPublic(localIsPublic);
 
         // 3. Muat detail kasus
+        let caseCreatorId = 0;
         try {
           const detail = await apiFetch(`/cases/${caseId}`);
-          setKasus(detail?.data || detail);
+          const actualCase = detail?.data || detail;
+          setKasus(actualCase);
+          caseCreatorId = actualCase?.user_id || 0;
         } catch (err) {
           console.error("Gagal memuat detail kasus dari Azure:", err);
           setKasus({
@@ -167,16 +171,21 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                 }
               }
 
+              const userPoints = p.UserID === caseCreatorId ? 50 : 25;
+
               otherAnswers.push({
                 id: String(p.ID),
                 author: authorName,
                 argument: pArg,
                 createdAt: formattedDate,
-                userId: p.UserID
+                userId: p.UserID,
+                points: userPoints
               });
             }
           });
         }
+
+        const ownPoints = userId === caseCreatorId ? 50 : 25;
 
         if (localArg) {
           const userOwnResponse: MockPerspektif = {
@@ -184,7 +193,8 @@ export default function JawabanUlasanPage({ params }: PageProps) {
             author: "Anda",
             argument: localArg,
             createdAt: "Baru saja",
-            userId: userId
+            userId: userId,
+            points: ownPoints
           };
           setDaftarPerspektif([userOwnResponse, ...otherAnswers]);
         } else {
@@ -283,7 +293,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                         </span>
                       )}
                     </h4>
-                    <span className="text-[10px] font-bold text-slate-400 mt-1 block">Point: 39 XP</span>
+                    <span className="text-[10px] font-bold text-slate-400 mt-1 block">{item.points || 25} Points</span>
                   </div>
                 </div>
 

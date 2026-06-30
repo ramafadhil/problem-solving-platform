@@ -268,7 +268,7 @@ export default function LearningDashboardPage() {
                           <span className={`flex-shrink-0 text-[10px] font-black px-2 py-1 rounded-lg whitespace-nowrap ${
                             isCompleted ? "bg-emerald-100 text-emerald-700" : isActive ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-400"
                           }`}>
-                            +{stage.xpReward} XP
+                            +{stage.xpReward} Points
                           </span>
                         </div>
                       </button>
@@ -303,7 +303,7 @@ export default function LearningDashboardPage() {
             </div>
             <div className="text-right flex-shrink-0">
               <p className="text-lg font-black text-indigo-700">{totalXP}</p>
-              <p className="text-[9px] text-indigo-400 font-bold uppercase tracking-wider">XP Jalur</p>
+              <p className="text-[9px] text-indigo-400 font-bold uppercase tracking-wider">Points Jalur</p>
             </div>
           </div>
 
@@ -327,7 +327,7 @@ export default function LearningDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-black text-slate-900">Papan Peringkat</h3>
-              <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Berdasarkan total XP</p>
+              <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Berdasarkan total Points</p>
             </div>
             <span className="text-[8px] font-black uppercase tracking-widest text-amber-500 bg-amber-50 border border-amber-200 px-2 py-1 rounded-lg">
               Live Soon
@@ -357,7 +357,7 @@ export default function LearningDashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-extrabold text-indigo-900 truncate">{userName} <span className="text-[9px] font-bold text-indigo-400">(Kamu)</span></p>
-                  <p className="text-[10px] text-indigo-500 font-semibold">{totalXP} XP</p>
+                  <p className="text-[10px] text-indigo-500 font-semibold">{totalXP} Points</p>
                 </div>
                 <span className="text-[10px] font-black text-indigo-400">#?</span>
               </div>

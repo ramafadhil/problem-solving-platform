@@ -229,7 +229,7 @@ export default function DynamicStagePage() {
       // Fallback ke data mock jika API kosong/gagal
       const mockPoints: Record<string, number> = {};
       kontenKasus.pilihanKataKunci.forEach((k) => {
-        mockPoints[k] = 50; // Default mock XP reward
+        mockPoints[k] = 50; // Default mock Points reward
       });
       setDynamicCase({
         judul: kontenKasus.judul,
@@ -337,7 +337,7 @@ export default function DynamicStagePage() {
 
     let feedbackText = "";
     if (correctCount > 0) {
-      feedbackText = `Luar biasa! Anda berhasil menempatkan ${correctCount} kartu dengan benar dan mendapatkan total +${totalScore} XP.`;
+      feedbackText = `Luar biasa! Anda berhasil menempatkan ${correctCount} kartu dengan benar dan mendapatkan total +${totalScore} Points.`;
     } else {
       feedbackText = "Kerja bagus sudah mencoba! Coba analisis kembali struktur keterkaitan pilarnya.";
     }
@@ -464,7 +464,7 @@ export default function DynamicStagePage() {
 
               <div className="my-4 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
                 <p className="text-2xl font-black text-indigo-600">
-                  +{scoreResult.pointsEarned} XP
+                  +{scoreResult.pointsEarned} Points
                 </p>
                 <p className="text-xs text-indigo-400 font-semibold mt-0.5">
                   Poin Berhasil Didapatkan

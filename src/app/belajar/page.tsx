@@ -132,10 +132,10 @@ export default function TopikSelectionPage() {
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
         {/* SISI KIRI: RUANG FOKUS UTAMA UNTUK MOTION GRAPHICS */}
         <section className="lg:col-span-5 flex flex-col justify-center items-center w-full">
-          <div className="w-full h-full min-h-[450px] flex items-center justify-center">
-            <div className="w-full max-w-[320px] aspect-square">
+          <div className="w-full h-full min-h-[650px] flex items-center justify-center">
+            <div className="w-full max-w-[500px] aspect-square">
               <DotLottieReact
-                src="/mascot-animation.json"
+                src="/aset_learning.json"
                 loop={true}
                 autoplay={true}
               />

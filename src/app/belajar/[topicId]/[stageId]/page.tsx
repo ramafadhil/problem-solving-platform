@@ -168,6 +168,7 @@ export default function DynamicStagePage() {
   const [highestCompletedStage, setHighestCompletedStage] = useState<number>(0);
   const [totalStages, setTotalStages] = useState<number>(5);
   const [submittedCardIds, setSubmittedCardIds] = useState<number[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   // State untuk data studi kasus dynamic dari API
   const [dynamicCase, setDynamicCase] = useState<{
@@ -263,21 +264,36 @@ export default function DynamicStagePage() {
     if (!dynamicCase) return;
 
     const initializePage = async () => {
+      // Ambil user ID terlebih dahulu
+      let userId: number | null = null;
+      try {
+        const profile = await apiFetch("/me");
+        const user = profile?.data || profile;
+        if (user?.id) {
+          userId = Number(user.id);
+          setCurrentUserId(userId);
+        }
+      } catch (err) {
+        console.error("Gagal memuat profil user:", err);
+      }
+
+      const userSuffix = userId ? `_${userId}` : "";
+
       // Baca progress dari localStorage langsung (bukan dari state, agar tidak overwrite nilai lebih tinggi)
-      const storedProgress = localStorage.getItem(`progress_${temaKey}`);
+      const storedProgress = localStorage.getItem(`progress_${temaKey}${userSuffix}`);
       const storedProgressInt = storedProgress ? parseInt(storedProgress, 10) : 0;
 
       // Fungsi helper: update progress hanya jika nilai baru lebih tinggi
       const updateProgressSafely = (newLevel: number) => {
-        const current = parseInt(localStorage.getItem(`progress_${temaKey}`) || "0", 10);
+        const current = parseInt(localStorage.getItem(`progress_${temaKey}${userSuffix}`) || "0", 10);
         const updated = Math.max(current, newLevel);
-        localStorage.setItem(`progress_${temaKey}`, String(updated));
+        localStorage.setItem(`progress_${temaKey}${userSuffix}`, String(updated));
         setHighestCompletedStage(updated);
       };
 
       // Kunci localStorage berbasis case ID (bukan posisi level) agar kebal terhadap perubahan urutan
-      const caseKey = dynamicCase.id ? `solved_case_${dynamicCase.id}` : null;
-      const detailsKey = dynamicCase.id ? `solved_case_details_${dynamicCase.id}` : null;
+      const caseKey = dynamicCase.id ? `solved_case_${dynamicCase.id}${userSuffix}` : null;
+      const detailsKey = dynamicCase.id ? `solved_case_details_${dynamicCase.id}${userSuffix}` : null;
 
       // 1. Cek localStorage berbasis case ID (cepat, sync)
       if (caseKey && localStorage.getItem(caseKey) === "true") {
@@ -301,34 +317,29 @@ export default function DynamicStagePage() {
       setHighestCompletedStage(storedProgressInt);
 
       // 2. Cek backend jika ada case ID di database
-      if (dynamicCase.id) {
+      if (dynamicCase.id && userId) {
         try {
-          const profile = await apiFetch("/me");
-          const user = profile?.data || profile;
-          const userId = user?.id;
-          if (userId) {
-            const perspectives = await apiFetch(`/cases/${dynamicCase.id}/perspectives`);
-            const list = Array.isArray(perspectives) ? perspectives : (perspectives?.data || []);
-            if (Array.isArray(list)) {
-              // Gunakan Number() untuk mencegah type mismatch antara string dan number
-              const userPerspective = list.find((p: any) => Number(p.user_id || p.UserID) === Number(userId));
-              if (userPerspective) {
-                // Tandai case ID ini sebagai solved di localStorage
-                if (caseKey) localStorage.setItem(caseKey, "true");
+          const perspectives = await apiFetch(`/cases/${dynamicCase.id}/perspectives`);
+          const list = Array.isArray(perspectives) ? perspectives : (perspectives?.data || []);
+          if (Array.isArray(list)) {
+            // Gunakan Number() untuk mencegah type mismatch antara string dan number
+            const userPerspective = list.find((p: any) => Number(p.user_id || p.UserID) === Number(userId));
+            if (userPerspective) {
+              // Tandai case ID ini sebagai solved di localStorage
+              if (caseKey) localStorage.setItem(caseKey, "true");
 
-                // Ekstrak detail logic_block_id yang disubmit user
-                const details = userPerspective.details || [];
-                const submittedIds = details.map((d: any) => d.logic_block_id || 0).filter((id: number) => id !== 0);
-                setSubmittedCardIds(submittedIds);
-                if (detailsKey) {
-                  localStorage.setItem(detailsKey, JSON.stringify(submittedIds));
-                }
-
-                updateProgressSafely(levelNum);
-                setIsAlreadySolved(true);
-                setIsMounted(true);
-                return;
+              // Ekstrak detail logic_block_id yang disubmit user
+              const details = userPerspective.details || [];
+              const submittedIds = details.map((d: any) => d.logic_block_id || 0).filter((id: number) => id !== 0);
+              setSubmittedCardIds(submittedIds);
+              if (detailsKey) {
+                localStorage.setItem(detailsKey, JSON.stringify(submittedIds));
               }
+
+              updateProgressSafely(levelNum);
+              setIsAlreadySolved(true);
+              setIsMounted(true);
+              return;
             }
           }
         } catch (err) {
@@ -447,15 +458,17 @@ export default function DynamicStagePage() {
     const isSuccess = !hasMismatch && correctCount >= 2;
 
     if (isSuccess) {
+      const userSuffix = currentUserId ? `_${currentUserId}` : "";
+
       // Update progres lokal dulu (berbasis posisi level untuk dashboard)
-      const savedProgress = localStorage.getItem(`progress_${temaKey}`);
+      const savedProgress = localStorage.getItem(`progress_${temaKey}${userSuffix}`);
       const currentProgressInt = savedProgress ? parseInt(savedProgress, 10) : 0;
       if (levelNum > currentProgressInt) {
-        localStorage.setItem(`progress_${temaKey}`, String(levelNum));
+        localStorage.setItem(`progress_${temaKey}${userSuffix}`, String(levelNum));
       }
       // Tandai case ID ini sebagai solved agar kebal terhadap perubahan urutan
       if (dynamicCase?.id) {
-        localStorage.setItem(`solved_case_${dynamicCase.id}`, "true");
+        localStorage.setItem(`solved_case_${dynamicCase.id}${userSuffix}`, "true");
 
         // Simpan detail logic block ID yang ditempatkan oleh user
         const placedCardIds = [
@@ -464,7 +477,7 @@ export default function DynamicStagePage() {
           ...items.impact.map(c => dynamicCase.cardBlockIds?.[c] || 0)
         ].filter(id => id !== 0);
         setSubmittedCardIds(placedCardIds);
-        localStorage.setItem(`solved_case_details_${dynamicCase.id}`, JSON.stringify(placedCardIds));
+        localStorage.setItem(`solved_case_details_${dynamicCase.id}${userSuffix}`, JSON.stringify(placedCardIds));
       }
 
       // Kirim ke backend dan pakai points_awarded dari respons untuk modal

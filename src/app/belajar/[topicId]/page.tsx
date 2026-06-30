@@ -180,9 +180,9 @@ export default function LearningDashboardPage() {
     fetchLearningCases();
   }, [temaKey]);
 
-  // Baca progres dari localStorage - hitung berdasarkan solved_case_{id} per stage
+  // Baca progres dari localStorage - hitung berdasarkan solved_case_{id}_{userId} per stage
   useEffect(() => {
-    if (stagesList.length === 0) return;
+    if (stagesList.length === 0 || myUserId === null) return;
 
     const computeProgress = async () => {
       // Ambil case IDs dari API (sudah dimuat di stagesList, tapi kita butuh ID aslinya)
@@ -194,29 +194,21 @@ export default function LearningDashboardPage() {
           .sort((a: any, b: any) => Number(a.id) - Number(b.id));
 
         if (filtered.length > 0) {
-          // Hitung stage mana saja yang sudah diselesaikan berdasarkan solved_case_{id}
+          // Hitung stage mana saja yang sudah diselesaikan secara berurutan
           let maxCompleted = 0;
           for (let i = 0; i < filtered.length; i++) {
             const caseId = filtered[i].id;
-            if (caseId && localStorage.getItem(`solved_case_${caseId}`) === "true") {
+            if (caseId && localStorage.getItem(`solved_case_${caseId}_${myUserId}`) === "true") {
               maxCompleted = i + 1; // posisi 1-indexed
+            } else {
+              break; // Hentikan jika ada level yang belum selesai di tengah jalan
             }
           }
 
-          // Fallback ke progress lama (jika belum ada solved_case_ keys)
-          if (maxCompleted === 0) {
-            const savedProgress = localStorage.getItem(`progress_${temaKey}`);
-            maxCompleted = savedProgress ? parseInt(savedProgress, 10) : 0;
-          } else {
-            // Sync progress lama supaya tidak turun
-            const savedProgress = localStorage.getItem(`progress_${temaKey}`);
-            const oldProgress = savedProgress ? parseInt(savedProgress, 10) : 0;
-            if (maxCompleted > oldProgress) {
-              localStorage.setItem(`progress_${temaKey}`, String(maxCompleted));
-            }
-          }
-
+          // Sinkronkan ke progress local storage untuk digunakan halaman level
+          localStorage.setItem(`progress_${temaKey}_${myUserId}`, String(maxCompleted));
           setHighestCompletedStage(maxCompleted);
+
           let earned = 0;
           for (let i = 0; i < maxCompleted; i++) {
             earned += stagesList[i]?.xpReward || 0;
@@ -228,8 +220,8 @@ export default function LearningDashboardPage() {
         console.error("Gagal menghitung progress dari case IDs:", err);
       }
 
-      // Fallback murni dari progress key lama
-      const savedProgress = localStorage.getItem(`progress_${temaKey}`);
+      // Fallback murni dari progress key lama (hanya jika API kosong/gagal)
+      const savedProgress = localStorage.getItem(`progress_${temaKey}_${myUserId}`);
       const progressInt = savedProgress ? parseInt(savedProgress, 10) : 0;
       setHighestCompletedStage(progressInt);
       let earned = 0;
@@ -240,7 +232,7 @@ export default function LearningDashboardPage() {
     };
 
     computeProgress();
-  }, [temaKey, stagesList]);
+  }, [temaKey, stagesList, myUserId]);
 
   const handleStageClick = (stageId: number) => {
     if (stageId > highestCompletedStage + 1) {

@@ -174,7 +174,7 @@ export default function LandingPage() {
           <div className="lg:col-span-5 w-full flex flex-col items-center justify-center">
             <div className="w-full max-w-[280px] aspect-square">
               <DotLottieReact
-                src="/basic-animation.json"
+                src="/tryliam.json"
                 loop={true}
                 autoplay={true}
               />

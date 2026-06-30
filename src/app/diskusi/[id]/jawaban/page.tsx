@@ -25,6 +25,7 @@ interface MockPerspektif {
   author: string;
   argument: string;
   createdAt: string;
+  userId?: number;
 }
 
 interface PageProps {
@@ -157,11 +158,21 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                 year: "numeric"
               });
 
+              let authorName = `Analis #${p.UserID}`;
+              if (p.user) {
+                if (p.user.is_private) {
+                  authorName = "Analis Anonim";
+                } else {
+                  authorName = p.user.name || p.user.username || authorName;
+                }
+              }
+
               otherAnswers.push({
                 id: String(p.ID),
-                author: `Analis #${p.UserID}`,
+                author: authorName,
                 argument: pArg,
-                createdAt: formattedDate
+                createdAt: formattedDate,
+                userId: p.UserID
               });
             }
           });
@@ -172,7 +183,8 @@ export default function JawabanUlasanPage({ params }: PageProps) {
             id: "p-user-own",
             author: "Anda",
             argument: localArg,
-            createdAt: "Baru saja"
+            createdAt: "Baru saja",
+            userId: userId
           };
           setDaftarPerspektif([userOwnResponse, ...otherAnswers]);
         } else {
@@ -223,7 +235,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
         {/* HEADER AREA */}
         <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="space-y-1">
-            <span className="inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border bg-blue-50 border-blue-200 text-blue-600">
+            <span className="inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border bg-red-50 border-red-200 text-red-600">
               Forum Hasil Diskusi
             </span>
             <h2 className="text-lg font-black tracking-tight text-slate-900 font-serif leading-snug mt-1">
@@ -245,14 +257,22 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                 key={item.id}
                 className="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm flex flex-col hover:border-slate-300 hover:shadow-md transition-all min-h-[300px]"
               >
-                {/* CARD HEADER */}
+                 {/* CARD HEADER */}
                 <div className="flex items-center gap-3 border-b border-slate-100 pb-3 mb-3">
-                  <div className="w-9 h-9 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center font-black text-xs text-indigo-600 shadow-inner select-none shrink-0">
+                  <Link
+                    href={item.author === "Anda" ? "/profile" : `/profile?userId=${item.userId}`}
+                    className="w-9 h-9 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center font-black text-xs text-indigo-600 shadow-inner select-none shrink-0 hover:border-indigo-500 hover:scale-105 transition-all"
+                  >
                     {item.author.charAt(0).toUpperCase()}
-                  </div>
+                  </Link>
                   <div className="overflow-hidden">
                     <h4 className="text-xs font-black text-slate-800 flex items-center gap-1.5 leading-none truncate">
-                      @{item.author}
+                      <Link
+                        href={item.author === "Anda" ? "/profile" : `/profile?userId=${item.userId}`}
+                        className="hover:text-indigo-600 hover:underline cursor-pointer transition-colors"
+                      >
+                        @{item.author}
+                      </Link>
                       {item.author.includes("Anda") && (
                         <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border shrink-0 ${
                           isPublic 

@@ -282,7 +282,7 @@ export default function DaftarKasusPage() {
                 >
                   <div className="space-y-2">
                     <div className="flex justify-between items-center pr-6">
-                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-sm bg-blue-50 border-blue-100 text-blue-600">
+                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-sm bg-red-50 border-red-100 text-red-600">
                         {kasus.topics && kasus.topics.length > 0
                           ? kasus.topics[0].name.split("|")[0]
                           : "Diskusi Umum"}

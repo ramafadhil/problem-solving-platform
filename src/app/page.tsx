@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 // Import player Lottie resmi
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
@@ -102,7 +103,7 @@ export default function LandingPage() {
           </div>
 
           {/* SISI KANAN: AUTH ACTIONS DINAMIS */}
-          <div className="flex items-center gap-3 sm:gap-6 text-[11px] font-black uppercase tracking-wider z-10">
+          <div className="flex items-center gap-3 sm:gap-6 text-[11px] font-black tracking-wider z-10">
             {isLoggedIn ? (
               <>
                 <button
@@ -111,9 +112,10 @@ export default function LandingPage() {
                 >
                   Keluar
                 </button>
+                <NotificationBell />
                 <Link
                   href="/profile"
-                  className="px-4 sm:px-5 py-2 sm:py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"
+                  className="px-4 sm:px-5 py-2 sm:py-2.5 bg-slate-900 uppercase hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"
                 >
                   Profile
                 </Link>

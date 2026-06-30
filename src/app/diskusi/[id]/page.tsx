@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
@@ -230,6 +231,7 @@ export default function DetailKasusPage() {
         <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
         Kembali ke Forum
         </Link>
+        <NotificationBell />
       </nav>
 
       {/* MAIN LAYOUT CONTAINER */}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
@@ -177,6 +178,7 @@ export default function DaftarKasusPage() {
           >
             Beranda
           </Link>
+          <NotificationBell />
         </div>
       </nav>
 
@@ -309,7 +311,7 @@ export default function DaftarKasusPage() {
                     <h3 className="text-sm font-black text-slate-900 font-serif tracking-tight leading-snug group-hover:text-indigo-600 transition-colors pt-1">
                       {kasus.title}
                     </h3>
-                    <p className="text-[11px] font-medium text-slate-400 line-clamp-3 leading-relaxed">
+                    <p className="text-[11px] font-medium text-slate-600 line-clamp-3 leading-relaxed">
                       {kasus.description}
                     </p>
                   </div>

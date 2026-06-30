@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { apiFetch } from "@/utils/api";
 
 const EMOJI_OPTIONS = [
@@ -314,12 +315,15 @@ export default function AdminDashboardPage() {
             Unravel<span className="text-indigo-600"> Admin</span>
           </Link>
         </div>
-        <Link
-          href="/profile"
-          className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all shadow-sm"
-        >
-          Kembali ke Profil
-        </Link>
+        <div className="flex items-center gap-3">
+          <NotificationBell />
+          <Link
+            href="/profile"
+            className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all shadow-sm"
+          >
+            Kembali ke Profil
+          </Link>
+        </div>
       </nav>
 
       {/* MAIN CONTAINER */}

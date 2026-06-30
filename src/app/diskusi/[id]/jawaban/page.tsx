@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
@@ -236,6 +237,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
           >
             Daftar Kasus
           </Link>
+          <NotificationBell />
         </div>
       </nav>
 

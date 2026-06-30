@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
@@ -119,6 +120,7 @@ export default function BuatKasusPage() {
         <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
         Batalkan & Kembali
         </Link>
+        <NotificationBell />
       </nav>
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 
@@ -268,6 +269,7 @@ function ProfileContent() {
           <Link href="/belajar" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
             Mode Belajar
           </Link>
+          <NotificationBell />
           {isOwnProfile ? (
             <button
               onClick={handleLogout}

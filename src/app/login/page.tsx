@@ -115,6 +115,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
 
         <div className="relative text-center space-y-4 max-w-sm">
+          <img src="/logo.svg" alt="Logo" className="w-360px h-360px"/>
           <h2 className="text-xl font-black text-slate-900 tracking-tight">
             Mulai Mengurai Masalah
           </h2>

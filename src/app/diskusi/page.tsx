@@ -97,11 +97,28 @@ export default function DaftarKasusPage() {
 
         setKasusList(casesWithCounts);
 
-        // Memuat data bookmark lokal sementara dari localStorage jika ada
-        const savedBookmarks = localStorage.getItem("unravel_saved_cases");
-        if (savedBookmarks) {
-          setSavedKasusIds(JSON.parse(savedBookmarks));
+        // Memuat data bookmark dari server jika login, jika gagal/tidak login gunakan localStorage
+        let serverSavedIds: string[] = [];
+        try {
+          const bookmarksRes = await apiFetch("/bookmarks");
+          const bookmarksList = Array.isArray(bookmarksRes) ? bookmarksRes : (bookmarksRes?.data || []);
+          if (Array.isArray(bookmarksList)) {
+            serverSavedIds = bookmarksList.map((item: any) => {
+              if (item && item.case_id) return String(item.case_id);
+              if (item && item.case && item.case.id) return String(item.case.id);
+              if (item && item.studi_kasus && item.studi_kasus.id) return String(item.studi_kasus.id);
+              if (item && item.id) return String(item.id);
+              return null;
+            }).filter(Boolean) as string[];
+          }
+        } catch (err) {
+          console.error("Gagal mengambil bookmarks dari server, fallback ke localStorage:", err);
+          const savedBookmarks = localStorage.getItem("unravel_saved_cases");
+          if (savedBookmarks) {
+            serverSavedIds = JSON.parse(savedBookmarks);
+          }
         }
+        setSavedKasusIds(serverSavedIds);
       } catch (err: any) {
         console.error("Gagal mengambil daftar kasus dari server:", err);
         setError(err.message || "Gagal mengambil data dari server.");
@@ -114,15 +131,38 @@ export default function DaftarKasusPage() {
   }, []);
 
   // Toggling bookmark simpan studi kasus
-  const toggleSaveKasus = (id: string) => {
+  const toggleSaveKasus = async (id: string) => {
+    const isSaved = savedKasusIds.includes(id);
     let updatedSaved: string[];
-    if (savedKasusIds.includes(id)) {
+    if (isSaved) {
       updatedSaved = savedKasusIds.filter((savedId) => savedId !== id);
     } else {
       updatedSaved = [...savedKasusIds, id];
     }
     setSavedKasusIds(updatedSaved);
     localStorage.setItem("unravel_saved_cases", JSON.stringify(updatedSaved));
+
+    try {
+      if (isSaved) {
+        // DELETE api/bookmarks/{case_id}
+        await apiFetch(`/bookmarks/${id}`, {
+          method: "DELETE",
+        });
+      } else {
+        // POST api/bookmarks
+        await apiFetch("/bookmarks", {
+          method: "POST",
+          body: JSON.stringify({
+            case_id: parseInt(id, 10),
+          }),
+        });
+      }
+    } catch (err) {
+      console.error("Gagal menyinkronkan bookmark dengan server:", err);
+      // Kembalikan ke state semula jika API gagal
+      setSavedKasusIds(savedKasusIds);
+      localStorage.setItem("unravel_saved_cases", JSON.stringify(savedKasusIds));
+    }
   };
 
   // PROSES DATA: Memastikan forum diskusi publik HANYA menampilkan tipe "general"
@@ -176,9 +216,17 @@ export default function DaftarKasusPage() {
             href="/"
             className="px-4 py-2 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors"
           >
-            Beranda
+            Home
           </Link>
           <NotificationBell />
+
+          {/* Profile Button */}
+          <Link
+            href="/profile"
+            className="px-3 sm:px-5 py-2 sm:py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"
+          >
+            PROFILE
+          </Link>
         </div>
       </nav>
 

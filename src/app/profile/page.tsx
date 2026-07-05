@@ -59,6 +59,9 @@ function ProfileContent() {
     totalXp: 0
   });
 
+  const [allCases, setAllCases] = useState<any[]>([]);
+  const [savedKasusIds, setSavedKasusIds] = useState<string[]>([]);
+
   // States untuk Settings Privacy Modal
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [selectedPrivacy, setSelectedPrivacy] = useState(false);
@@ -78,6 +81,30 @@ function ProfileContent() {
 
         const casesRes = await apiFetch("/cases");
         const casesList = Array.isArray(casesRes) ? casesRes : (casesRes?.cases || casesRes?.data || []);
+        setAllCases(casesList);
+
+        // Memuat data bookmark dari server jika login, jika gagal/tidak login gunakan localStorage
+        let serverSavedIds: string[] = [];
+        try {
+          const bookmarksRes = await apiFetch("/bookmarks");
+          const bookmarksList = Array.isArray(bookmarksRes) ? bookmarksRes : (bookmarksRes?.data || []);
+          if (Array.isArray(bookmarksList)) {
+            serverSavedIds = bookmarksList.map((item: any) => {
+              if (item && item.case_id) return String(item.case_id);
+              if (item && item.case && item.case.id) return String(item.case.id);
+              if (item && item.studi_kasus && item.studi_kasus.id) return String(item.studi_kasus.id);
+              if (item && item.id) return String(item.id);
+              return null;
+            }).filter(Boolean) as string[];
+          }
+        } catch (bookmarkErr) {
+          console.error("Gagal mengambil bookmarks dari server, fallback ke localStorage:", bookmarkErr);
+          const savedBookmarks = localStorage.getItem("unravel_saved_cases");
+          if (savedBookmarks) {
+            serverSavedIds = JSON.parse(savedBookmarks);
+          }
+        }
+        setSavedKasusIds(serverSavedIds);
 
         if (isOwnProfile) {
           // 1. Profil Sendiri (Ambil dari /me)
@@ -248,6 +275,42 @@ function ProfileContent() {
     router.push("/login");
     router.refresh();
   };
+
+  const toggleSaveKasus = async (id: string) => {
+    const isSaved = savedKasusIds.includes(id);
+    let updatedSaved: string[];
+    if (isSaved) {
+      updatedSaved = savedKasusIds.filter((savedId) => savedId !== id);
+    } else {
+      updatedSaved = [...savedKasusIds, id];
+    }
+    setSavedKasusIds(updatedSaved);
+    localStorage.setItem("unravel_saved_cases", JSON.stringify(updatedSaved));
+
+    try {
+      if (isSaved) {
+        // DELETE api/bookmarks/{case_id}
+        await apiFetch(`/bookmarks/${id}`, {
+          method: "DELETE",
+        });
+      } else {
+        // POST api/bookmarks
+        await apiFetch("/bookmarks", {
+          method: "POST",
+          body: JSON.stringify({
+            case_id: parseInt(id, 10),
+          }),
+        });
+      }
+    } catch (err) {
+      console.error("Gagal menyinkronkan bookmark dengan server:", err);
+      // Kembalikan ke state semula jika API gagal
+      setSavedKasusIds(savedKasusIds);
+      localStorage.setItem("unravel_saved_cases", JSON.stringify(savedKasusIds));
+    }
+  };
+
+  const savedCases = allCases.filter((c: any) => savedKasusIds.includes(String(c.id)));
 
   // Logika override nama jika Anonymous Mode aktif
   const isAnonymous = profile?.is_private && !isOwnProfile;
@@ -476,12 +539,74 @@ function ProfileContent() {
                 </div>
               )}
 
-              {/* 3. TAB KASUS DISIMPAN PLACEHOLDER */}
+              {/* 3. TAB KASUS DISIMPAN DYNAMIC */}
               {activeTab === "disimpan" && (
-                <div className="bg-white border-2 border-dashed border-slate-200 p-12 rounded-3xl text-center text-xs font-medium text-slate-400">
-                  {isOwnProfile 
-                    ? "Gumpalan referensi kasus yang kamu bintangi (★) akan terdaftar rapi pada klaster penyimpanan luring ini."
-                    : "Penyimpanan luring analis ini bersifat privat."}
+                <div className="space-y-4">
+                  {!isOwnProfile ? (
+                    <div className="text-center py-16 bg-white border-2 border-dashed border-slate-200 rounded-3xl text-xs font-medium text-slate-400">
+                      Penyimpanan luring analis ini bersifat privat.
+                    </div>
+                  ) : savedCases.length === 0 ? (
+                    <div className="text-center py-16 bg-white border-2 border-dashed border-slate-200 rounded-3xl text-xs font-medium text-slate-400">
+                      Belum ada kasus yang Anda simpan. Klik ikon penanda (☆) di mode diskusi untuk menambahkan.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {savedCases.map((kasus) => {
+                        const isSaved = savedKasusIds.includes(String(kasus.id));
+                        return (
+                          <div
+                            key={kasus.id}
+                            className="bg-white border-2 border-slate-200 p-5 rounded-2xl flex flex-col justify-between min-h-[180px] transition-all hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:border-indigo-400 hover:-translate-y-0.5 group relative"
+                          >
+                            <div className="space-y-2 text-left">
+                              <div className="flex justify-between items-center pr-6">
+                                <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded shadow-sm bg-red-50 border-red-100 text-red-600">
+                                  {kasus.topics && kasus.topics.length > 0
+                                    ? kasus.topics[0].name.split("|")[0]
+                                    : "Diskusi Umum"}
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-400">
+                                  @{kasus.name || kasus.username || "analis"}
+                                </span>
+                              </div>
+
+                              {isOwnProfile && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleSaveKasus(String(kasus.id))}
+                                  title={isSaved ? "Hapus dari simpanan" : "Simpan studi kasus"}
+                                  className={`absolute right-4 top-4 text-xs p-1.5 rounded-lg border transition-all hover:scale-110 ${
+                                    isSaved
+                                      ? "bg-amber-500 border-amber-600 text-white shadow-sm"
+                                      : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-600"
+                                  }`}
+                                >
+                                  {isSaved ? "★" : "☆"}
+                                </button>
+                              )}
+
+                              <h3 className="text-sm font-black text-slate-900 font-serif tracking-tight leading-snug group-hover:text-indigo-600 transition-colors pt-1">
+                                {kasus.title}
+                              </h3>
+                              <p className="text-[11px] font-medium text-slate-600 line-clamp-3 leading-relaxed">
+                                {kasus.description}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
+                              <Link
+                                href={`/diskusi/${kasus.id}`}
+                                className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-400 text-slate-600 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors"
+                              >
+                                Buka Kasus
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </section>

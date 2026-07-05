@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { Trophy, AlertTriangle, PartyPopper, Lightbulb, CheckCircle2 } from "lucide-react";
 import {
   DndContext,
   DragEndEvent,
@@ -574,7 +575,7 @@ export default function DynamicStagePage() {
             </h3>
             {isAlreadySolved ? (
               <div className="p-4 bg-emerald-50/50 border-2 border-emerald-100 rounded-2xl text-xs text-emerald-800 font-extrabold flex items-center gap-2 shadow-inner">
-                <span className="text-lg">🎉</span>
+                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
                 <span>Level ini sudah selesai dianalisis. Skor optimal telah terekam di papan peringkat.</span>
               </div>
             ) : (
@@ -649,7 +650,7 @@ export default function DynamicStagePage() {
                               className="px-4 py-3 bg-emerald-50/80 border-2 border-emerald-300 rounded-xl flex items-center justify-between font-bold text-sm text-slate-800 shadow-sm"
                             >
                               <div className="flex items-center gap-2">
-                                <span className="text-emerald-600 font-extrabold">✓</span>
+                                <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
                                 <span>{cardName}</span>
                                 <span className="text-[9px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
                                   Pilihanmu
@@ -732,7 +733,9 @@ export default function DynamicStagePage() {
             <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100">
               {scoreResult.isSuccess ? (
                 <>
-                  <div className="text-4xl mb-2">🎉</div>
+                  <div className="text-amber-500 flex justify-center mb-2">
+                    <PartyPopper size={48} className="animate-bounce" />
+                  </div>
                   <h3 className="text-lg font-black text-slate-900">
                     Analisis Selesai Diverifikasi!
                   </h3>
@@ -760,7 +763,9 @@ export default function DynamicStagePage() {
                 </>
               ) : (
                 <>
-                  <div className="text-4xl mb-2">⚠️</div>
+                  <div className="text-rose-500 flex justify-center mb-2">
+                    <AlertTriangle size={48} className="animate-pulse" />
+                  </div>
                   <h3 className="text-lg font-black text-slate-900">
                     Analisis Belum Tepat!
                   </h3>

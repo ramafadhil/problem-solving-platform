@@ -5,6 +5,7 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { CheckCircle2 } from "lucide-react";
 
 interface LogicBlock {
   category?: string;
@@ -321,15 +322,16 @@ export default function DetailKasusPage() {
 
             {hasSubmitted ? (
               <div className="p-4 bg-indigo-50 border-2 border-indigo-200 rounded-2xl flex items-center gap-3 animate-fade-in">
-                <span className="text-lg">✅</span>
+                <CheckCircle2 size={20} className="text-indigo-650 shrink-0" />
                 <div>
                   <p className="text-xs font-black text-indigo-700 uppercase">Analisis Terkirim</p>
                   <p className="text-[10px] font-medium text-indigo-500">Anda sudah memberikan jawaban untuk studi kasus ini. Mengalihkan...</p>
                 </div>
               </div>
             ) : submitSuccess ? (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 text-xs font-semibold text-center animate-fade-in">
-                ✓ Argumen analisis terstruktur berhasil dikirim! Mengalihkan...
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 text-xs font-semibold text-center animate-fade-in flex items-center justify-center gap-2">
+                <CheckCircle2 size={14} className="shrink-0" />
+                <span>Argumen analisis terstruktur berhasil dikirim! Mengalihkan...</span>
               </div>
             ) : null}
 

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { apiFetch } from "@/utils/api";
+import { DynamicIcon } from "@/components/DynamicIcon";
+import { Lock } from "lucide-react";
 
 interface DynamicTopic {
   id: string;
@@ -186,9 +188,9 @@ export default function TopikSelectionPage() {
                     {/* Deskripsi Ikon & Ringkasan Topik */}
                     <div className="flex gap-4 items-center flex-1">
                       <div
-                        className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-white shadow-md transform -rotate-3 shrink-0`}
+                        className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-white shadow-md transform -rotate-3 shrink-0 text-white`}
                       >
-                        {tema.icon}
+                        <DynamicIcon emoji={tema.icon} className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <h3
@@ -221,7 +223,7 @@ export default function TopikSelectionPage() {
                     <div
                       className="text-lg bg-slate-200 w-11 h-11 rounded-xl flex items-center justify-center border border-slate-300/40 shadow-sm shrink-0"
                     >
-                      🔒
+                      <Lock size={16} className="text-slate-400" />
                     </div>
                     <div>
                       <h3

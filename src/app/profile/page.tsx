@@ -5,6 +5,7 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { Settings, AlertTriangle, Star } from "lucide-react";
 
 interface UserProfile {
   id?: number;
@@ -359,8 +360,9 @@ function ProfileContent() {
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Memuat Berkas Profil...</p>
           </div>
         ) : error ? (
-          <div className="p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-red-600 text-xs font-semibold text-center max-w-xl mx-auto">
-            ⚠️ {error}
+          <div className="p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-red-600 text-xs font-semibold flex items-center justify-center gap-2 max-w-xl mx-auto">
+            <AlertTriangle size={14} className="shrink-0" />
+            <span>{error}</span>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -373,10 +375,10 @@ function ProfileContent() {
                 {isOwnProfile && (
                   <button
                     onClick={() => setShowSettingsModal(true)}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 transition-colors p-1.5 rounded-lg border border-slate-100 bg-slate-50 hover:bg-white text-xs select-none"
+                    className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 transition-colors p-1.5 rounded-lg border border-slate-100 bg-slate-50 hover:bg-white select-none flex items-center justify-center"
                     title="Pengaturan Profil"
                   >
-                    ⚙️
+                    <Settings size={14} />
                   </button>
                 )}
 
@@ -548,7 +550,7 @@ function ProfileContent() {
                     </div>
                   ) : savedCases.length === 0 ? (
                     <div className="text-center py-16 bg-white border-2 border-dashed border-slate-200 rounded-3xl text-xs font-medium text-slate-400">
-                      Belum ada kasus yang Anda simpan. Klik ikon penanda (☆) di mode diskusi untuk menambahkan.
+                      Belum ada kasus yang Anda simpan. Klik ikon penanda bintang di mode diskusi untuk menambahkan.
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -576,13 +578,13 @@ function ProfileContent() {
                                   type="button"
                                   onClick={() => toggleSaveKasus(String(kasus.id))}
                                   title={isSaved ? "Hapus dari simpanan" : "Simpan studi kasus"}
-                                  className={`absolute right-4 top-4 text-xs p-1.5 rounded-lg border transition-all hover:scale-110 ${
+                                  className={`absolute right-4 top-4 text-xs p-1.5 rounded-lg border transition-all hover:scale-110 flex items-center justify-center ${
                                     isSaved
                                       ? "bg-amber-500 border-amber-600 text-white shadow-sm"
                                       : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-600"
                                   }`}
                                 >
-                                  {isSaved ? "★" : "☆"}
+                                  <Star size={12} fill={isSaved ? "currentColor" : "none"} />
                                 </button>
                               )}
 

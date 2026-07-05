@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 interface ToastState {
   show: boolean;
@@ -53,7 +54,7 @@ export default function SignupPage() {
       });
 
       // Pemicu Toast Sukses
-      showToastNotification("✓ Registrasi Berhasil! Mengalihkan ke halaman masuk...", "success");
+      showToastNotification("Registrasi Berhasil! Mengalihkan ke halaman masuk...", "success");
 
       // Beri sedikit jeda agar user sempat melihat pesan sukses sebelum dialihkan
       setTimeout(() => {
@@ -76,7 +77,7 @@ export default function SignupPage() {
       setError(friendlyMsg);
       
       // 🌟 PERBAIKAN 2: Buat pesan Toast menjadi ringkas sebagai indikator cepat saja
-      showToastNotification("⚠️ Registrasi Gagal", "error");
+      showToastNotification("Registrasi Gagal", "error");
       
     } finally {
       setLoading(false);
@@ -95,7 +96,8 @@ export default function SignupPage() {
               : "bg-red-50 border-red-400 text-red-800"
           }`}
         >
-          {toast.message}
+          {toast.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          <span>{toast.message}</span>
         </div>
       )}
 
@@ -145,8 +147,9 @@ export default function SignupPage() {
 
           {/* NOTIFIKASI ERROR STATIC JIKA RESPONSE BE GAGAL */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium">
-              ⚠️ {error}
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium flex items-center gap-2">
+              <AlertCircle size={14} className="shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -225,7 +228,7 @@ export default function SignupPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors text-sm"
                 >
-                  {showPassword ? "👁️‍🗨️" : "👁️"}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>

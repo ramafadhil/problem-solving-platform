@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { apiFetch } from "@/utils/api";
+import { DynamicIcon } from "@/components/DynamicIcon";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 const EMOJI_OPTIONS = [
   "💻", "📱", "🌐", "🔒", "⚙️", "🚀",
@@ -288,7 +290,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="min-h-screen bg-[#FFFDF9] flex items-center justify-center p-6">
         <div className="bg-white border-2 border-slate-200 p-8 rounded-3xl shadow-sm text-center max-w-md w-full space-y-6">
-          <div className="text-4xl">⚠️</div>
+          <div className="text-red-500 flex justify-center"><AlertTriangle size={48} /></div>
           <div className="space-y-2">
             <h2 className="text-xl font-black text-slate-900 font-serif">Akses Ditolak</h2>
             <p className="text-xs text-slate-500 leading-relaxed">
@@ -359,9 +361,9 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setShowEmojiPicker(v => !v)}
-                      className="w-full h-[38px] bg-slate-50/50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 rounded-xl text-base text-center font-black transition-all flex items-center justify-center gap-1.5 group"
+                      className="w-full h-[38px] bg-slate-50/50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 rounded-xl transition-all flex items-center justify-center gap-1.5 group"
                     >
-                      <span>{newTopicIcon}</span>
+                      <span className="text-slate-700 flex items-center justify-center"><DynamicIcon emoji={newTopicIcon} size={16} /></span>
                       <span className="text-[9px] font-black text-slate-400 group-hover:text-indigo-500 uppercase tracking-wider leading-none">{showEmojiPicker ? "▲" : "▼"}</span>
                     </button>
 
@@ -385,13 +387,13 @@ export default function AdminDashboardPage() {
                                   setNewTopicIcon(emoji);
                                   setShowEmojiPicker(false);
                                 }}
-                                className={`text-xl p-1.5 rounded-xl transition-all hover:bg-indigo-50 hover:scale-110 active:scale-95 ${
+                                className={`p-1.5 rounded-xl transition-all hover:bg-indigo-50 hover:scale-110 active:scale-95 flex items-center justify-center ${
                                   newTopicIcon === emoji
                                     ? "bg-indigo-100 ring-2 ring-indigo-400 shadow-sm"
                                     : ""
                                 }`}
                               >
-                                {emoji}
+                                <DynamicIcon emoji={emoji} size={16} className="text-slate-700 mx-auto" />
                               </button>
                             ))}
                           </div>
@@ -431,14 +433,16 @@ export default function AdminDashboardPage() {
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold shadow-sm animate-shake">
-                ⚠️ {error}
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold shadow-sm animate-shake flex items-center gap-2">
+                <AlertTriangle size={14} className="shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
             {successMsg && (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-xl text-xs font-bold shadow-sm">
-                ✓ {successMsg}
+              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-xl text-xs font-bold shadow-sm flex items-center gap-2">
+                <CheckCircle2 size={14} className="shrink-0" />
+                <span>{successMsg}</span>
               </div>
             )}
 
@@ -607,7 +611,9 @@ export default function AdminDashboardPage() {
                   return (
                     <div key={t.id} className="flex items-center justify-between border border-slate-100 rounded-2xl px-4 py-3 bg-slate-50/30 hover:border-slate-200 transition-colors shadow-sm">
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-xl flex-shrink-0">{icon}</span>
+                        <span className="text-slate-700 flex-shrink-0 flex items-center justify-center bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                          <DynamicIcon emoji={icon} size={16} />
+                        </span>
                         <div className="min-w-0">
                           <p className="text-xs font-extrabold text-slate-900 font-serif truncate">{displayName}</p>
                           {desc && <p className="text-[9px] text-slate-400 font-medium truncate">{desc}</p>}

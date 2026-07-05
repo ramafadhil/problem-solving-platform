@@ -5,6 +5,7 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { Star, MessageSquare, AlertTriangle } from "lucide-react";
 
 interface LogicBlock {
   category?: string;
@@ -297,8 +298,9 @@ export default function DaftarKasusPage() {
 
         {/* ERROR CONDITIONAL STATE */}
         {error && !loading && (
-          <div className="p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-red-600 text-xs font-semibold text-center max-w-xl mx-auto">
-            ⚠️ {error}
+          <div className="p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-red-600 text-xs font-semibold flex items-center justify-center gap-2 max-w-xl mx-auto">
+            <AlertTriangle size={14} className="shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -347,13 +349,13 @@ export default function DaftarKasusPage() {
                       type="button"
                       onClick={() => toggleSaveKasus(kasus.id)}
                       title={isSaved ? "Hapus dari simpanan" : "Simpan studi kasus"}
-                      className={`absolute right-4 top-4 text-xs p-1.5 rounded-lg border transition-all hover:scale-110 ${
+                      className={`absolute right-4 top-4 text-xs p-1.5 rounded-lg border transition-all hover:scale-110 flex items-center justify-center ${
                         isSaved
                           ? "bg-amber-500 border-amber-600 text-white shadow-sm"
                           : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-600"
                       }`}
                     >
-                      {isSaved ? "★" : "☆"}
+                      <Star size={12} fill={isSaved ? "currentColor" : "none"} />
                     </button>
 
                     <h3 className="text-sm font-black text-slate-900 font-serif tracking-tight leading-snug group-hover:text-indigo-600 transition-colors pt-1">
@@ -372,7 +374,7 @@ export default function DaftarKasusPage() {
                       Buka Kasus
                     </Link>
                     <span className="text-[10px] font-black text-slate-400 flex items-center gap-1">
-                      💬 {kasus.perspectivesCount || 0} Tanggapan
+                      <MessageSquare size={12} /> {kasus.perspectivesCount || 0} Tanggapan
                     </span>
                   </div>
                 </div>

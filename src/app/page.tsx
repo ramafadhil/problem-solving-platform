@@ -5,6 +5,7 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 // Import player Lottie resmi
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { User, Star, Gamepad2, Route } from "lucide-react";
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -201,8 +202,8 @@ export default function LandingPage() {
                 key={idx}
                 className="bg-white border-2 border-slate-200 hover:border-indigo-400 p-6 rounded-2xl shadow-sm transition-all hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] group hover:-translate-y-0.5"
               >
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-lg mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                  {idx === 0 ? "🎮" : "🛣️"}
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-slate-700 mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  {idx === 0 ? <Gamepad2 size={20} /> : <Route size={20} />}
                 </div>
                 <h3 className="text-base font-black text-slate-900 tracking-tight">
                   {feat.title}
@@ -233,16 +234,20 @@ export default function LandingPage() {
                 className="bg-white border-2 border-slate-100 p-6 rounded-2xl shadow-sm min-w-[280px] md:min-w-[340px] flex-1 snap-start flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex text-amber-400 text-sm mb-3">
-                    ⭐⭐⭐⭐⭐
+                  <div className="flex text-amber-400 gap-0.5 mb-3">
+                    <Star size={14} fill="currentColor" />
+                    <Star size={14} fill="currentColor" />
+                    <Star size={14} fill="currentColor" />
+                    <Star size={14} fill="currentColor" />
+                    <Star size={14} fill="currentColor" />
                   </div>
                   <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
                     "{testi.text}"
                   </p>
                 </div>
                 <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-50">
-                  <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm">
-                    👤
+                  <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                    <User size={16} />
                   </div>
                   <div>
                     <h4 className="text-xs font-black text-slate-900 tracking-tight">

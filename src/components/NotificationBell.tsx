@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { Bell } from "lucide-react";
 
 interface NotificationItem {
   id: number;
@@ -77,7 +78,7 @@ export default function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         className="w-9 h-9 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center relative cursor-pointer transition-all shadow-sm select-none"
       >
-        <span className="text-lg">🔔</span>
+        <Bell size={18} />
         {unreadCount > 0 && (
           <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 border border-white text-[9px] font-black text-white flex items-center justify-center animate-bounce">
             {unreadCount}

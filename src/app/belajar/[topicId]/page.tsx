@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { DynamicIcon } from "@/components/DynamicIcon";
+import { Check, Flag, Lock, Play, CheckCircle2, Trophy, Medal, Award, Lightbulb } from "lucide-react";
 
 // Fallback mock data jika API kosong
 const dataTemaKasus: Record<string, { namaTema: string; listStage: { id: number; name: string; xpReward: number; type: string }[] }> = {
@@ -262,7 +264,9 @@ export default function LearningDashboardPage() {
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Jalur Belajar</p>
               <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <span>{topicIcon}</span>
+                <span className="text-slate-800 flex items-center justify-center bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                  <DynamicIcon emoji={topicIcon} size={18} />
+                </span>
                 <span>{namaTema || temaFallback.namaTema}</span>
               </h2>
               {topicDesc && <p className="text-[11px] text-slate-400 mt-0.5 font-medium">{topicDesc}</p>}
@@ -299,13 +303,13 @@ export default function LearningDashboardPage() {
 
                 const connectorColor = isCompleted ? "bg-emerald-300" : "bg-slate-200";
 
-                const nodeIcon = isCompleted
-                  ? "✓"
-                  // : stage.type === "challenge"
-                  // ? "🔥"
-                  : stage.type === "finish"
-                  ? "🏁"
-                  : String(stage.id);
+                const nodeIcon = isCompleted ? (
+                  <Check size={20} className="stroke-[3]" />
+                ) : stage.type === "finish" ? (
+                  <Flag size={20} className="stroke-[2.5]" />
+                ) : (
+                  <span>{stage.id}</span>
+                );
 
                 return (
                   <div key={stage.id} className="flex flex-col items-center w-full">
@@ -341,10 +345,25 @@ export default function LearningDashboardPage() {
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className={`text-[10px] font-black uppercase tracking-wider mb-0.5 ${
+                            <p className={`text-[10px] font-black uppercase tracking-wider mb-0.5 flex items-center gap-1 ${
                               isCompleted ? "text-emerald-600" : isActive ? "text-indigo-600" : "text-slate-400"
                             }`}>
-                              {isCompleted ? "✅ Selesai" : isActive ? "▶ Level Aktif" : `🔒 Level ${stage.id}`}
+                              {isCompleted ? (
+                                <>
+                                  <CheckCircle2 size={12} />
+                                  <span>Selesai</span>
+                                </>
+                              ) : isActive ? (
+                                <>
+                                  <Play size={12} fill="currentColor" />
+                                  <span>Level Aktif</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Lock size={12} />
+                                  <span>Level {stage.id}</span>
+                                </>
+                              )}
                             </p>
                             <p className="text-sm font-extrabold text-slate-900 leading-snug line-clamp-2">
                               {stage.name}
@@ -380,7 +399,7 @@ export default function LearningDashboardPage() {
                 <div
                   className="w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center font-black text-base border-4 border-dashed border-slate-200 bg-slate-50 text-slate-400 shadow-sm cursor-not-allowed"
                 >
-                  🔒
+                  <Lock size={18} />
                 </div>
 
                 {/* Info Card */}
@@ -458,7 +477,7 @@ export default function LearningDashboardPage() {
               // Skeleton Loader
               [1, 2, 3, 4, 5].map((rank) => (
                 <div key={rank} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50 animate-pulse">
-                  <span className="text-[10px] font-black text-slate-350 w-5 text-center">▫️</span>
+                  <span className="text-xs font-black text-slate-300 w-5 text-center">-</span>
                   <div className="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0" />
                   <div className="flex-1 space-y-1.5">
                     <div className="h-2.5 bg-slate-200 rounded-full w-20" />
@@ -476,9 +495,15 @@ export default function LearningDashboardPage() {
                 {leaderboard.slice(0, 5).map((user, idx) => {
                   const rank = idx + 1;
                   const isMe = user.user_id === myUserId;
-                  const rankIcon = rank === 1 ? "🏆" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "▫️";
                   const displayName = user.is_private ? "Analis Anonim" : (user.username || "Analis");
                   const avatarLetter = displayName.charAt(0).toUpperCase();
+
+                  const renderRank = () => {
+                    if (rank === 1) return <Trophy size={16} className="text-amber-500 mx-auto" fill="currentColor" />;
+                    if (rank === 2) return <Medal size={16} className="text-slate-400 mx-auto" fill="currentColor" />;
+                    if (rank === 3) return <Award size={16} className="text-amber-700 mx-auto" fill="currentColor" />;
+                    return <span className="text-xs font-black text-slate-400">#{rank}</span>;
+                  };
 
                   return (
                     <div
@@ -489,8 +514,8 @@ export default function LearningDashboardPage() {
                           : "border-slate-100 bg-slate-50/30 hover:bg-slate-50 hover:border-slate-200"
                       }`}
                     >
-                      <span className="text-base w-5 text-center flex-shrink-0 font-black">
-                        {rank <= 3 ? rankIcon : rank}
+                      <span className="text-base w-5 text-center flex-shrink-0 font-black flex items-center justify-center">
+                        {renderRank()}
                       </span>
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs uppercase flex-shrink-0 ${
                         isMe ? "bg-indigo-200 text-indigo-700" : "bg-slate-200 text-slate-650"
@@ -550,7 +575,7 @@ export default function LearningDashboardPage() {
 
           {/* Info Poin Global */}
           <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed font-sans font-medium">
-            <span className="text-xs text-indigo-500 mt-0.5 flex-shrink-0">💡</span>
+            <span className="text-indigo-500 mt-0.5 flex-shrink-0 flex items-center justify-center"><Lightbulb size={12} fill="currentColor" /></span>
             <span>
               <strong>Info Poin:</strong> Papan peringkat ini bersifat global. Poin Anda diakumulasikan dari penyelesaian peta jalur belajar dan kontribusi di <strong>Mode Diskusi</strong>.
             </span>

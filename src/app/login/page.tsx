@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 interface ToastState {
   show: boolean;
@@ -51,7 +52,7 @@ export default function LoginPage() {
 
       if (data?.token) {
         // Pemicu Toast Sukses
-        showToastNotification("✓ Login Berhasil! Menyiapkan lingkungan analisis Anda...", "success");
+        showToastNotification("Login Berhasil! Menyiapkan lingkungan analisis Anda...", "success");
 
         // 1. Simpan token ke localStorage untuk client fetching
         localStorage.setItem("token", data.token);
@@ -85,7 +86,7 @@ export default function LoginPage() {
       setError(friendlyMsg);
       
       // 🌟 PERBAIKAN 2: Buat pesan Toast berbeda (singkat) agar tidak duplikat identik dengan kotak merah di bawah
-      showToastNotification("⚠️ Autentikasi Gagal", "error");
+      showToastNotification("Autentikasi Gagal", "error");
       
     } finally {
       setLoading(false);
@@ -104,7 +105,8 @@ export default function LoginPage() {
               : "bg-red-50 border-red-400 text-red-800"
           }`}
         >
-          {toast.message}
+          {toast.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          <span>{toast.message}</span>
         </div>
       )}
 
@@ -154,8 +156,9 @@ export default function LoginPage() {
 
           {/* NOTIFIKASI ERROR STATIC JIKA LOGIN GAGAL */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium">
-              ⚠️ {error}
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium flex items-center gap-2">
+              <AlertCircle size={14} className="shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -200,7 +203,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors text-sm"
                 >
-                  {showPassword ? "👁️‍🗨️" : "👁️"}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>

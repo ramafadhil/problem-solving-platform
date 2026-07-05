@@ -75,30 +75,44 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
-      
       {/* 1. NAVBAR HEADER SECTION (Responsif & Rata Tengah Sempurna) */}
       <nav className="w-full bg-white border-b border-slate-200 px-4 sm:px-8 py-4 max-w-7xl mx-auto rounded-b-2xl shadow-sm relative">
         <div className="flex items-center justify-between w-full">
-          
           {/* SISI KIRI: LOGO */}
-          <div className="flex items-center z-10">
-            <span className="font-black text-xl tracking-tight text-slate-950">
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo" className="w-14" />
+            <a
+              href="/"
+              className="font-black text-lg tracking-tight text-slate-900"
+            >
               Unravel
-            </span>
+            </a>
           </div>
 
           {/* SISI TENGAH: MENU LINKS (Hidden di mobile, mengunci posisi absolut di tengah pada desktop) */}
           <div className="hidden md:flex items-center justify-center gap-8 text-[11px] font-black uppercase tracking-wider text-slate-500 absolute left-1/2 -translate-x-1/2">
-            <Link href="/belajar" className="hover:text-indigo-600 transition-colors py-2">
+            <Link
+              href="/belajar"
+              className="hover:text-indigo-600 transition-colors py-2"
+            >
               Mode Belajar
             </Link>
-            <Link href="/diskusi" className="hover:text-indigo-600 transition-colors py-2">
+            <Link
+              href="/diskusi"
+              className="hover:text-indigo-600 transition-colors py-2"
+            >
               Mode Diskusi
             </Link>
-            <a href="#features" className="hover:text-indigo-600 transition-colors py-2">
+            <a
+              href="#features"
+              className="hover:text-indigo-600 transition-colors py-2"
+            >
               Fitur
             </a>
-            <a href="#faq" className="hover:text-indigo-600 transition-colors py-2">
+            <a
+              href="#faq"
+              className="hover:text-indigo-600 transition-colors py-2"
+            >
               FAQ
             </a>
           </div>
@@ -142,7 +156,6 @@ export default function LandingPage() {
       </nav>
 
       <main className="max-w-6xl mx-auto px-6 space-y-24 py-12">
-        
         {/* 2. HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8">
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
@@ -154,8 +167,8 @@ export default function LandingPage() {
             </h1>
             <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-xl mx-auto lg:mx-0">
               Uji kemampuan problem-solving secara mandiri atau diskusikan
-              analisis pemecahan masalah pelik bersama komunitas analis
-              secara real-time.
+              analisis pemecahan masalah pelik bersama komunitas analis secara
+              real-time.
             </p>
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
@@ -176,11 +189,7 @@ export default function LandingPage() {
 
           <div className="lg:col-span-5 w-full flex flex-col items-center justify-center">
             <div className="w-full max-w-[280px] aspect-square">
-              <DotLottieReact
-                src="/tryliam.json"
-                loop={true}
-                autoplay={true}
-              />
+              <DotLottieReact src="/tryliam.json" loop={true} autoplay={true} />
             </div>
           </div>
         </section>
@@ -192,7 +201,8 @@ export default function LandingPage() {
               Cara Baru Memahami Masalah Kompleks
             </h2>
             <p className="text-xs text-slate-400 font-medium">
-              Bukan sekadar membaca teks kaku, tapi berinteraksi langsung dengan struktur kasus.
+              Bukan sekadar membaca teks kaku, tapi berinteraksi langsung dengan
+              struktur kasus.
             </p>
           </div>
 
@@ -223,7 +233,8 @@ export default function LandingPage() {
               Testimoni Pengguna Platform
             </h2>
             <p className="text-xs text-slate-400 font-medium">
-              Apa kata mereka yang sudah merasakan serunya membedah kasus di sini?
+              Apa kata mereka yang sudah merasakan serunya membedah kasus di
+              sini?
             </p>
           </div>
 
@@ -273,7 +284,8 @@ export default function LandingPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-xs font-medium text-slate-400 leading-relaxed">
-              Punya pertanyaan seputar platform ini? Temukan jawaban cepat atas kebingungan umum kamu di sini.
+              Punya pertanyaan seputar platform ini? Temukan jawaban cepat atas
+              kebingungan umum kamu di sini.
             </p>
           </div>
 
@@ -317,10 +329,16 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="flex justify-center md:justify-end gap-6 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            <Link href="/belajar" className="hover:text-white transition-colors">
+            <Link
+              href="/belajar"
+              className="hover:text-white transition-colors"
+            >
               Belajar
             </Link>
-            <Link href="/diskusi" className="hover:text-white transition-colors">
+            <Link
+              href="/diskusi"
+              className="hover:text-white transition-colors"
+            >
               Diskusi
             </Link>
             <a href="#features" className="hover:text-white transition-colors">

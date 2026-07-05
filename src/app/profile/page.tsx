@@ -376,9 +376,12 @@ function ProfileContent() {
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
       {/* NAVBAR HEADER */}
       <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <Link href="/" className="font-black text-lg tracking-tight text-slate-900">
-          Unravel
-        </Link>
+        <div className="flex items-center gap-2">
+          <img src="/logo.svg" alt="Logo" className="w-14"/>
+          <a href="/" className="font-black text-lg tracking-tight text-slate-900">
+            Unravel
+          </a>
+        </div>
         <div className="flex items-center gap-4">
           <Link href="/diskusi" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
             Mode Diskusi

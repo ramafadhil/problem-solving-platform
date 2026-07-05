@@ -6,6 +6,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 import { Settings, AlertTriangle, Star } from "lucide-react";
+import { DynamicIcon } from "@/components/DynamicIcon";
 
 interface UserProfile {
   id?: number;
@@ -62,6 +63,7 @@ function ProfileContent() {
 
   const [allCases, setAllCases] = useState<any[]>([]);
   const [savedKasusIds, setSavedKasusIds] = useState<string[]>([]);
+  const [learningProgress, setLearningProgress] = useState<any[]>([]);
 
   // States untuk Settings Privacy Modal
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -250,6 +252,57 @@ function ProfileContent() {
             calculatedPoints += 25; // fallback
           }
         });
+
+        // Load topics and compute progress
+        let progressData: any[] = [];
+        try {
+          const topicsRes = await apiFetch("/topics");
+          const topicsList = Array.isArray(topicsRes) ? topicsRes : (topicsRes?.data || []);
+          if (Array.isArray(topicsList) && Array.isArray(casesList)) {
+            for (const t of topicsList) {
+              const parts = (t.name || "").split("|");
+              const displayName = parts[0] || "Topik Tanpa Nama";
+              const icon = parts[1] || "📚";
+              const topicKey = displayName.toLowerCase().replace(/\s+/g, "-");
+
+              // Filter cases for this topic
+              const matchedCases = casesList
+                .filter((c: any) => c.type === "learning" && c.topics && c.topics.some((ct: any) => {
+                  const ctParts = (ct.name || "").split("|");
+                  const ctTitle = ctParts[0] || "";
+                  const ctKey = ctTitle.toLowerCase().replace(/\s+/g, "-");
+                  return ctKey === topicKey;
+                }))
+                .sort((a: any, b: any) => Number(a.id) - Number(b.id));
+
+              if (matchedCases.length > 0) {
+                // Calculate how many stages completed sequentially
+                let completedCount = 0;
+                for (let i = 0; i < matchedCases.length; i++) {
+                  const caseId = matchedCases[i].id;
+                  const localKey = `solved_case_${caseId}_${currentUserId}`;
+                  const isSolved = (typeof window !== "undefined" && localStorage.getItem(localKey) === "true") ||
+                                   userPerspectives.some(p => String(p.caseId) === String(caseId));
+                  if (isSolved) {
+                    completedCount = i + 1;
+                  } else {
+                    break;
+                  }
+                }
+                progressData.push({
+                  topicId: topicKey,
+                  displayName: displayName,
+                  icon: icon,
+                  completedStages: completedCount,
+                  totalStages: matchedCases.length
+                });
+              }
+            }
+          }
+        } catch (topicErr) {
+          console.error("Gagal memuat data progress belajar:", topicErr);
+        }
+        setLearningProgress(progressData);
 
         const solvedCount = userPerspectives.length;
         
@@ -522,20 +575,85 @@ function ProfileContent() {
                 </div>
               )}
 
-              {/* 2. TAB PROGRES BELAJAR PLACEHOLDER */}
+              {/* 2. TAB PROGRES BELAJAR DYNAMIC */}
               {activeTab === "belajar" && (
-                <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl text-center space-y-2 shadow-sm py-12">
-                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Jalur Linear Sedang Aktif</p>
-                  <p className="text-[11px] font-medium text-slate-400 max-w-sm mx-auto leading-relaxed">
-                    {isOwnProfile 
-                      ? "Kamu saat ini sedang menempuh modul berbasis Topik utama. Selesaikan rekonstruksi logika kuis pada peta jalur linear untuk memperbarui progres di sini."
-                      : "Analis ini sedang menempuh modul linear berbasis Topik."}
-                  </p>
-                  {isOwnProfile && (
-                    <div className="pt-2">
-                      <Link href="/belajar" className="inline-block text-xs font-black text-indigo-600 hover:underline">
-                        Lanjutkan Petualangan Belajar →
-                      </Link>
+                <div className="space-y-4">
+                  {learningProgress.length === 0 ? (
+                    <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl text-center space-y-2 shadow-sm py-12">
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Belum Ada Progres Belajar</p>
+                      <p className="text-[11px] font-medium text-slate-400 max-w-sm mx-auto leading-relaxed">
+                        {isOwnProfile 
+                          ? "Kamu belum memulai modul kuis berbasis Topik. Silakan pilih salah satu tema untuk mulai memecahkan kuis linear."
+                          : "Analis ini belum memiliki progres belajar kuis."}
+                      </p>
+                      {isOwnProfile && (
+                        <div className="pt-2">
+                          <Link href="/belajar" className="inline-block text-xs font-black text-indigo-600 hover:underline">
+                            Pilih Tema Belajar →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {learningProgress.map((topic) => {
+                        const pct = Math.round((topic.completedStages / topic.totalStages) * 100);
+                        const isFullyCompleted = topic.completedStages === topic.totalStages;
+
+                        return (
+                          <div
+                            key={topic.topicId}
+                            className="bg-white border-2 border-slate-200 p-5 rounded-2xl flex flex-col justify-between min-h-[160px] transition-all hover:border-slate-300 hover:shadow-md relative"
+                          >
+                            <div className="space-y-3 text-left">
+                              <div className="flex items-center gap-3">
+                                <span className="text-slate-700 flex-shrink-0 flex items-center justify-center bg-slate-100 p-2 rounded-xl border border-slate-200 shadow-sm">
+                                  <DynamicIcon emoji={topic.icon} size={18} />
+                                </span>
+                                <div>
+                                  <h4 className="text-sm font-extrabold text-slate-900 font-serif leading-none">
+                                    {topic.displayName}
+                                  </h4>
+                                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1 block">
+                                    Topik Modul
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="space-y-1.5 pt-1">
+                                <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
+                                  <span>Progres Level</span>
+                                  <span className={isFullyCompleted ? "text-emerald-600 font-black" : "text-indigo-650 font-black"}>
+                                    {topic.completedStages} / {topic.totalStages} Level ({pct}%)
+                                  </span>
+                                </div>
+                                {/* Progress Bar Container */}
+                                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/50">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-500 ${
+                                      isFullyCompleted ? "bg-emerald-500" : "bg-indigo-600"
+                                    }`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="pt-4 flex justify-end">
+                              <Link
+                                href={`/belajar/${topic.topicId}`}
+                                className={`px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${
+                                  isOwnProfile
+                                    ? "bg-slate-900 hover:bg-slate-800 text-white border-slate-900 hover:-translate-y-0.5"
+                                    : "bg-white border-slate-200 hover:border-slate-300 text-slate-600"
+                                }`}
+                              >
+                                {isOwnProfile ? "Lanjutkan Belajar →" : "Lihat Jalur Belajar →"}
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

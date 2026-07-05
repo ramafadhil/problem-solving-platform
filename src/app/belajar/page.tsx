@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { apiFetch } from "@/utils/api";
+import Navbar from "@/components/Navbar";
 
 interface DynamicTopic {
   id: string;
@@ -128,125 +129,125 @@ export default function TopikSelectionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] flex items-center justify-center p-6 lg:p-12 relative">
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
-        {/* SISI KIRI: RUANG FOKUS UTAMA UNTUK MOTION GRAPHICS */}
-        <section className="lg:col-span-5 flex flex-col justify-center items-center w-full">
-          <div className="w-full h-full min-h-[650px] flex items-center justify-center">
-            <div className="w-full max-w-[500px] aspect-square">
-              <DotLottieReact
-                src="/aset_learning.json"
-                loop={true}
-                autoplay={true}
-              />
+    <div
+      className="min-h-screen text-black font-sans flex flex-col selection:bg-indigo-500 selection:text-white"
+      style={{
+        backgroundColor: "#FFD400",
+        backgroundImage:
+          "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+        backgroundSize: "64px 64px",
+      }}
+    >
+      <Navbar variant="app" logoAccent="Learn" />
+
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+          {/* SISI KIRI: Lottie + headline */}
+          <section className="lg:col-span-5 flex flex-col items-center lg:items-start gap-6">
+            <div className="w-full max-w-[420px] aspect-square">
+              <DotLottieReact src="/aset_learning.json" loop autoplay />
             </div>
-          </div>
-        </section>
+            <div className="text-center lg:text-left space-y-3">
+              <h1 className="text-3xl lg:text-4xl font-black leading-tight tracking-tight">
+                Pilih Tema,<br />Mulai Analisis.
+              </h1>
+              <p className="text-sm font-semibold text-black/60 leading-relaxed max-w-xs">
+                Setiap tema punya jalur linear — makin dalam makin menantang.
+              </p>
+            </div>
+          </section>
 
-        {/* SISI KANAN: MENU SELECTION DENGAN INDIKATOR JALUR LINEAR */}
-        <section className="lg:col-span-7 flex flex-col justify-center space-y-6 relative">
-          <div className="flex justify-between items-center w-full">
-            <button
-              onClick={() => router.push("/")}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 font-sans rounded-xl text-xs font-bold uppercase tracking-wider text-slate-500 shadow-sm transition-all hover:-translate-y-0.5"
-            >
-              Kembali
-            </button>
-          </div>
+          {/* SISI KANAN: daftar topik */}
+          <section className="lg:col-span-7 flex flex-col gap-4">
 
-          <div className="space-y-3 mb-2">
-            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight leading-tight font-serif">
-              Pilih Tema Utama Analisis
-            </h1>
-            <p className="text-xs font-medium text-slate-500 leading-relaxed max-w-xl font-sans">
-              Tentukan payung masalah yang ingin kamu bedah. Setiap tema
-              menyediakan jalur petualangan linear dengan studi kasus yang makin
-              menantang di tiap levelnya!
-            </p>
-          </div>
+            {/* Label section */}
+            <div className="flex items-center gap-3">
+              <span
+                className="px-3 py-1.5 text-xs font-black uppercase tracking-widest rounded-xl"
+                style={{ background: "#fff", border: "3px solid #000", boxShadow: "3px 3px 0 #000" }}
+              >
+                🗺️ Pilih Tema
+              </span>
+            </div>
 
-          <div className="flex flex-col gap-4 w-full max-h-[480px] overflow-y-auto pr-1">
-            {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center space-y-3 bg-white border-2 border-slate-200 rounded-3xl shadow-sm">
-                <div className="w-6 h-6 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat Tema Analisis...</span>
-              </div>
-            ) : topics.length === 0 ? (
-              <div className="py-20 text-center text-xs text-slate-400 font-semibold italic bg-white border-2 border-slate-200 rounded-3xl shadow-sm">
-                Belum ada tema analisis terdaftar di database.
-              </div>
-            ) : (
-              <>
-                {topics.map((tema) => (
-                  <div
-                    key={tema.id}
-                    onClick={() => handleSelectTema(tema.id)}
-                    className={`bg-white border-2 rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] border-slate-200 cursor-pointer bg-gradient-to-br ${tema.gradient} ${tema.borderColor} ${tema.shadowColor} hover:-translate-y-0.5`}
-                  >
-                    {/* Deskripsi Ikon & Ringkasan Topik */}
-                    <div className="flex gap-4 items-center flex-1">
-                      <div
-                        className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-white shadow-md transform -rotate-3 shrink-0`}
-                      >
-                        {tema.icon}
-                      </div>
-                      <div>
-                        <h3
-                          className={`text-sm font-black tracking-tight font-serif ${tema.textColor}`}
+            <div className="flex flex-col gap-3 max-h-[520px] overflow-y-auto pr-1">
+              {loading ? (
+                <div
+                  className="py-16 flex flex-col items-center justify-center space-y-3 rounded-2xl"
+                  style={{ background: "#fff", border: "3px solid #000", boxShadow: "4px 4px 0 #000" }}
+                >
+                  <div className="w-6 h-6 border-[3px] border-black border-t-transparent rounded-full animate-spin" />
+                  <span className="text-[10px] font-black text-black/50 uppercase tracking-widest">Memuat Tema...</span>
+                </div>
+              ) : topics.length === 0 ? (
+                <div
+                  className="py-16 text-center text-xs font-bold text-black/40 rounded-2xl"
+                  style={{ background: "#fff", border: "3px solid #000", boxShadow: "4px 4px 0 #000" }}
+                >
+                  Belum ada tema terdaftar di database.
+                </div>
+              ) : (
+                <>
+                  {topics.map((tema) => (
+                    <div
+                      key={tema.id}
+                      onClick={() => handleSelectTema(tema.id)}
+                      className="group bg-white rounded-2xl p-4 flex items-center justify-between gap-4 cursor-pointer transition-all duration-150 hover:-translate-y-0.5"
+                      style={{ border: "3px solid #000", boxShadow: "4px 4px 0 #000" }}
+                      onMouseEnter={e => (e.currentTarget.style.boxShadow = "5px 5px 0 #000")}
+                      onMouseLeave={e => (e.currentTarget.style.boxShadow = "4px 4px 0 #000")}
+                    >
+                      <div className="flex gap-4 items-center flex-1 min-w-0">
+                        <div
+                          className={`text-xl ${tema.iconBg} w-12 h-12 rounded-xl flex items-center justify-center shrink-0`}
+                          style={{ border: "3px solid #000", boxShadow: "3px 3px 0 #000" }}
                         >
-                          {tema.title}
-                        </h3>
-                        <p className="text-[11px] font-medium text-slate-500 mt-0.5 leading-relaxed max-w-sm font-sans">
-                          {tema.description}
-                        </p>
+                          {tema.icon}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-black tracking-tight text-black truncate">
+                            {tema.title}
+                          </h3>
+                          <p className="text-[11px] font-medium text-black/50 mt-0.5 leading-relaxed line-clamp-2">
+                            {tema.description}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Badge Indikator Informasi Kasus */}
-                    <div className="shrink-0 text-right min-w-[85px] font-sans">
-                      <div className="flex flex-col items-end gap-0.5">
-                        <span className="bg-white px-2 py-0.5 rounded-md border border-slate-200 text-indigo-600 shadow-sm text-[9px] font-black uppercase tracking-wider">
+                      <div className="shrink-0">
+                        <span
+                          className="text-[9px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg whitespace-nowrap"
+                          style={{ background: "#FFD400", border: "2px solid #000" }}
+                        >
                           {tema.totalStages} Kasus
                         </span>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {/* Kotak Locked (Future Updates) */}
-                <div
-                  className="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 min-h-[95px] cursor-not-allowed opacity-80"
-                >
-                  <div className="flex gap-4 items-center flex-1">
-                    <div
-                      className="text-lg bg-slate-200 w-11 h-11 rounded-xl flex items-center justify-center border border-slate-300/40 shadow-sm shrink-0"
-                    >
-                      🔒
+                  {/* Locked */}
+                  <div
+                    className="rounded-2xl p-4 flex items-center justify-between gap-4 opacity-50 cursor-not-allowed"
+                    style={{ background: "#f1f5f9", border: "3px dashed #94a3b8" }}
+                  >
+                    <div className="flex gap-4 items-center flex-1">
+                      <div className="text-xl bg-slate-200 w-12 h-12 rounded-xl flex items-center justify-center border-2 border-slate-300 shrink-0">
+                        🔒
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-slate-400">Tema Baru (Segera Hadir)</h3>
+                        <p className="text-[11px] font-medium text-slate-400 mt-0.5">Sedang dirancang oleh tim analis.</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3
-                        className="text-sm font-black tracking-tight font-serif text-slate-400"
-                      >
-                        Tema Baru (Segera Hadir)
-                      </h3>
-                      <p className="text-[11px] font-medium text-slate-450 mt-0.5 leading-relaxed max-w-sm font-sans text-slate-400">
-                        Petualangan dan studi kasus baru sedang dirancang oleh tim analis.
-                      </p>
-                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg bg-slate-200 text-slate-400 border border-slate-300">
+                      Locked
+                    </span>
                   </div>
-
-                  <div className="shrink-0 text-right min-w-[85px] font-sans">
-                    <div className="flex flex-col items-end gap-0.5">
-                      <span className="bg-slate-100 px-2 py-0.5 rounded-md border border-slate-250 text-slate-400 text-[9px] font-black uppercase tracking-wider">
-                        Locked
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </section>
+                </>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

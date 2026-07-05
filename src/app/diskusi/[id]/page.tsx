@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import AnimatedButton from "@/components/AnimatedButton";
+import Navbar from "@/components/Navbar";
 
 interface LogicBlock {
   category?: string;
@@ -227,12 +227,7 @@ export default function DetailKasusPage() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
       {/* NAVBAR */}
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
-        Kembali ke Forum
-        </Link>
-        <NotificationBell />
-      </nav>
+      <Navbar variant="app" backHref="/diskusi" backLabel="Kembali ke Forum" />
 
       {/* MAIN LAYOUT CONTAINER */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -241,7 +236,7 @@ export default function DetailKasusPage() {
         <section className="lg:col-span-5 space-y-6">
           
           {/* KARTU DETAIL STUDI KASUS */}
-          <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+          <div className="bg-white border-2 border-black p-6 rounded-2xl shadow-[3px_3px_0_#000] space-y-4">
             <div className="space-y-1">
               <span className="text-[9px] font-black uppercase text-indigo-600 tracking-wider">
                 Studi Kasus Analisis
@@ -376,19 +371,21 @@ export default function DetailKasusPage() {
                 />
               </div>
               
-              <button
+              <AnimatedButton
                 type="submit"
                 disabled={submitting || hasSubmitted || !shInput.trim() || !acInput.trim() || !imInput.trim()}
-                className={`w-full py-3.5 text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all mt-2 ${
+                background={
                   hasSubmitted
-                    ? "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed"
+                    ? "#F1F5F9"
                     : submitting || !shInput.trim() || !acInput.trim() || !imInput.trim()
-                    ? "bg-slate-300 text-white cursor-not-allowed"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:-translate-y-0.5"
-                }`}
+                    ? "#CBD5E1"
+                    : "#6366F1"
+                }
+                shadowSize={6}
+                className="w-full !py-3.5 !text-xs !rounded-xl !text-white uppercase tracking-widest mt-2"
               >
                 {hasSubmitted ? "Tanggapan Terkirim" : submitting ? "Mentransmisikan..." : "Kirim Respon Perspektif"}
-              </button>
+              </AnimatedButton>
             </form>
           </div>
         </section>

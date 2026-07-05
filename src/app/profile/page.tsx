@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import Navbar from "@/components/Navbar";
 
 interface UserProfile {
   id?: number;
@@ -257,36 +257,8 @@ function ProfileContent() {
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
-      {/* NAVBAR HEADER */}
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <Link href="/" className="font-black text-lg tracking-tight text-slate-900">
-          Unravel
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/diskusi" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
-            Mode Diskusi
-          </Link>
-          <Link href="/belajar" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
-            Mode Belajar
-          </Link>
-          <NotificationBell />
-          {isOwnProfile ? (
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors border border-red-200"
-            >
-              Keluar Account
-            </button>
-          ) : (
-            <Link
-              href="/diskusi"
-              className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors border border-slate-200"
-            >
-              Kembali ke Forum
-            </Link>
-          )}
-        </div>
-      </nav>
+      {/* NAVBAR */}
+      <Navbar variant="app" logoAccent="Profile" />
 
       {/* MAIN CONTAINER */}
       <main className="max-w-6xl w-full mx-auto px-6 py-10">

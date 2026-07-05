@@ -1,329 +1,402 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
-// Import player Lottie resmi
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import AnimatedButton from "@/components/AnimatedButton";
+import Navbar from "@/components/Navbar";
+
+const offsetShadow = (size = 8, color = "#000") =>
+  `${size}px ${size}px 0 ${color}`;
+
+const cards = [
+  {
+    title: "Jalur Belajar Interaktif",
+    desc: "Masuk ke topik, lanjutkan stage, dan selesaikan tantangan secara bertahap.",
+    accent: "#FFE76A",
+    emoji: "🧭",
+  },
+  {
+    title: "Forum Diskusi Publik",
+    desc: "Baca studi kasus lain, beri perspektif, dan lihat sudut pandang yang berbeda.",
+    accent: "#A7F3D0",
+    emoji: "💬",
+  },
+  {
+    title: "Profil Progres",
+    desc: "Pantau aktivitas, riwayat jawaban, dan pencapaianmu dari satu tempat.",
+    accent: "#E9D5FF",
+    emoji: "📊",
+  },
+  {
+    title: "Badge & XP",
+    desc: "Dapatkan motivasi dari pencapaian kecil yang terus tumbuh seiring latihan.",
+    accent: "#FDBA74",
+    emoji: "🏅",
+  },
+];
+
+const steps = [
+  {
+    title: "Pilih topik",
+    desc: "Mulai dari tema yang paling dekat dengan kebutuhanmu.",
+  },
+  {
+    title: "Selesaikan stage",
+    desc: "Latih kemampuan analisis lewat jalur belajar yang sudah terarah.",
+  },
+  {
+    title: "Bagikan perspektif",
+    desc: "Tukar jawaban dan diskusikan hasilmu di forum publik.",
+  },
+];
+
+// A few sample cases for the interactive demo card in the hero.
+// Cycling through these gives visitors a taste of the actual exercise
+// instead of one static screenshot.
+const demoCases = [
+  {
+    label: "Susun alur sebab → akibat",
+    masalah: "Munculnya backlog yang terus bertambah.",
+    solusi: "Tentukan akar masalah sebelum mengambil tindakan.",
+  },
+  {
+    label: "Baca studi kasus tim produk",
+    masalah: "Fitur baru jarang dipakai setelah dirilis.",
+    solusi: "Validasi kebutuhan pengguna sebelum membangun fitur.",
+  },
+  {
+    label: "Analisis keputusan bisnis",
+    masalah: "Keputusan diambil tanpa data yang cukup.",
+    solusi: "Kumpulkan data pendukung, lalu uji beberapa opsi.",
+  },
+];
 
 export default function LandingPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [demoIndex, setDemoIndex] = useState(0);
 
   useEffect(() => {
-    // Mengecek apakah cookie token tersedia di browser saat landing page dimuat
     const cookies = document.cookie.split(";");
     const hasToken = cookies.some((item) => item.trim().startsWith("token="));
     setIsLoggedIn(hasToken);
   }, []);
 
-  const handleLogout = () => {
-    // Menghapus cookie token dengan mengatur masa kedaluwarsa ke masa lalu
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    setIsLoggedIn(false);
-    window.location.reload(); // Refresh halaman untuk membersihkan state global global
-  };
-
-  const toggleFaq = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
-  const features = [
-    {
-      title: "Gamifikasi Analisis Kasus",
-      desc: "Belajar membedah masalah makro lewat metode interaktif drag-and-drop yang seru, terstruktur, dan tidak membosankan.",
-    },
-    {
-      title: "Jalur Belajar Linear & Terarah",
-      desc: "Mulailah dari level eksplorasi dasar hingga perumusan rekomendasi solusi nyata melalui berbagai tema pilihan.",
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: "Rama",
-      role: "Mahasiswa Rekayasa Perangkat Lunak",
-      text: "Platform ini ngebantu banget buat ngasah critical thinking. UI gamifikasinya bikin betah ngerjain studi kasus berjam-jam!",
-    },
-    {
-      name: "Radit",
-      role: "Rekan Belajar",
-      text: "Fitur leaderboard dan papan skor real-time-nya bikin kompetisi belajar bareng rekan analis lain jadi makin seru dan kompetitif.",
-    },
-    {
-      name: "Fadhil",
-      role: "Beta Tester Platform",
-      text: "Biasa males baca studi kasus yang panjang dan kaku, tapi pas coba dibikin model interaktif begini jadi gampang paham alur sebab-akibatnya.",
-    },
-  ];
-
-  const faqs = [
-    {
-      q: "Apa itu Platform Unravel?",
-      a: "Unravel adalah sebuah platform edutech gamifikasi yang dirancang untuk membantu kamu belajar membedah studi kasus kompleks (seperti isu lingkungan, politik, and sosial) dengan cara mengurai komponen masalah secara interaktif.",
-    },
-    {
-      q: "Bagaimana cara kerja sistem penilaian skornya?",
-      a: "Setiap kali kamu berhasil menempatkan kartu kata kunci analisis di kotak yang tepat pada permainan drag-and-drop, kamu akan mendapatkan poin Points dinamis yang langsung menaikkan peringkatmu di leaderboard.",
-    },
-    {
-      q: "Apakah jalur petualangan belajarnya harus berurutan?",
-      a: "Ya, platform ini menerapkan sistem kemajuan linear. Kamu harus menyelesaikan Level 1 (Eksplorasi) terlebih dahulu untuk membuka tantangan di level berikutnya.",
-    },
-  ];
+  const activeDemo = demoCases[demoIndex];
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-indigo-500 selection:text-white">
-      
-      {/* 1. NAVBAR HEADER SECTION (Responsif & Rata Tengah Sempurna) */}
-      <nav className="w-full bg-white border-b border-slate-200 px-4 sm:px-8 py-4 max-w-7xl mx-auto rounded-b-2xl shadow-sm relative">
-        <div className="flex items-center justify-between w-full">
-          
-          {/* SISI KIRI: LOGO */}
-          <div className="flex items-center z-10">
-            <span className="font-black text-xl tracking-tight text-slate-950">
-              Unravel
-            </span>
-          </div>
+    <div
+      className="relative min-h-screen text-black"
+      style={{
+        backgroundColor: "#FFD400",
+        backgroundImage:
+          "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+        backgroundSize: "64px 64px, 64px 64px",
+      }}
+    >
+      {/* Decorative shapes — kept sparse on purpose so they read as accents, not clutter */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div
+          className="absolute -top-8 left-6 h-20 w-28 rounded-xl"
+          style={{ background: "#A21CAF", border: "4px solid #000", boxShadow: offsetShadow(8) }}
+        />
+        <div
+          className="absolute right-12 top-28 h-16 w-16 rounded-full"
+          style={{ background: "#22C55E", border: "4px solid #000", boxShadow: offsetShadow(6) }}
+        />
+      </div>
 
-          {/* SISI TENGAH: MENU LINKS (Hidden di mobile, mengunci posisi absolut di tengah pada desktop) */}
-          <div className="hidden md:flex items-center justify-center gap-8 text-[11px] font-black uppercase tracking-wider text-slate-500 absolute left-1/2 -translate-x-1/2">
-            <Link href="/belajar" className="hover:text-indigo-600 transition-colors py-2">
-              Mode Belajar
-            </Link>
-            <Link href="/diskusi" className="hover:text-indigo-600 transition-colors py-2">
-              Mode Diskusi
-            </Link>
-            <a href="#features" className="hover:text-indigo-600 transition-colors py-2">
-              Fitur
-            </a>
-            <a href="#faq" className="hover:text-indigo-600 transition-colors py-2">
-              FAQ
-            </a>
-          </div>
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
 
-          {/* SISI KANAN: AUTH ACTIONS DINAMIS */}
-          <div className="flex items-center gap-3 sm:gap-6 text-[11px] font-black tracking-wider z-10">
-            {isLoggedIn ? (
-              <>
-                <button
-                  onClick={handleLogout}
-                  className="text-slate-500 hover:text-red-500 transition-colors py-2 hidden sm:inline-block cursor-pointer"
-                >
-                  Keluar
-                </button>
-                <NotificationBell />
-                <Link
-                  href="/profile"
-                  className="px-4 sm:px-5 py-2 sm:py-2.5 bg-slate-900 uppercase hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"
-                >
-                  Profile
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-slate-500 hover:text-indigo-600 transition-colors py-2 hidden sm:inline-block"
-                >
-                  Masuk
-                </Link>
-                <Link
-                  href="/signup"
-                  className="px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-bold normal-case shrink-0"
-                >
-                  Mulai Sekarang
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      {/* ---------- Header ---------- */}
+      <Navbar variant="landing" />
 
-      <main className="max-w-6xl mx-auto px-6 space-y-24 py-12">
-        
-        {/* 2. HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-8">
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <h1 className="text-4xl md:text-5xl font-serif font-black text-slate-900 leading-tight tracking-tight">
-              Kuasai Analisis Kasus <br className="hidden md:inline" />
-              <span className="text-indigo-600 font-sans font-black font-serif">
-                Lewat Gamifikasi Interaktif
+      <main className="relative z-10 overflow-x-hidden">
+        {/* ---------- Hero ---------- */}
+        <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-28">
+          <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+            <div>
+              <span
+                className="inline-flex rounded-full px-4 py-2 text-sm font-black"
+                style={{ background: "#fff", border: "4px solid #000", boxShadow: offsetShadow(6) }}
+              >
+                ✨ Belajar, diskusi, dan progres dalam satu tempat
               </span>
-            </h1>
-            <p className="text-sm font-medium text-slate-500 leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Uji kemampuan problem-solving secara mandiri atau diskusikan
-              analisis pemecahan masalah pelik bersama komunitas analis
-              secara real-time.
-            </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-              <Link
-                href="/belajar"
-                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.4)] hover:-translate-y-0.5 transition-all"
-              >
-                {isLoggedIn ? "Lanjutkan Belajar" : "Masuk Mode Belajar"}
-              </Link>
-              <Link
-                href="/diskusi"
-                className="px-6 py-3 bg-white border-2 border-slate-200 hover:border-indigo-400 text-slate-700 font-bold rounded-xl text-sm transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.15)]"
-              >
-                Masuk Mode Diskusi
-              </Link>
+              <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[1.1] md:text-5xl lg:text-6xl">
+                Belajar menganalisis kasus, lalu bagikan hasilmu.
+              </h1>
+
+              <p className="mt-6 max-w-xl text-base font-semibold leading-7 text-slate-700 md:text-lg">
+                Unravel menyatukan jalur belajar interaktif, forum diskusi publik, dan profil
+                progres agar kamu bisa berlatih, berdiskusi, dan melihat perkembangan dari satu
+                pengalaman yang konsisten.
+              </p>
+
+              <div className="mt-9 flex flex-wrap items-center gap-4">
+                <AnimatedButton
+                  as="link"
+                  href="/belajar"
+                  background="#22C55E"
+                  shadowSize={8}
+                >
+                  {isLoggedIn ? "Lanjutkan Belajar" : "Mulai Sekarang"}
+                </AnimatedButton>
+                <AnimatedButton
+                  as="link"
+                  href="/diskusi"
+                  background="#fff"
+                  shadowSize={8}
+                >
+                  Lihat Diskusi
+                </AnimatedButton>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3 text-xs font-black">
+                <span
+                  className="rounded-full px-3 py-2"
+                  style={{ background: "#A7F3D0", border: "4px solid #000", boxShadow: offsetShadow(4) }}
+                >
+                  🎯 100+ tantangan
+                </span>
+                <span
+                  className="rounded-full px-3 py-2"
+                  style={{ background: "#FDE68A", border: "4px solid #000", boxShadow: offsetShadow(4) }}
+                >
+                  🏆 badge & skor
+                </span>
+                <span
+                  className="rounded-full px-3 py-2"
+                  style={{ background: "#E9D5FF", border: "4px solid #000", boxShadow: offsetShadow(4) }}
+                >
+                  🤝 komunitas aktif
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="lg:col-span-5 w-full flex flex-col items-center justify-center">
-            <div className="w-full max-w-[280px] aspect-square">
-              <DotLottieReact
-                src="/tryliam.json"
-                loop={true}
-                autoplay={true}
+            {/* Interactive demo card — visitors can click through a few sample cases
+                instead of seeing one static example, which gives a real feel for the product. */}
+            <div className="relative mx-auto w-full max-w-xl">
+              <div
+                className="rounded-[32px] border-[6px] border-black bg-[#6D28D9] p-4 sm:p-5"
+                style={{ boxShadow: offsetShadow(14) }}
+              >
+                <div className="rounded-[24px] border-[4px] border-black bg-white p-6 sm:p-8">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black uppercase tracking-[0.2em] text-[#6D28D9]">
+                        Contoh aktivitas
+                      </p>
+                      <h2 className="mt-1 text-xl font-black">{activeDemo.label}</h2>
+                    </div>
+                    <div
+                      className="rounded-full bg-[#FFE76A] px-3 py-2 text-sm font-black"
+                      style={{ border: "3px solid #000" }}
+                    >
+                      Live
+                    </div>
+                  </div>
+
+                  <div className="mt-6 space-y-3">
+                    <div className="rounded-[20px] border-[4px] border-black bg-[#FDE68A] p-4">
+                      <p className="text-sm font-black">Masalah</p>
+                      <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">
+                        {activeDemo.masalah}
+                      </p>
+                    </div>
+                    <div className="rounded-[20px] border-[4px] border-black bg-[#A7F3D0] p-4">
+                      <p className="text-sm font-black">Solusi</p>
+                      <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">
+                        {activeDemo.solusi}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Dots let visitors flip through sample cases */}
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    {demoCases.map((demoCase, index) => (
+                      <button
+                        key={demoCase.label}
+                        onClick={() => setDemoIndex(index)}
+                        aria-label={`Lihat contoh ${index + 1}`}
+                        className="h-3 w-3 rounded-full transition-all"
+                        style={{
+                          background: index === demoIndex ? "#6D28D9" : "#E5E7EB",
+                          border: "2px solid #000",
+                          transform: index === demoIndex ? "scale(1.3)" : "scale(1)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute -left-3 bottom-5 h-20 w-20 rounded-2xl rotate-3"
+                style={{ background: "#10B981", border: "4px solid #000", boxShadow: offsetShadow(8) }}
+              />
+              <div
+                className="absolute -right-3 top-5 h-20 w-20 rounded-full -rotate-6"
+                style={{ background: "#F59E0B", border: "4px solid #000", boxShadow: offsetShadow(8) }}
               />
             </div>
           </div>
         </section>
 
-        {/* 3. FEATURES SECTION */}
-        <section id="features" className="space-y-12 pt-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-              Cara Baru Memahami Masalah Kompleks
-            </h2>
-            <p className="text-xs text-slate-400 font-medium">
-              Bukan sekadar membaca teks kaku, tapi berinteraksi langsung dengan struktur kasus.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {features.map((feat, idx) => (
-              <div
-                key={idx}
-                className="bg-white border-2 border-slate-200 hover:border-indigo-400 p-6 rounded-2xl shadow-sm transition-all hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] group hover:-translate-y-0.5"
-              >
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-lg mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                  {idx === 0 ? "🎮" : "🛣️"}
-                </div>
-                <h3 className="text-base font-black text-slate-900 tracking-tight">
-                  {feat.title}
-                </h3>
-                <p className="text-xs font-medium text-slate-500 mt-2 leading-relaxed">
-                  {feat.desc}
+        {/* ---------- Quick overview ---------- */}
+        <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-28">
+          <div className="rounded-[32px] border-[6px] border-black bg-white p-8 md:p-10" style={{ boxShadow: offsetShadow(12) }}>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm font-black uppercase tracking-[0.25em] text-[#6D28D9]">
+                  Kenapa terasa lebih mudah dipahami
                 </p>
+                <h2 className="mt-3 text-2xl font-black leading-snug md:text-3xl">
+                  Semua bagian utama web terasa terhubung dan mudah diikuti.
+                </h2>
               </div>
-            ))}
+              <div className="rounded-2xl border-[4px] border-black bg-[#FDE68A] px-4 py-3 text-sm font-black" style={{ boxShadow: offsetShadow(6) }}>
+                Belajar → diskusi → progres
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              <div className="rounded-[24px] border-[4px] border-black bg-[#FDF2F8] p-5">
+                <p className="text-sm font-black">1. Pilih topik</p>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">Mulai dari tema yang paling relevan dengan kebutuhanmu.</p>
+              </div>
+              <div className="rounded-[24px] border-[4px] border-black bg-[#ECFDF5] p-5">
+                <p className="text-sm font-black">2. Selesaikan stage</p>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">Lanjutkan tantangan secara bertahap tanpa rasa terburu-buru.</p>
+              </div>
+              <div className="rounded-[24px] border-[4px] border-black bg-[#F5F3FF] p-5">
+                <p className="text-sm font-black">3. Bagikan hasil</p>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">Tukar perspektif dan lihat perkembanganmu di profil.</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* 4. TESTIMONIALS SECTION */}
-        <section id="testimonials" className="space-y-12 pt-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-              Testimoni Pengguna Platform
-            </h2>
-            <p className="text-xs text-slate-400 font-medium">
-              Apa kata mereka yang sudah merasakan serunya membedah kasus di sini?
-            </p>
-          </div>
-
-          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin">
-            {testimonials.map((testi, idx) => (
+        {/* ---------- Feature cards ---------- */}
+        <section id="konten" className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-28">
+          <div
+            className="rounded-[32px] border-[6px] border-black bg-[#3B1E7A] p-8 md:p-10"
+            style={{ boxShadow: offsetShadow(12) }}
+          >
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.25em] text-[#FDE68A]">
+                  Yang bisa kamu lakukan
+                </p>
+                <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">
+                  Semua bagian utama web ada di sini
+                </h2>
+              </div>
               <div
-                key={idx}
-                className="bg-white border-2 border-slate-100 p-6 rounded-2xl shadow-sm min-w-[280px] md:min-w-[340px] flex-1 snap-start flex flex-col justify-between"
+                className="rounded-2xl bg-white px-4 py-3 text-sm font-black"
+                style={{ border: "4px solid #000", boxShadow: offsetShadow(6) }}
               >
-                <div>
-                  <div className="flex text-amber-400 text-sm mb-3">
-                    ⭐⭐⭐⭐⭐
+                Belajar, berdiskusi, dan pantau progres
+              </div>
+            </div>
+
+            <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {cards.map((card) => (
+                <article
+                  key={card.title}
+                  className="rounded-[24px] border-[4px] border-black bg-white p-5 transition-transform duration-200 hover:-translate-y-1.5"
+                  style={{ boxShadow: offsetShadow(10) }}
+                >
+                  <div
+                    className="mb-4 flex h-24 items-center justify-center rounded-[16px] border-[4px] border-black text-4xl"
+                    style={{ background: card.accent }}
+                  >
+                    {card.emoji}
                   </div>
-                  <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
-                    "{testi.text}"
+                  <h3 className="text-lg font-black text-[#6D28D9]">{card.title}</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">
+                    {card.desc}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Experience flow ---------- */}
+        <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-28">
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div
+              className="rounded-[28px] border-[4px] border-black bg-white p-8"
+              style={{ boxShadow: offsetShadow(10) }}
+            >
+              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#6D28D9]">
+                Alur pengalaman
+              </p>
+              <h2 className="mt-2 text-2xl font-black leading-snug md:text-3xl">
+                Mulai dari satu topik, lalu lanjutkan ke diskusi dan progres.
+              </h2>
+              <p className="mt-4 text-sm font-semibold leading-6 text-slate-700">
+                Kamu tidak perlu langsung jadi ahli. Pilih topik, selesaikan stage, lalu bagikan
+                perspektifmu dan lihat perkembanganmu di profil.
+              </p>
+              <AnimatedButton
+                as="link"
+                href="/belajar"
+                background="#F472B6"
+                shadowSize={8}
+                className="mt-6"
+              >
+                Coba sekarang
+              </AnimatedButton>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-3">
+              {steps.map((step, index) => (
+                <div
+                  key={step.title}
+                  className="rounded-[24px] border-[4px] border-black bg-white p-6 transition hover:-translate-y-1"
+                  style={{ boxShadow: offsetShadow(8) }}
+                >
+                  <div
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#FFD400] text-sm font-black"
+                    style={{ border: "3px solid #000" }}
+                  >
+                    {index + 1}
+                  </div>
+                  <h3 className="mt-4 text-lg font-black">{step.title}</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">
+                    {step.desc}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-50">
-                  <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm">
-                    👤
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black text-slate-900 tracking-tight">
-                      {testi.name}
-                    </h4>
-                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                      {testi.role}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 5. FAQ SECTION */}
-        <section
-          id="faq"
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-slate-100"
-        >
-          <div className="lg:col-span-5 space-y-3 text-center lg:text-left">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xs font-medium text-slate-400 leading-relaxed">
-              Punya pertanyaan seputar platform ini? Temukan jawaban cepat atas kebingungan umum kamu di sini.
-            </p>
-          </div>
-
-          <div className="lg:col-span-7 flex flex-col gap-3 w-full">
-            {faqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className="bg-white border-2 border-slate-200 rounded-xl overflow-hidden transition-colors"
-              >
-                <button
-                  onClick={() => toggleFaq(idx)}
-                  className="w-full px-5 py-4 flex items-center justify-between text-left font-black text-xs text-slate-800 hover:text-indigo-600 tracking-tight"
-                >
-                  <span>{faq.q}</span>
-                  <span
-                    className={`transform transition-transform text-slate-400 ${openFaq === idx ? "rotate-180 text-indigo-600" : ""}`}
-                  >
-                    ▼
-                  </span>
-                </button>
-                {openFaq === idx && (
-                  <div className="px-5 pb-4 pt-1 text-xs font-medium text-slate-500 leading-relaxed border-t border-slate-50">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-
-      {/* 6. FOOTER SECTION */}
-      <footer className="w-full bg-slate-900 text-slate-400 text-xs py-12 mt-24 border-t border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center text-center md:text-left">
-          <div className="space-y-2">
-            <div className="flex items-center justify-center md:justify-start gap-2 text-white font-black text-sm">
-              Unravel
+              ))}
             </div>
-            <p className="text-[10px] text-slate-500">
-              © 2026 Unravel Inc. Hak cipta dilindungi undang-undang.
-            </p>
           </div>
-          <div className="flex justify-center md:justify-end gap-6 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            <Link href="/belajar" className="hover:text-white transition-colors">
-              Belajar
-            </Link>
-            <Link href="/diskusi" className="hover:text-white transition-colors">
-              Diskusi
-            </Link>
-            <a href="#features" className="hover:text-white transition-colors">
-              Fitur
-            </a>
+        </section>
+
+        {/* ---------- Footer ---------- */}
+        <footer className="mx-6 mb-10 max-w-7xl pt-6 lg:mx-auto lg:px-0 lg:pt-8">
+          <div
+            className="flex flex-col gap-3 rounded-[24px] border-[4px] border-black bg-white px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
+            style={{ boxShadow: offsetShadow(8) }}
+          >
+            <div className="font-black">© 2026 Unravel</div>
+            <div className="flex gap-5 text-sm font-extrabold">
+              <Link href="/belajar" className="hover:underline underline-offset-4">
+                Belajar
+              </Link>
+              <Link href="/diskusi" className="hover:underline underline-offset-4">
+                Diskusi
+              </Link>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </main>
     </div>
   );
 }

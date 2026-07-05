@@ -9,6 +9,7 @@ import {
   useDraggable,
   useDroppable,
 } from "@dnd-kit/core";
+import AnimatedButton from "@/components/AnimatedButton";
 
 // REPOSITORI DATA STUDI KASUS (Simulasi Kontrak Data dari Database / API)
 const repoStudiKasus: Record<
@@ -710,19 +711,23 @@ export default function DynamicStagePage() {
           )}
 
           {isAlreadySolved ? (
-            <button
+            <AnimatedButton
               onClick={() => router.push(`/belajar/${temaKey}`)}
-              className="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all text-sm transform hover:-translate-y-0.5"
+              background="#22C55E"
+              shadowSize={6}
+              className="w-full mt-2 !py-3 !text-sm !rounded-xl !text-white"
             >
               Kembali ke Peta Jalur Belajar
-            </button>
+            </AnimatedButton>
           ) : (
-            <button
+            <AnimatedButton
               onClick={handleVerification}
-              className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all text-sm transform hover:-translate-y-0.5"
+              background="#6366F1"
+              shadowSize={6}
+              className="w-full mt-2 !py-3 !text-sm !rounded-xl !text-white"
             >
               Verifikasi Analisis Level {levelNum}
-            </button>
+            </AnimatedButton>
           )}
         </section>
 
@@ -751,12 +756,14 @@ export default function DynamicStagePage() {
                     peringkat secara *real-time*.
                   </p>
 
-                  <button
+                  <AnimatedButton
                     onClick={handleBackToDashboard}
-                    className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
+                    background="#0F172A"
+                    shadowSize={6}
+                    className="w-full !py-2.5 !text-xs !rounded-xl !text-white"
                   >
                     Kembali ke Peta Jalur Belajar
-                  </button>
+                  </AnimatedButton>
                 </>
               ) : (
                 <>
@@ -778,12 +785,14 @@ export default function DynamicStagePage() {
                     {scoreResult.feedback}
                   </p>
 
-                  <button
+                  <AnimatedButton
                     onClick={() => setShowModal(false)}
-                    className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
+                    background="#E11D48"
+                    shadowSize={6}
+                    className="w-full !py-2.5 !text-xs !rounded-xl !text-white"
                   >
                     Coba Lagi
-                  </button>
+                  </AnimatedButton>
                 </>
               )}
             </div>

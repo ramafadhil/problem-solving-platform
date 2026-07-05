@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import Navbar from "@/components/Navbar";
 
 interface LogicBlock {
   category?: string;
@@ -224,39 +224,30 @@ export default function JawabanUlasanPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
       {/* NAVBAR */}
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <div className="flex items-center gap-2">
-          <a href="/" className="font-black text-lg tracking-tight text-slate-900">
-            Unravel<span className="text-indigo-600"> Discuss</span>
-          </a>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/diskusi"
-            className="px-4 py-2 bg-slate-50 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl text-xs font-black uppercase tracking-wider transition-colors"
-          >
-            Daftar Kasus
-          </Link>
-          <NotificationBell />
-        </div>
-      </nav>
+      <Navbar variant="app" logoAccent="Discuss" />
 
       {/* MAIN CONTAINER */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 space-y-6">
         
         {/* HEADER AREA */}
-        <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="bg-white border-2 border-black p-6 rounded-2xl shadow-[3px_3px_0_#000] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="space-y-1">
-            <span className="inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border bg-red-50 border-red-200 text-red-600">
+            <span className="inline-block px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider border-2 border-black bg-[#FFD400] text-black shadow-[2px_2px_0_#000]">
               Forum Hasil Diskusi
             </span>
-            <h2 className="text-lg font-black tracking-tight text-slate-900 font-serif leading-snug mt-1">
-              Ulasan Perspektif: {kasus?.title}
+            <h2 className="text-lg font-black tracking-tight text-slate-900 leading-snug mt-1">
+              {kasus?.title}
             </h2>
-            <p className="text-xs text-slate-400 font-medium">
-              Berikut adalah rumusan kerangka 3 pilar yang dikirimkan oleh para analis di komunitas.
+            <p className="text-xs text-slate-500 font-medium">
+              Rumusan kerangka 3 pilar dari para analis komunitas.
             </p>
           </div>
+          <Link
+            href={`/diskusi/${caseId}`}
+            className="shrink-0 px-4 py-2 bg-white border-2 border-black rounded-xl text-xs font-black uppercase tracking-wider shadow-[2px_2px_0_#000] hover:shadow-[3px_3px_0_#000] hover:-translate-y-0.5 transition-all"
+          >
+            ← Kembali ke Kasus
+          </Link>
         </div>
 
         {/* GRID DAFTAR JAWABAN (Sesuai Wireframe Lofi 2) */}
@@ -267,7 +258,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
             return (
               <div
                 key={item.id}
-                className="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm flex flex-col hover:border-slate-300 hover:shadow-md transition-all min-h-[300px]"
+                className="bg-white border-2 border-black p-5 rounded-2xl shadow-[3px_3px_0_#000] flex flex-col hover:shadow-[4px_4px_0_#000] hover:-translate-y-0.5 transition-all duration-200 min-h-[300px]"
               >
                  {/* CARD HEADER */}
                 <div className="flex items-center gap-3 border-b border-slate-100 pb-3 mb-3">

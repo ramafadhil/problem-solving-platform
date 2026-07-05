@@ -5,6 +5,8 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import AnimatedButton from "@/components/AnimatedButton";
+import Navbar from "@/components/Navbar";
 
 interface LogicBlock {
   category?: string;
@@ -165,27 +167,12 @@ export default function DaftarKasusPage() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
       {/* 1. NAVBAR FORUM HEADER */}
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <div className="flex items-center gap-2">
-          <a href="/" className="font-black text-lg tracking-tight text-slate-900">
-            Unravel<span className="text-indigo-600"> Discuss</span>
-          </a>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="px-4 py-2 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors"
-          >
-            Beranda
-          </Link>
-          <NotificationBell />
-        </div>
-      </nav>
+      <Navbar variant="app" logoAccent="Discuss" />
 
       {/* MAIN CONTAINER CONTENT */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-8 space-y-6">
         {/* HEADER BARIS UTAMA */}
-        <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="bg-white border-2 border-black p-6 rounded-2xl shadow-[3px_3px_0_#000] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="space-y-1">
             <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">
               Urai dan Pecahkan Studi Kasus Global
@@ -194,17 +181,20 @@ export default function DaftarKasusPage() {
               Cari topik studi kasus yang dibuat oleh analis lain atau ajukan problem benang kusut barumu sendiri.
             </p>
           </div>
-          <button
+          <AnimatedButton
             onClick={() => router.push("/diskusi/buat")}
-            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] shrink-0"
+            background="#6366F1"
+            border="4px solid #000"
+            shadowSize={6}
+            className="!px-5 !py-3 !text-xs !rounded-xl !text-white uppercase tracking-wider shrink-0"
           >
             + Buat Studi Kasus Baru
-          </button>
+          </AnimatedButton>
         </div>
 
         {/* CONTROLLER & INPUT PENCARIAN BAR */}
         <div className="flex flex-col sm:flex-row gap-4 items-stretch">
-          <div className="flex-1 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-3 shadow-inner">
+          <div className="flex-1 bg-white border-2 border-black rounded-2xl px-4 py-3 flex items-center gap-3 shadow-[2px_2px_0_#000]">
             <input
               type="text"
               value={searchQuery}
@@ -219,7 +209,7 @@ export default function DaftarKasusPage() {
             <select
               value={selectedTopicId}
               onChange={(e) => setSelectedTopicId(e.target.value)}
-              className="px-4 py-3 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-2xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors focus:outline-none cursor-pointer shadow-sm min-w-[160px]"
+              className="px-4 py-3 bg-white border-2 border-black rounded-2xl text-xs font-black uppercase tracking-wider text-slate-700 focus:outline-none cursor-pointer shadow-[2px_2px_0_#000] min-w-[160px]"
             >
               <option value="">Semua Topik</option>
               {topics.map((t) => {
@@ -238,7 +228,7 @@ export default function DaftarKasusPage() {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as any)}
-              className="px-4 py-3 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-2xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors focus:outline-none cursor-pointer shadow-sm min-w-[150px]"
+              className="px-4 py-3 bg-white border-2 border-black rounded-2xl text-xs font-black uppercase tracking-wider text-slate-700 focus:outline-none cursor-pointer shadow-[2px_2px_0_#000] min-w-[150px]"
             >
               <option value="terbaru">Terbaru</option>
               <option value="populer">Paling Populer</option>
@@ -280,7 +270,7 @@ export default function DaftarKasusPage() {
               return (
                 <div
                   key={kasus.id}
-                  className="bg-white border-2 border-slate-200 p-5 rounded-2xl flex flex-col justify-between min-h-[180px] transition-all hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:border-indigo-400 hover:-translate-y-0.5 group relative"
+                  className="bg-white border-2 border-black p-5 rounded-2xl shadow-[3px_3px_0_#000] flex flex-col justify-between min-h-[180px] transition-all hover:shadow-[4px_4px_0_#000] hover:-translate-y-0.5 group relative"
                 >
                   <div className="space-y-2">
                     <div className="flex justify-between items-center pr-6">
@@ -319,7 +309,7 @@ export default function DaftarKasusPage() {
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
                     <Link
                       href={`/diskusi/${kasus.id}`}
-                      className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-400 text-slate-600 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors"
+                      className="px-3 py-1.5 bg-white border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0_#000] hover:shadow-[3px_3px_0_#000] hover:-translate-y-0.5 transition-all"
                     >
                       Buka Kasus
                     </Link>

@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import AnimatedButton from "@/components/AnimatedButton";
+import Navbar from "@/components/Navbar";
 
 interface Topic {
   id: number;
@@ -116,15 +116,10 @@ export default function BuatKasusPage() {
 
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
-        Batalkan & Kembali
-        </Link>
-        <NotificationBell />
-      </nav>
+      <Navbar variant="app" backHref="/diskusi" backLabel="Batalkan & Kembali" />
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">
-        <div className="bg-white border-2 border-slate-200 p-6 md:p-8 rounded-3xl shadow-sm space-y-6">
+        <div className="bg-white border-2 border-black p-6 md:p-8 rounded-2xl shadow-[3px_3px_0_#000] space-y-6">
           <div className="space-y-1">
             <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">Ajukan Studi Kasus Baru!</h2>
             <p className="text-xs font-medium text-slate-400 leading-relaxed">
@@ -237,17 +232,19 @@ export default function BuatKasusPage() {
               </div>
             </div>
 
-            <button
+            <AnimatedButton
               type="submit"
               disabled={loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId}
-              className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all mt-4 ${
+              background={
                 loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId
-                  ? "bg-slate-300 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:-translate-y-0.5"
-              }`}
+                  ? "#CBD5E1"
+                  : "#6366F1"
+              }
+              shadowSize={6}
+              className="w-full !py-3.5 !text-xs !rounded-xl !text-white uppercase tracking-widest mt-4"
             >
               {loading ? "Menerbitkan Kasus..." : "Terbitkan Kasus & 3 Pilar Analisis"}
-            </button>
+            </AnimatedButton>
           </form>
         </div>
       </main>

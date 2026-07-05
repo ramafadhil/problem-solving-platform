@@ -4,12 +4,10 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
+import AnimatedButton from "@/components/AnimatedButton";
 
-interface ToastState {
-  show: boolean;
-  message: string;
-  type: "success" | "error";
-}
+const offsetShadow = (size = 8, color = "#000") =>
+  `${size}px ${size}px 0 ${color}`;
 
 export default function SignupPage() {
   const router = useRouter();
@@ -22,20 +20,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  // State untuk manajemen status Toast Notifikasi
-  const [toast, setToast] = useState<ToastState>({
-    show: false,
-    message: "",
-    type: "success",
-  });
-
-  const showToastNotification = (message: string, type: "success" | "error") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => {
-      setToast((prev) => ({ ...prev, show: false }));
-    }, 3000);
-  };
+  const [agreed, setAgreed] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,109 +37,104 @@ export default function SignupPage() {
         body: JSON.stringify(formData),
       });
 
-      // Pemicu Toast Sukses
-      showToastNotification("✓ Registrasi Berhasil! Mengalihkan ke halaman masuk...", "success");
-
-      // Beri sedikit jeda agar user sempat melihat pesan sukses sebelum dialihkan
-      setTimeout(() => {
-        router.push("/login");
-      }, 1200);
-
+      setTimeout(() => router.push("/login"), 300);
     } catch (err: any) {
-      // 🌟 PERBAIKAN 1: Saring pesan error mentah dari HTTP Status menjadi kalimat yang ramah
-      let friendlyMsg = "Registrasi gagal. Silakan coba lagi.";
-      
-      // Biasanya jika email atau username sudah terdaftar, backend mengirim status 400 atau 409
-      if (err.message && (err.message.includes("400") || err.message.includes("409"))) {
-        friendlyMsg = "Username atau email sudah digunakan oleh orang lain.";
-      } else if (err.message && err.message.includes("Fetch")) {
-        friendlyMsg = "Gagal terhubung ke server. Periksa koneksi internetmu.";
+      let msg = "Registrasi gagal. Silakan coba lagi.";
+      if (err.message?.includes("400") || err.message?.includes("409")) {
+        msg = "Username atau email sudah digunakan orang lain.";
+      } else if (err.message?.includes("Fetch")) {
+        msg = "Gagal terhubung ke server. Periksa koneksimu.";
       } else if (err.message) {
-        friendlyMsg = err.message;
+        msg = err.message;
       }
-
-      setError(friendlyMsg);
-      
-      // 🌟 PERBAIKAN 2: Buat pesan Toast menjadi ringkas sebagai indikator cepat saja
-      showToastNotification("⚠️ Registrasi Gagal", "error");
-      
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] flex items-stretch text-slate-800 font-sans selection:bg-indigo-500 selection:text-white relative">
-      
-      {/* ================= COMPONENT TOAST FLOATING NOTIFICATION ================= */}
-      {toast.show && (
+    <div
+      className="relative min-h-screen overflow-hidden text-black flex items-center justify-center px-4 py-12"
+      style={{
+        backgroundColor: "#FFD400",
+        backgroundImage:
+          "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+        backgroundSize: "64px 64px",
+      }}
+    >
+      {/* Dekorasi pojok */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div
-          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-bold uppercase tracking-wider ${
-            toast.type === "success"
-              ? "bg-emerald-50 border-emerald-400 text-emerald-800"
-              : "bg-red-50 border-red-400 text-red-800"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
+          className="absolute -top-6 right-10 h-20 w-28 rounded-2xl"
+          style={{ background: "#A21CAF", border: "4px solid #000", boxShadow: offsetShadow(8) }}
+        />
+        <div
+          className="absolute left-10 top-24 h-14 w-14 rounded-full"
+          style={{ background: "#22C55E", border: "4px solid #000", boxShadow: offsetShadow(6) }}
+        />
+        <div
+          className="absolute bottom-20 right-12 h-14 w-14 rotate-12 rounded-2xl"
+          style={{ background: "#7C3AED", border: "4px solid #000", boxShadow: offsetShadow(6) }}
+        />
+        <div
+          className="absolute bottom-12 left-16 h-10 w-10 rounded-full"
+          style={{ background: "#F97316", border: "4px solid #000", boxShadow: offsetShadow(5) }}
+        />
+      </div>
 
-      {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET ================= */}
-      <section className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-50 to-slate-50 border-r-2 border-slate-100 p-12 flex-col items-center justify-center relative overflow-hidden shadow-inner">
-        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
+      {/* Card Utama */}
+      <div className="relative z-10 w-full max-w-md">
 
-        <div className="relative text-center space-y-4 max-w-sm">
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">
-            Mulai Mengurai Masalah
-          </h2>
-          <p className="text-xs font-medium text-slate-400 leading-relaxed">
-            Daftarkan dirimu untuk memulai petualangan membedah studi kasus
-            kompleks secara bertahap di platform Unravel.
+        {/* Branding */}
+        <div className="text-center mb-6">
+          <Link href="/">
+            <span
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-black text-2xl"
+              style={{ background: "#fff", border: "4px solid #000", boxShadow: offsetShadow(8) }}
+            >
+              <span
+                className="inline-flex h-8 w-8 items-center justify-center rounded-xl font-black text-sm"
+                style={{ background: "#6D28D9", color: "#fff", border: "3px solid #000" }}
+              >
+                U
+              </span>
+              <span style={{ color: "#6D28D9" }}>Unravel</span>
+            </span>
+          </Link>
+          <p className="mt-3 text-sm font-bold text-black/70">
+            Mulai perjalanan analisis dan diskusi kamu.
           </p>
         </div>
-      </section>
 
-      {/* ================= SISI KANAN: FORM SIGNUP VERTIKAL UTUH ================= */}
-      <section className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 bg-white">
-        <div className="w-full max-w-md space-y-8">
-          {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => router.push("/")}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all hover:-translate-y-0.5"
-              >
-                Beranda
-              </button>
+        {/* Form Card */}
+        <div
+          className="rounded-[32px] bg-white p-8"
+          style={{ border: "5px solid #000", boxShadow: offsetShadow(12) }}
+        >
+          <h1 className="text-2xl font-black tracking-tight mb-1">Buat Akun Baru</h1>
+          <p className="text-sm font-semibold text-slate-500 mb-6">
+            Sudah punya akun?{" "}
+            <Link href="/login" className="font-black underline underline-offset-2" style={{ color: "#6D28D9" }}>
+              Masuk di sini
+            </Link>
+          </p>
 
-              <span className="text-xs font-black text-slate-600 tracking-tight select-none">
-                Unravel
-              </span>
-            </div>
-
-            <div className="space-y-1 pt-2">
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                Daftar Akun Baru
-              </h2>
-              <p className="text-xs font-medium text-slate-400">
-                Silakan lengkapi isian formulir pendaftaran di bawah ini.
-              </p>
-            </div>
-          </div>
-
-          {/* NOTIFIKASI ERROR STATIC JIKA RESPONSE BE GAGAL */}
+          {/* Error */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-medium">
-              ⚠️ {error}
+            <div
+              className="mb-4 flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-red-700"
+              style={{ background: "#FECACA", border: "3px solid #000", boxShadow: offsetShadow(4) }}
+            >
+              <span>⚠️</span>
+              <span>{error}</span>
             </div>
           )}
 
-          {/* FORM ISIAN UTAMA */}
           <form onSubmit={handleRegister} className="space-y-4">
-            {/* INPUT NAMA LENGKAP */}
+            {/* Nama */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400">
                 Nama Lengkap
               </label>
               <input
@@ -164,14 +144,15 @@ export default function SignupPage() {
                 disabled={loading}
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Isi Nama Lengkap Kamu"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
+                placeholder="Nama lengkap kamu"
+                className="w-full rounded-xl px-4 py-3 text-sm font-semibold bg-[#FFFDF7] focus:outline-none focus:bg-white transition disabled:opacity-60"
+                style={{ border: "3px solid #000" }}
               />
             </div>
 
-            {/* INPUT USERNAME */}
+            {/* Username */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400">
                 Username
               </label>
               <input
@@ -181,15 +162,16 @@ export default function SignupPage() {
                 disabled={loading}
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Isi Username Unik Kamu"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
+                placeholder="Username unik kamu"
+                className="w-full rounded-xl px-4 py-3 text-sm font-semibold bg-[#FFFDF7] focus:outline-none focus:bg-white transition disabled:opacity-60"
+                style={{ border: "3px solid #000" }}
               />
             </div>
 
-            {/* INPUT EMAIL */}
+            {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Surel / Email
+              <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400">
+                Email
               </label>
               <input
                 type="email"
@@ -198,14 +180,15 @@ export default function SignupPage() {
                 disabled={loading}
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="nama@mahasiswa.id"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
+                placeholder="nama@email.com"
+                className="w-full rounded-xl px-4 py-3 text-sm font-semibold bg-[#FFFDF7] focus:outline-none focus:bg-white transition disabled:opacity-60"
+                style={{ border: "3px solid #000" }}
               />
             </div>
 
-            {/* INPUT PASSWORD */}
-            <div className="space-y-1.5 relative">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label className="block text-[11px] font-black uppercase tracking-widest text-slate-400">
                 Kata Sandi
               </label>
               <div className="relative">
@@ -217,60 +200,79 @@ export default function SignupPage() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-10 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all disabled:opacity-60"
+                  className="w-full rounded-xl px-4 py-3 pr-12 text-sm font-semibold bg-[#FFFDF7] focus:outline-none focus:bg-white transition disabled:opacity-60"
+                  style={{ border: "3px solid #000" }}
                 />
-                {/* Tombol Mata / Intip Password */}
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors text-sm"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition"
+                  tabIndex={-1}
                 >
                   {showPassword ? "👁️‍🗨️" : "👁️"}
                 </button>
               </div>
             </div>
 
-            {/* BARIS KETENTUAN LAYANAN */}
-            <div className="flex items-center justify-between pt-1 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-500 select-none">
-                <input
-                  type="checkbox"
-                  required
-                  disabled={loading}
-                  className="w-4 h-4 rounded-md border-2 border-slate-300 accent-indigo-600 cursor-pointer"
-                />
-                <span className="text-[11px]">
-                  Saya menyetujui Ketentuan Layanan
-                </span>
-              </label>
-            </div>
+            {/* Checkbox */}
+            <label className="flex items-start gap-3 cursor-pointer select-none pt-1">
+              <input
+                type="checkbox"
+                required
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                disabled={loading}
+                className="mt-0.5 h-4 w-4 rounded border-2 border-black accent-[#6D28D9] cursor-pointer shrink-0"
+              />
+              <span className="text-xs font-semibold text-slate-600 leading-relaxed">
+                Saya menyetujui{" "}
+                <span className="font-black underline underline-offset-2 cursor-pointer" style={{ color: "#6D28D9" }}>
+                  Ketentuan Layanan
+                </span>{" "}
+                dan{" "}
+                <span className="font-black underline underline-offset-2 cursor-pointer" style={{ color: "#6D28D9" }}>
+                  Kebijakan Privasi
+                </span>{" "}
+                Unravel.
+              </span>
+            </label>
 
-            {/* TOMBOL SUBMIT UTAMA */}
-            <button
+            {/* Submit */}
+            <AnimatedButton
               type="submit"
-              disabled={loading}
-              className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-md transition-all mt-4 ${
-                loading
-                  ? "bg-indigo-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:-translate-y-0.5"
-              }`}
+              disabled={loading || !agreed}
+              background={loading || !agreed ? "#FDE68A" : "#22C55E"}
+              shadowSize={6}
+              className="mt-2 w-full !py-3.5 !text-sm !rounded-2xl uppercase tracking-widest"
             >
-              {loading ? "Memproses Pendaftaran..." : "Daftar Akun Baru"}
-            </button>
+              {loading ? "Memproses..." : "Daftar Sekarang →"}
+            </AnimatedButton>
           </form>
 
-          {/* FOOTER AKUN BARU */}
-          <div className="text-center pt-4 text-xs font-medium text-slate-400">
-            Sudah memiliki akun sebelumnya?{" "}
-            <Link
-              href="/login"
-              className="font-black text-indigo-600 hover:underline"
-            >
-              Masuk Di Sini
-            </Link>
+          {/* Divider */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="flex-1 h-px bg-slate-200" />
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">atau</span>
+            <div className="flex-1 h-px bg-slate-200" />
           </div>
+
+          {/* Back to home */}
+          <AnimatedButton
+            as="link"
+            href="/"
+            background="#fff"
+            shadowSize={5}
+            className="w-full !py-3 !text-sm !rounded-2xl uppercase tracking-widest"
+          >
+            ← Kembali ke Beranda
+          </AnimatedButton>
         </div>
-      </section>
+
+        {/* Tagline bawah */}
+        <p className="text-center mt-5 text-xs font-bold text-black/60">
+          © 2026 Unravel — Belajar, diskusi, dan progres dalam satu tempat.
+        </p>
+      </div>
     </div>
   );
 }

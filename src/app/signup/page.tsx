@@ -125,7 +125,7 @@ export default function SignupPage() {
                 onClick={() => router.push("/")}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all hover:-translate-y-0.5"
               >
-                Beranda
+                Home
               </button>
 
               <span className="text-xs font-black text-slate-600 tracking-tight select-none">

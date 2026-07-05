@@ -39,15 +39,15 @@ export default function BelajarLayout({
 
           <button
             onClick={() => router.push("/")}
-            className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all hover:-translate-y-0.5"
+            className="px-4 py-2 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-xs font-black uppercase tracking-wider text-slate-600 transition-colors"
           >
-            Beranda
+            Home
           </button>
 
-          {/* Tombol Notifikasi */}
+          {/* Notification Button */}
           <NotificationBell />
 
-          {/* Avatar Lingkar User */}
+          {/* Profile Button */}
           <Link
             href="/profile"
             className="px-3 sm:px-5 py-2 sm:py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-all hover:-translate-y-0.5 text-[10px] sm:text-xs font-black shrink-0"

@@ -169,7 +169,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neogrid flex items-stretch text-black font-sans selection:bg-[#00BC7D] selection:text-white relative">
+    <div className="min-h-screen bg-neogrid flex items-center justify-center text-black font-sans selection:bg-[#00BC7D] selection:text-white relative p-6 sm:p-12">
       {/* ================= COMPONENT TOAST FLOATING NOTIFICATION ================= */}
       {toast.show && (
         <div
@@ -188,16 +188,20 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET ================= */}
-      <section className="hidden lg:flex lg:w-1/2 items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
-
-        <div className="relative text-center space-y-4 max-w-sm">
-          <div className="w-64 h-64 flex items-center justify-center mx-auto overflow-hidden">
+      {/* Centered bounded container to reduce distance gap between left and right */}
+      <div className="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 xl:gap-24">
+        {/* ================= SISI KIRI: PLACEHOLDER VISUAL ASSET ================= */}
+        <section className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center text-center space-y-4 max-w-sm">
+          <div className="w-96 h-96 flex items-center justify-center mx-auto overflow-hidden">
             <DotLottieReact
               src="/loginnsignup.json"
               loop={true}
               autoplay={true}
+              className="w-full h-full"
+              style={{ transform: "scale(1.4)" }}
+              renderConfig={{
+                devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+              }}
             />
           </div>
           <h2 className="text-xl font-black text-black font-serif tracking-tight pt-2">
@@ -207,17 +211,16 @@ export default function LoginPage() {
             Masuk ke akunmu untuk melanjutkan petualangan membedah studi kasus
             kompleks secara bertahap di platform Unravel.
           </p>
-        </div>
-      </section>
+        </section>
 
-      {/* ================= SISI KANAN: FORM LOGIN VERTIKAL UTUH ================= */}
-      <section className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 md:p-12">
-        <div className="w-full max-w-md bg-white border-3 border-black rounded-3xl p-8 shadow-[6px_6px_0px_#000] space-y-6">
-          {recoveryState === "login" && (
-            <>
-              {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
+        {/* ================= SISI KANAN: FORM LOGIN VERTIKAL UTUH ================= */}
+        <section className="w-full lg:w-1/2 flex flex-col justify-center items-center">
+          <div className="w-full max-w-md bg-white border-3 border-black rounded-3xl p-8 shadow-[6px_6px_0px_#000] space-y-6">
+            {recoveryState === "login" && (
+              <>
+                {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
                   <button
                     type="button"
                     onClick={() => router.push("/")}
@@ -545,6 +548,7 @@ export default function LoginPage() {
           )}
         </div>
       </section>
+      </div> {/* Closes max-w-6xl container */}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
@@ -24,6 +24,12 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // OTP verification step
+  const [signupStep, setSignupStep] = useState<"form" | "otp">("form");
+  const [otpValue, setOtpValue] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
   // State untuk manajemen status Toast Notifikasi
   const [toast, setToast] = useState<ToastState>({
@@ -56,34 +62,10 @@ export default function SignupPage() {
         method: "POST",
         body: JSON.stringify(formData),
       });
-
-      // Auto-login: langsung login dengan kredensial yang sama setelah registrasi berhasil
-      const loginData = await apiFetch("/login", {
-        method: "POST",
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      });
-
-      if (loginData?.token) {
-        // Simpan token ke localStorage
-        localStorage.setItem("token", loginData.token);
-        // Simpan di cookie agar dibaca Next.js Middleware (berlaku 7 hari)
-        const maxAge = 7 * 24 * 60 * 60;
-        document.cookie = `token=${loginData.token}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
-      }
-
-      // Pemicu Toast Sukses
-      showToastNotification(
-        "Akun berhasil dibuat! Selamat datang di Unravel!",
-        "success",
-      );
-
-      // Arahkan langsung ke homepage setelah singkat jeda toast
-      setTimeout(() => {
-        router.push("/");
-      }, 1200);
+      // Registration succeeded — proceed to OTP verification
+      setSignupStep("otp");
+      setResendCountdown(60);
+      showToastNotification("Kode OTP telah dikirim ke emailmu!", "success");
     } catch (err: any) {
       // 🌟 PERBAIKAN 1: Saring pesan error mentah dari HTTP Status menjadi kalimat yang ramah
       let friendlyMsg = "Registrasi gagal. Silakan coba lagi.";
@@ -108,6 +90,63 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpValue.length !== 6) {
+      setError("Masukkan 6 digit OTP yang valid.");
+      return;
+    }
+    setError("");
+    setOtpLoading(true);
+    try {
+      await apiFetch("/auth/verify-register-otp", {
+        method: "POST",
+        body: JSON.stringify({ email: formData.email, otp: otpValue }),
+      });
+      // OTP valid — now auto-login
+      const loginData = await apiFetch("/login", {
+        method: "POST",
+        body: JSON.stringify({ username: formData.username, password: formData.password }),
+      });
+      if (loginData?.token) {
+        localStorage.setItem("token", loginData.token);
+        const maxAge = 7 * 24 * 60 * 60;
+        document.cookie = `token=${loginData.token}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+      }
+      showToastNotification("Akun berhasil diverifikasi! Selamat datang!", "success");
+      setTimeout(() => { router.push("/"); }, 1200);
+    } catch (err: any) {
+      setError(err.message || "OTP salah atau sudah kedaluwarsa.");
+      showToastNotification("Verifikasi Gagal", "error");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendRegisterOtp = async () => {
+    if (resendCountdown > 0) return;
+    setOtpLoading(true);
+    try {
+      await apiFetch("/auth/reset-register-otp", {
+        method: "POST",
+        body: JSON.stringify({ email: formData.email }),
+      });
+      setResendCountdown(60);
+      showToastNotification("OTP baru terkirim!", "success");
+    } catch {
+      showToastNotification("Gagal kirim ulang OTP", "error");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // Countdown timer
+  useEffect(() => {
+    if (resendCountdown <= 0) return;
+    const timer = setTimeout(() => setResendCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCountdown]);
 
   return (
     <div className="min-h-screen bg-neogrid flex items-center justify-center text-black font-sans selection:bg-[#00BC7D] selection:text-white relative p-6 sm:p-12">
@@ -154,9 +193,12 @@ export default function SignupPage() {
           </p>
         </section>
 
-        {/* ================= SISI KANAN: FORM SIGNUP VERTIKAL UTUH ================= */}
+        {/* ================= SISI KANAN: FORM SIGNUP / OTP ================= */}
         <section className="w-full lg:w-1/2 flex flex-col justify-center items-center">
           <div className="w-full max-w-md bg-white border-3 border-black rounded-3xl p-8 shadow-[6px_6px_0px_#000] space-y-6">
+
+          {/* ─── REGISTRATION FORM ─── */}
+          {signupStep === "form" && (<>
           {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -310,9 +352,82 @@ export default function SignupPage() {
               Masuk Di Sini
             </Link>
           </div>
-        </div>
-      </section>
-      </div> {/* Closes max-w-6xl container */}
+          </>)}
+
+          {/* ─── OTP VERIFICATION SCREEN ─── */}
+          {signupStep === "otp" && (
+            <>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => { setSignupStep("form"); setOtpValue(""); setError(""); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 rounded-xl text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+                  >
+                    Kembali
+                  </button>
+                  <span className="text-xs font-black text-black uppercase tracking-wider select-none">Unravel</span>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <h2 className="text-2xl font-black text-black tracking-tight font-serif">Verifikasi Email</h2>
+                  <p className="text-xs font-semibold text-slate-500 leading-relaxed">
+                    Kami mengirimkan kode 6 digit ke{" "}
+                    <span className="font-black text-[#00BC7D]">{formData.email}</span>.
+                    Masukkan kode untuk mengaktifkan akunmu.
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="p-3 bg-[#FDEDEC] border-2 border-black rounded-xl text-red-900 text-xs font-black flex items-center gap-2 shadow-[2px_2px_0px_#000]">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleVerifyOtp} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">Kode OTP</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    required
+                    value={otpValue}
+                    onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ""))}
+                    placeholder="_ _ _ _ _ _"
+                    className="w-full px-4 py-4 bg-white border-2 border-black rounded-xl text-2xl font-black text-black text-center tracking-[0.5em] focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all font-mono"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={otpLoading}
+                  className="w-full py-3.5 border-2 border-black text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all cursor-pointer bg-[#00BC7D] disabled:opacity-60"
+                >
+                  {otpLoading ? "Memverifikasi..." : "Verifikasi & Aktifkan Akun"}
+                </button>
+              </form>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  disabled={resendCountdown > 0 || otpLoading}
+                  onClick={handleResendRegisterOtp}
+                  className="text-xs font-black text-slate-500 hover:text-[#00BC7D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {resendCountdown > 0
+                    ? `Kirim ulang OTP dalam ${resendCountdown}s`
+                    : "Tidak menerima OTP? Kirim Ulang"}
+                </button>
+              </div>
+            </>
+          )}
+
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { apiFetch } from "@/utils/api";
 import { DynamicIcon } from "@/components/DynamicIcon";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, AlertCircle } from "lucide-react";
 
 const EMOJI_OPTIONS = [
   "💻", "📱", "🌐", "🔒", "⚙️", "🚀",
@@ -45,6 +45,27 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+
+  // States for custom neobrutalist toast
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToastNotification = (
+    message: string,
+    type: "success" | "error"
+  ) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   // Form State - Kasus Belajar
   const [title, setTitle] = useState("");
@@ -141,7 +162,7 @@ export default function AdminDashboardPage() {
 
   const removeCard = (index: number) => {
     if (cards.length <= 1) {
-      alert("Minimal harus ada 1 kartu jawaban!");
+      showToastNotification("Minimal harus ada 1 kartu jawaban!", "error");
       return;
     }
     setCards(cards.filter((_, idx) => idx !== index));
@@ -248,7 +269,7 @@ export default function AdminDashboardPage() {
       });
       
       if (res?.message === "Fitur Delete segera hadir!") {
-        alert("⚠️ Backend Info: Fitur Delete belum diimplementasikan sepenuhnya di server API (menampilkan pesan 'Fitur Delete segera hadir!'). Silakan hubungi developer backend Anda.");
+        showToastNotification("Backend Info: Fitur Delete belum diimplementasikan sepenuhnya di server API (menampilkan pesan 'Fitur Delete segera hadir!'). Silakan hubungi developer backend Anda.", "error");
         setSuccessMsg("Pesan terkirim ke BE: Fitur Delete segera hadir!");
       } else {
         setSuccessMsg("Kasus berhasil dihapus.");
@@ -693,6 +714,24 @@ export default function AdminDashboardPage() {
           </div>
         </section>
       </main>
+
+      {/* COMPONENT TOAST FLOATING NOTIFICATION */}
+      {toast.show && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 border-black shadow-[4px_4px_0px_#000] transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-black uppercase tracking-wider ${
+            toast.type === "success"
+              ? "bg-emerald-100 text-emerald-900"
+              : "bg-[#FDEDEC] text-red-900"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle2 size={16} />
+          ) : (
+            <AlertCircle size={16} />
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 }

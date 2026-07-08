@@ -409,7 +409,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                         <span className="block text-[8px] font-black uppercase text-black tracking-wider">
                           2. Rencana Tindakan
                         </span>
-                        <p className="text-xs font-semibold text-slate-700 mt-0.5 whitespace-pre-line leading-relaxed font-mono">
+                        <p className="text-xs font-bold text-slate-850 mt-0.5 font-mono">
                           {parsedData.action}
                         </p>
                       </div>
@@ -417,7 +417,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                         <span className="block text-[8px] font-black uppercase text-black tracking-wider">
                           3. Prediksi Dampak
                         </span>
-                        <p className="text-xs font-semibold text-slate-700 mt-0.5 whitespace-pre-line leading-relaxed font-mono">
+                        <p className="text-xs font-bold text-slate-850 mt-0.5 font-mono">
                           {parsedData.impact}
                         </p>
                       </div>

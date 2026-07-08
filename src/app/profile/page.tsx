@@ -5,7 +5,15 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
-import { Settings, AlertTriangle, Star, Eye, EyeOff } from "lucide-react";
+import {
+  Settings,
+  AlertTriangle,
+  Star,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { DynamicIcon } from "@/components/DynamicIcon";
 
 interface UserProfile {
@@ -76,13 +84,36 @@ function ProfileContent() {
   const [selectedPrivacy, setSelectedPrivacy] = useState(false);
   const [savingPrivacy, setSavingPrivacy] = useState(false);
   const [editName, setEditName] = useState("");
-  const [settingsView, setSettingsView] = useState<"profile" | "password">("profile");
+  const [settingsView, setSettingsView] = useState<"profile" | "password">(
+    "profile",
+  );
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+  // States for custom neobrutalist toast
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToastNotification = (
+    message: string,
+    type: "success" | "error",
+  ) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   useEffect(() => {
     if (showSettingsModal && profile) {
@@ -164,7 +195,9 @@ function ProfileContent() {
               (c: any) => c.user_id === userId,
             ).length;
 
-            for (const c of casesList) {
+            for (const c of casesList.filter(
+              (x: any) => x.type !== "learning",
+            )) {
               try {
                 const perspectives = await apiFetch(
                   `/cases/${c.id}/perspectives`,
@@ -248,7 +281,9 @@ function ProfileContent() {
               (c: any) => c.user_id === targetUserId,
             ).length;
 
-            for (const c of casesList) {
+            for (const c of casesList.filter(
+              (x: any) => x.type !== "learning",
+            )) {
               try {
                 const perspectives = await apiFetch(
                   `/cases/${c.id}/perspectives`,
@@ -728,7 +763,7 @@ function ProfileContent() {
                                   <span className="block text-[8px] font-black uppercase tracking-wider">
                                     2. Rencana Tindakan
                                   </span>
-                                  <p className="text-xs font-medium text-slate-600 mt-0.5 whitespace-pre-line leading-relaxed">
+                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
                                     {parsed.action}
                                   </p>
                                 </div>
@@ -736,7 +771,7 @@ function ProfileContent() {
                                   <span className="block text-[8px] font-black uppercase tracking-wider">
                                     3. Prediksi Dampak
                                   </span>
-                                  <p className="text-xs font-medium text-slate-600 mt-0.5 whitespace-pre-line leading-relaxed">
+                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
                                     {parsed.impact}
                                   </p>
                                 </div>
@@ -962,7 +997,8 @@ function ProfileContent() {
                     Pengaturan Akun
                   </h3>
                   <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
-                    Sesuaikan visibilitas identitas profil Anda bagi analis lainnya.
+                    Sesuaikan visibilitas identitas profil Anda bagi analis
+                    lainnya.
                   </p>
                 </div>
 
@@ -1012,17 +1048,21 @@ function ProfileContent() {
                   <div className="text-[10px] font-medium leading-relaxed p-3 bg-slate-50/50 border border-slate-100 rounded-xl">
                     {!selectedPrivacy ? (
                       <p className="text-slate-500">
-                        <span className="font-bold text-[#00BC7D]">Publik:</span>{" "}
+                        <span className="font-bold text-[#00BC7D]">
+                          Publik:
+                        </span>{" "}
                         Nama asli Anda dan ulasan publik terlihat di profil Anda
                         oleh analis lain.
                       </p>
                     ) : (
                       <p className="text-slate-500">
-                        <span className="font-bold text-slate-700">Anonymous:</span>{" "}
+                        <span className="font-bold text-slate-700">
+                          Anonymous:
+                        </span>{" "}
                         Semua ulasan Anda tetap bisa diakses, tetapi nama profil
                         Anda akan ditampilkan sebagai{" "}
-                        <span className="font-bold">Analis Anonim</span> bagi analis
-                        lain.
+                        <span className="font-bold">Analis Anonim</span> bagi
+                        analis lain.
                       </p>
                     )}
                   </div>
@@ -1053,7 +1093,10 @@ function ProfileContent() {
                     onClick={async () => {
                       try {
                         if (!editName.trim()) {
-                          alert("Nama lengkap tidak boleh kosong.");
+                          showToastNotification(
+                            "Nama lengkap tidak boleh kosong.",
+                            "error",
+                          );
                           return;
                         }
 
@@ -1071,8 +1114,15 @@ function ProfileContent() {
                         const updatedData = updateRes?.data || updateRes;
                         setProfile((prev) => {
                           if (!prev) return null;
-                          const nextName = updatedData && typeof updatedData.name === "string" ? updatedData.name : editName;
-                          const nextPrivacy = updatedData && typeof updatedData.is_private === "boolean" ? updatedData.is_private : selectedPrivacy;
+                          const nextName =
+                            updatedData && typeof updatedData.name === "string"
+                              ? updatedData.name
+                              : editName;
+                          const nextPrivacy =
+                            updatedData &&
+                            typeof updatedData.is_private === "boolean"
+                              ? updatedData.is_private
+                              : selectedPrivacy;
                           return {
                             ...prev,
                             name: nextName,
@@ -1080,10 +1130,16 @@ function ProfileContent() {
                           };
                         });
 
-                        alert("Pengaturan profil berhasil diperbarui!");
+                        showToastNotification(
+                          "Pengaturan profil berhasil diperbarui!",
+                          "success",
+                        );
                         setShowSettingsModal(false);
                       } catch (err: any) {
-                        alert("Gagal memperbarui pengaturan: " + err.message);
+                        showToastNotification(
+                          "Gagal memperbarui pengaturan: " + err.message,
+                          "error",
+                        );
                       } finally {
                         setSavingPrivacy(false);
                       }
@@ -1125,7 +1181,11 @@ function ProfileContent() {
                         onClick={() => setShowCurrentPass(!showCurrentPass)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 cursor-pointer flex items-center justify-center"
                       >
-                        {showCurrentPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                        {showCurrentPass ? (
+                          <EyeOff size={14} />
+                        ) : (
+                          <Eye size={14} />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -1171,7 +1231,11 @@ function ProfileContent() {
                         onClick={() => setShowConfirmPass(!showConfirmPass)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 cursor-pointer flex items-center justify-center"
                       >
-                        {showConfirmPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                        {showConfirmPass ? (
+                          <EyeOff size={14} />
+                        ) : (
+                          <Eye size={14} />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -1200,19 +1264,31 @@ function ProfileContent() {
                     onClick={async () => {
                       try {
                         if (!currentPassword) {
-                          alert("Silakan masukkan kata sandi saat ini.");
+                          showToastNotification(
+                            "Silakan masukkan kata sandi saat ini.",
+                            "error",
+                          );
                           return;
                         }
                         if (!newPassword) {
-                          alert("Silakan masukkan kata sandi baru.");
+                          showToastNotification(
+                            "Silakan masukkan kata sandi baru.",
+                            "error",
+                          );
                           return;
                         }
                         if (newPassword.length < 6) {
-                          alert("Kata sandi baru minimal 6 karakter.");
+                          showToastNotification(
+                            "Kata sandi baru minimal 6 karakter.",
+                            "error",
+                          );
                           return;
                         }
                         if (newPassword !== confirmNewPassword) {
-                          alert("Konfirmasi kata sandi baru tidak cocok.");
+                          showToastNotification(
+                            "Konfirmasi kata sandi baru tidak cocok.",
+                            "error",
+                          );
                           return;
                         }
 
@@ -1228,18 +1304,27 @@ function ProfileContent() {
                             }),
                           });
                         } catch (err: any) {
-                          console.warn("Backend /profile/password belum diimplementasikan, membypass untuk demo:", err.message);
+                          console.warn(
+                            "Backend /profile/password belum diimplementasikan, membypass untuk demo:",
+                            err.message,
+                          );
                         }
 
-                        alert("Kata sandi berhasil diperbarui!");
-                        
+                        showToastNotification(
+                          "Kata sandi berhasil diperbarui!",
+                          "success",
+                        );
+
                         // Reset and return
                         setCurrentPassword("");
                         setNewPassword("");
                         setConfirmNewPassword("");
                         setSettingsView("profile");
                       } catch (err: any) {
-                        alert("Gagal memperbarui kata sandi: " + err.message);
+                        showToastNotification(
+                          "Gagal memperbarui kata sandi: " + err.message,
+                          "error",
+                        );
                       } finally {
                         setSavingPrivacy(false);
                       }
@@ -1253,6 +1338,24 @@ function ProfileContent() {
               </>
             )}
           </div>
+        </div>
+      )}
+
+      {/* COMPONENT TOAST FLOATING NOTIFICATION */}
+      {toast.show && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 border-black shadow-[4px_4px_0px_#000] transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-black uppercase tracking-wider ${
+            toast.type === "success"
+              ? "bg-emerald-100 text-emerald-900"
+              : "bg-[#FDEDEC] text-red-900"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle2 size={16} />
+          ) : (
+            <AlertCircle size={16} />
+          )}
+          <span>{toast.message}</span>
         </div>
       )}
     </div>

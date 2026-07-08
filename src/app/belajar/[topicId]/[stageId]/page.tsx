@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   X,
   HelpCircle,
+  AlertCircle,
 } from "lucide-react";
 import {
   DndContext,
@@ -178,6 +179,27 @@ export default function DynamicStagePage() {
   const [totalStages, setTotalStages] = useState<number>(5);
   const [submittedCardIds, setSubmittedCardIds] = useState<number[]>([]);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  // States for custom neobrutalist toast
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToastNotification = (
+    message: string,
+    type: "success" | "error"
+  ) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   // State untuk data studi kasus dynamic dari API
   const [dynamicCase, setDynamicCase] = useState<{
@@ -490,8 +512,9 @@ export default function DynamicStagePage() {
     const totalDitempatkan =
       items.stakeholder.length + items.action.length + items.impact.length;
     if (totalDitempatkan < 2) {
-      alert(
-        "⚠️ Analisis belum lengkap! Taruh minimal 2 kartu kata kunci untuk mulai verifikasi.",
+      showToastNotification(
+        "Analisis belum lengkap! Taruh minimal 2 kartu kata kunci untuk mulai verifikasi.",
+        "error"
       );
       return;
     }
@@ -1085,6 +1108,24 @@ export default function DynamicStagePage() {
         >
           <HelpCircle size={22} className="stroke-[3]" />
         </button>
+      )}
+
+      {/* COMPONENT TOAST FLOATING NOTIFICATION */}
+      {toast.show && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 border-black shadow-[4px_4px_0px_#000] transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-black uppercase tracking-wider ${
+            toast.type === "success"
+              ? "bg-emerald-100 text-emerald-900"
+              : "bg-[#FDEDEC] text-red-900"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle2 size={16} />
+          ) : (
+            <AlertCircle size={16} />
+          )}
+          <span>{toast.message}</span>
+        </div>
       )}
     </DndContext>
   );

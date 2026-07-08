@@ -14,6 +14,7 @@ import {
   Medal,
   Award,
   Lightbulb,
+  AlertCircle,
 } from "lucide-react";
 
 // Fallback mock data jika API kosong
@@ -123,6 +124,27 @@ export default function LearningDashboardPage() {
   const [leaderboardLoading, setLeaderboardLoading] = useState<boolean>(true);
   const [myUserId, setMyUserId] = useState<number | null>(null);
   const [myRank, setMyRank] = useState<number | null>(null);
+
+  // States for custom neobrutalist toast
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToastNotification = (
+    message: string,
+    type: "success" | "error"
+  ) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   // Fungsi pencocokan topik dari API
   const matchTopic = (caseTopics: any[], topicKey: string) => {
@@ -325,8 +347,9 @@ export default function LearningDashboardPage() {
 
   const handleStageClick = (stageId: number) => {
     if (stageId > highestCompletedStage + 1) {
-      alert(
-        "⚠️ Level ini masih terkunci! Selesaikan kasus level sebelumnya terlebih dahulu.",
+      showToastNotification(
+        "Level ini masih terkunci! Selesaikan kasus level sebelumnya terlebih dahulu.",
+        "error"
       );
       return;
     }
@@ -766,6 +789,24 @@ export default function LearningDashboardPage() {
           </div>
         </div>
       </section>
+
+      {/* COMPONENT TOAST FLOATING NOTIFICATION */}
+      {toast.show && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border-2 border-black shadow-[4px_4px_0px_#000] transition-all duration-300 animate-in fade-in slide-in-from-top-4 font-sans text-xs font-black uppercase tracking-wider ${
+            toast.type === "success"
+              ? "bg-emerald-100 text-emerald-900"
+              : "bg-[#FDEDEC] text-red-900"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle2 size={16} />
+          ) : (
+            <AlertCircle size={16} />
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 }

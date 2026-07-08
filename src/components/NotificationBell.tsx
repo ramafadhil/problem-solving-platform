@@ -76,11 +76,11 @@ export default function NotificationBell() {
       {/* Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-9 h-9 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center relative cursor-pointer transition-all shadow-sm select-none"
+        className="w-10 h-10 rounded-xl bg-white border-2 border-black text-black hover:bg-indigo-50 flex items-center justify-center relative cursor-pointer transition-all shadow-[2px_2px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none select-none"
       >
         <Bell size={18} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 border border-white text-[9px] font-black text-white flex items-center justify-center animate-bounce">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-indigo-600 border border-black text-[9px] font-black text-white flex items-center justify-center animate-bounce">
             {unreadCount}
           </span>
         )}
@@ -88,10 +88,10 @@ export default function NotificationBell() {
 
       {/* Floating Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-[999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-205">
+        <div className="absolute right-0 mt-3 w-80 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_#000] z-[999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
-          <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
-            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">
+          <div className="px-4 py-3 bg-indigo-50/50 border-b-2 border-black flex items-center justify-between">
+            <span className="text-xs font-black text-black uppercase tracking-wider">
               Notifikasi
             </span>
             {notifications.length > 0 && (

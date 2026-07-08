@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
-import { Trophy, AlertTriangle, PartyPopper, Lightbulb, CheckCircle2 } from "lucide-react";
+import { Trophy, AlertTriangle, PartyPopper, Lightbulb, CheckCircle2, X, HelpCircle } from "lucide-react";
 import {
   DndContext,
   DragEndEvent,
@@ -91,9 +91,9 @@ function DraggableCard({ id, text }: { id: string; text: string }) {
       style={style}
       {...listeners}
       {...attributes}
-      className={`px-4 py-3 bg-white border-2 border-slate-200 rounded-xl shadow-sm cursor-grab active:cursor-grabbing font-medium text-sm text-slate-700 transition-all hover:border-indigo-400 ${
+      className={`px-4 py-3 bg-white border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] cursor-grab active:cursor-grabbing font-bold text-sm text-black transition-all active:translate-y-0.5 active:translate-x-0.5 active:shadow-none hover:bg-slate-50 ${
         isDragging
-          ? "opacity-50 ring-2 ring-indigo-500/20 shadow-md scale-105"
+          ? "opacity-50 ring-2 ring-indigo-500/20 scale-105"
           : ""
       }`}
     >
@@ -117,16 +117,16 @@ function DroppableZone({
   return (
     <div
       ref={setNodeRef}
-      className={`p-4 rounded-xl border-2 border-dashed min-h-[100px] transition-colors flex flex-col gap-2 ${
-        isOver ? "bg-indigo-50 border-indigo-400" : "bg-white border-slate-200"
+      className={`p-4 rounded-xl border-2 border-black min-h-[100px] transition-colors flex flex-col gap-2 shadow-[4px_4px_0px_#000] ${
+        isOver ? "bg-[#FDEDEC]" : "bg-white"
       }`}
     >
-      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+      <span className="text-xs font-black text-black uppercase tracking-wider">
         {title}
       </span>
       <div className="flex flex-wrap gap-2">
         {items.length === 0 && (
-          <span className="text-xs text-slate-400 my-auto italic py-2">
+          <span className="text-xs text-slate-500 my-auto italic py-2">
             Tarik kata kunci yang sesuai ke sini...
           </span>
         )}
@@ -150,6 +150,8 @@ export default function DynamicStagePage() {
   const kontenKasus = repoStudiKasus[temaKey] || repoStudiKasus["teknologi"];
 
   const [isMounted, setIsMounted] = useState(false);
+  const [showGameplayGuide, setShowGameplayGuide] = useState<boolean>(false);
+  const [guideStep, setGuideStep] = useState<number>(1);
   const [showModal, setShowModal] = useState(false);
   const [scoreResult, setScoreResult] = useState({
     pointsEarned: 0,
@@ -362,6 +364,13 @@ export default function DynamicStagePage() {
         action: [],
         impact: [],
       });
+
+      const gameplayGuidedKey = userId ? `unravel_gameplay_guided_${userId}` : "unravel_gameplay_guided";
+      const guided = localStorage.getItem(gameplayGuidedKey);
+      if (!guided) {
+        setShowGameplayGuide(true);
+      }
+
       setIsMounted(true);
     };
 
@@ -539,6 +548,108 @@ export default function DynamicStagePage() {
     router.push(`/belajar/${temaKey}`);
   };
 
+  const renderGuideBox = () => {
+    return (
+      <div className="bg-[#FFFDF9] border-[3px] border-black rounded-[20px] shadow-[6px_6px_0px_#000] w-full p-5 flex flex-col gap-4 relative animate-in slide-in-from-top-4 duration-200 mt-4 z-40 text-left">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 border-2 border-black px-2 py-0.5 rounded-md shadow-[1px_1px_0px_#000]">
+            Petunjuk Bermain (Langkah {guideStep}/4)
+          </span>
+          <button
+            onClick={() => {
+              const key = currentUserId ? `unravel_gameplay_guided_${currentUserId}` : "unravel_gameplay_guided";
+              localStorage.setItem(key, "true");
+              setShowGameplayGuide(false);
+            }}
+            className="text-xs font-bold text-slate-500 hover:text-black hover:underline cursor-pointer"
+          >
+            Skip
+          </button>
+        </div>
+
+        {/* Step content */}
+        <div className="space-y-2">
+          {guideStep === 1 && (
+            <>
+              <h4 className="text-sm font-black text-black font-sans">1. Membaca Deskripsi Kasus</h4>
+              <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
+                Di sisi kiri ini, bacalah narasi permasalahan kasus dengan cermat untuk menemukan pilar-pilar penting.
+              </p>
+            </>
+          )}
+          {guideStep === 2 && (
+            <>
+              <h4 className="text-sm font-black text-black font-sans">2. Pilih Kata Kunci</h4>
+              <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
+                Di bawah teks narasi, terdapat beberapa pilihan kata kunci penting yang mewakili pilar analisis.
+              </p>
+            </>
+          )}
+          {guideStep === 3 && (
+            <>
+              <h4 className="text-sm font-black text-black font-sans">3. Seret ke Pilar Drop Zone</h4>
+              <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
+                Seret kata kunci tersebut dan letakkan (drop) ke dalam salah satu dari 3 kategori pilar di sebelah kanan: Stakeholder, Action, atau Impact.
+              </p>
+            </>
+          )}
+          {guideStep === 4 && (
+            <>
+              <h4 className="text-sm font-black text-black font-sans">4. Lakukan Verifikasi</h4>
+              <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
+                Setelah semua pilar terisi, tekan tombol "Verifikasi" di bawah drop zone untuk mengevaluasi jawabanmu secara real-time.
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* Footer controls */}
+        <div className="flex justify-between items-center border-t border-black pt-3">
+          <div className="flex gap-1">
+            {[1, 2, 3, 4].map((step) => (
+              <span
+                key={step}
+                className={`w-2 h-2 rounded-full border border-black ${
+                  guideStep === step ? "bg-indigo-600" : "bg-white"
+                }`}
+              />
+            ))}
+          </div>
+          <div className="flex gap-2">
+            {guideStep > 1 && (
+              <button
+                onClick={() => setGuideStep((prev) => prev - 1)}
+                className="px-3 py-1.5 bg-white border-2 border-black rounded-lg text-[10px] font-black uppercase text-black shadow-[1.5px_1.5px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+              >
+                Sebelumnya
+              </button>
+            )}
+            {guideStep < 4 ? (
+              <button
+                onClick={() => setGuideStep((prev) => prev + 1)}
+                className="px-3 py-1.5 bg-indigo-650 hover:bg-indigo-700 border-2 border-black text-white rounded-lg text-[10px] font-black uppercase shadow-[1.5px_1.5px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+              >
+                Lanjut
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  const key = currentUserId ? `unravel_gameplay_guided_${currentUserId}` : "unravel_gameplay_guided";
+                  localStorage.setItem(key, "true");
+                  setShowGameplayGuide(false);
+                }}
+                className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 border-2 border-black text-white rounded-lg text-[10px] font-black uppercase shadow-[1.5px_1.5px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+              >
+                Selesai!
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!isMounted) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[400px]">
@@ -553,29 +664,48 @@ export default function DynamicStagePage() {
     <DndContext onDragEnd={handleDragEnd}>
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-4 relative">
         {/* KOLOM KIRI: Teks Studi Kasus & Pool Kartu Pilihan */}
-        <section className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-6">
-          <div>
-            <span className={`text-xs font-bold tracking-wider uppercase ${isAlreadySolved ? "text-emerald-600" : "text-indigo-600"}`}>
+        <section className="lg:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col gap-6">
+          <div className={`transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}>
+            <span className={`text-xs font-black tracking-wider uppercase ${isAlreadySolved ? "text-emerald-600" : "text-indigo-600"}`}>
               Level {levelNum} - {isAlreadySolved ? "Peninjauan Analisis" : "Eksplorasi"}
             </span>
-            <h2 className="text-2xl font-extrabold text-slate-900 mt-1">
+            <h2 className="text-2xl font-black text-slate-900 mt-1 font-serif">
               {dynamicCase?.judul}
             </h2>
           </div>
  
-          <article className="text-sm text-slate-600 leading-relaxed space-y-4 border-t border-b border-slate-100 py-4">
+          <article
+            id="guide-narrative"
+            className={`text-sm text-slate-700 leading-relaxed space-y-4 border-t-2 border-b-2 border-black py-4 font-mono transition-all duration-300 ${
+              showGameplayGuide
+                ? guideStep === 1
+                  ? "ring-[4px] ring-indigo-600 ring-offset-4 rounded-lg bg-indigo-50/30 p-2 scale-[1.01] z-30 relative"
+                  : "blur-[2.5px] opacity-40 pointer-events-none"
+                : ""
+            }`}
+          >
             {dynamicCase?.narasi.map((paragraf, index) => (
               <p key={index}>{paragraf}</p>
             ))}
           </article>
+          {showGameplayGuide && guideStep === 1 && renderGuideBox()}
 
-          <div>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+          <div
+            id="guide-keywords"
+            className={`transition-all duration-300 ${
+              showGameplayGuide
+                ? guideStep === 2
+                  ? "ring-[4px] ring-indigo-600 ring-offset-4 rounded-2xl p-3 bg-indigo-50/30 scale-[1.01] z-30 relative"
+                  : "blur-[2.5px] opacity-40 pointer-events-none"
+                : ""
+            }`}
+          >
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">
               {isAlreadySolved ? "Status Level" : "Pilihan Kata Kunci"}
             </h3>
             {isAlreadySolved ? (
-              <div className="p-4 bg-emerald-50/50 border-2 border-emerald-100 rounded-2xl text-xs text-emerald-800 font-extrabold flex items-center gap-2 shadow-inner">
-                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+              <div className="p-4 bg-emerald-100 border-2 border-black rounded-2xl text-xs text-emerald-900 font-extrabold flex items-center gap-2 shadow-[3px_3px_0px_#000]">
+                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
                 <span>Level ini sudah selesai dianalisis. Skor optimal telah terekam di papan peringkat.</span>
               </div>
             ) : (
@@ -591,12 +721,13 @@ export default function DynamicStagePage() {
               </div>
             )}
           </div>
+          {showGameplayGuide && guideStep === 2 && renderGuideBox()}
         </section>
 
         {/* KOLOM KANAN: Tempat Peletakan DropZone / Tampilan Kunci Jawaban */}
         <section className="lg:col-span-7 flex flex-col gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex justify-between items-center">
-            <span className="text-sm font-bold text-slate-700">
+          <div className={`bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_#000] flex justify-between items-center transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}>
+            <span className="text-sm font-black text-black">
               Kemajuan Analisis Jalur
             </span>
              <div className="flex gap-1.5 flex-wrap">
@@ -606,7 +737,7 @@ export default function DynamicStagePage() {
                 return (
                   <div
                     key={lvl}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${isActive ? "bg-indigo-600 text-white" : isLvlSolved ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-400"}`}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black border-2 border-black shadow-[1.5px_1.5px_0px_#000] ${isActive ? "bg-indigo-650 text-white" : isLvlSolved ? "bg-[#00c853] text-white" : "bg-slate-100 text-slate-400 opacity-60 shadow-none border-dashed border-slate-350"}`}
                   >
                     {lvl}
                   </div>
@@ -632,9 +763,9 @@ export default function DynamicStagePage() {
                 return (
                   <div
                     key={category.key}
-                    className="p-5 rounded-2xl border-2 border-slate-200 bg-white flex flex-col gap-3 shadow-sm"
+                    className="p-5 rounded-2xl border-2 border-black bg-white flex flex-col gap-3 shadow-[4px_4px_0px_#000]"
                   >
-                    <span className="text-xs font-black text-slate-450 uppercase tracking-wider">
+                    <span className="text-xs font-black text-black uppercase tracking-wider">
                       {category.title}
                     </span>
                     <div className="flex flex-col gap-2">
@@ -644,37 +775,37 @@ export default function DynamicStagePage() {
                         const isChosenByUser = submittedCardIds.includes(cardId);
 
                         if (isChosenByUser) {
-                          return (
-                            <div
-                              key={cardName}
-                              className="px-4 py-3 bg-emerald-50/80 border-2 border-emerald-300 rounded-xl flex items-center justify-between font-bold text-sm text-slate-800 shadow-sm"
-                            >
-                              <div className="flex items-center gap-2">
-                                <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                                <span>{cardName}</span>
-                                <span className="text-[9px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
-                                  Pilihanmu
-                                </span>
-                              </div>
-                              <span className="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-lg">
-                                +{points} Points
-                              </span>
-                            </div>
-                          );
+                           return (
+                             <div
+                               key={cardName}
+                               className="px-4 py-3 bg-emerald-100 border-2 border-black rounded-xl flex items-center justify-between font-bold text-sm text-emerald-900 shadow-[2px_2px_0px_#000]"
+                             >
+                               <div className="flex items-center gap-2">
+                                 <CheckCircle2 size={16} className="text-emerald-750 shrink-0" />
+                                 <span>{cardName}</span>
+                                 <span className="text-[9px] bg-emerald-600 border border-black text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
+                                   Pilihanmu
+                                 </span>
+                               </div>
+                               <span className="text-xs bg-emerald-250 border border-black text-emerald-800 px-2.5 py-1 rounded-lg">
+                                 +{points} Points
+                               </span>
+                             </div>
+                           );
                         } else {
                           return (
                             <div
                               key={cardName}
-                              className="px-4 py-3 bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-between font-semibold text-sm text-slate-500 shadow-sm"
+                              className="px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-between font-semibold text-sm text-slate-400"
                             >
                               <div className="flex items-center gap-2">
                                 <span className="text-slate-400 font-bold">○</span>
                                 <span>{cardName}</span>
-                                <span className="text-[9px] bg-slate-100 text-slate-400 border border-slate-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                <span className="text-[9px] bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                                   Alternatif
                                 </span>
                               </div>
-                              <span className="text-xs bg-slate-100 text-slate-400 px-2.5 py-1 rounded-lg">
+                              <span className="text-xs bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
                                 +{points} Points
                               </span>
                             </div>
@@ -690,47 +821,69 @@ export default function DynamicStagePage() {
               })}
             </div>
           ) : (
-            // Play Mode (Droppable Zones)
-            <div className="flex flex-col gap-3">
-              <DroppableZone
-                id="stakeholder"
-                title="1. Stakeholder Utama"
-                items={items.stakeholder}
-              />
-              <DroppableZone
-                id="action"
-                title="2. Rencana Tindakan (Action)"
-                items={items.action}
-              />
-              <DroppableZone
-                id="impact"
-                title="3. Konsekuensi Capaian (Impact)"
-                items={items.impact}
-              />
-            </div>
+             // Play Mode (Droppable Zones)
+             <div
+               id="guide-zones"
+               className={`flex flex-col gap-3 transition-all duration-300 ${
+                 showGameplayGuide
+                   ? guideStep === 3
+                     ? "ring-[4px] ring-indigo-600 ring-offset-4 rounded-2xl p-3 bg-indigo-50/30 scale-[1.01] z-30 relative"
+                     : "blur-[2.5px] opacity-40 pointer-events-none"
+                   : ""
+               }`}
+             >
+               <DroppableZone
+                 id="stakeholder"
+                 title="1. Stakeholder Utama"
+                 items={items.stakeholder}
+               />
+               <DroppableZone
+                 id="action"
+                 title="2. Rencana Tindakan (Action)"
+                 items={items.action}
+               />
+               <DroppableZone
+                 id="impact"
+                 title="3. Konsekuensi Capaian (Impact)"
+                 items={items.impact}
+               />
+             </div>
           )}
+          {showGameplayGuide && guideStep === 3 && renderGuideBox()}
 
           {isAlreadySolved ? (
             <button
               onClick={() => router.push(`/belajar/${temaKey}`)}
-              className="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all text-sm transform hover:-translate-y-0.5"
+              className={`w-full mt-2 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm font-black uppercase tracking-wider cursor-pointer transition-all duration-300 ${
+                showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""
+              }`}
             >
               Kembali ke Peta Jalur Belajar
             </button>
           ) : (
-            <button
-              onClick={handleVerification}
-              className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all text-sm transform hover:-translate-y-0.5"
-            >
-              Verifikasi Analisis Level {levelNum}
-            </button>
+            <>
+              <button
+                id="guide-verify"
+                onClick={handleVerification}
+                className={`w-full mt-2 py-3.5 bg-indigo-650 hover:bg-indigo-700 text-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm font-black uppercase tracking-wider cursor-pointer transition-all duration-300 ${
+                  showGameplayGuide
+                    ? guideStep === 4
+                      ? "ring-[4px] ring-indigo-600 ring-offset-4 animate-pulse scale-[1.01] z-30 relative"
+                      : "blur-[2.5px] opacity-40 pointer-events-none"
+                    : ""
+                }`}
+              >
+                Verifikasi Analisis Level {levelNum}
+              </button>
+              {showGameplayGuide && guideStep === 4 && renderGuideBox()}
+            </>
           )}
         </section>
 
         {/* MODAL NOTIFIKASI HASIL PENILAIAN */}
         {showModal && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-[8px_8px_0px_#000] border-2 border-black space-y-4">
               {scoreResult.isSuccess ? (
                 <>
                   <div className="text-amber-500 flex justify-center mb-2">
@@ -740,23 +893,23 @@ export default function DynamicStagePage() {
                     Analisis Selesai Diverifikasi!
                   </h3>
 
-                  <div className="my-4 bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-                    <p className="text-2xl font-black text-emerald-600">
+                  <div className="my-4 bg-[#FDEDEC] p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000]">
+                    <p className="text-2xl font-black text-indigo-650">
                       +{scoreResult.pointsEarned} Points
                     </p>
-                    <p className="text-xs text-emerald-500 font-semibold mt-0.5">
+                    <p className="text-xs text-indigo-600 font-semibold mt-0.5">
                       Poin Berhasil Didapatkan
                     </p>
                   </div>
 
-                  <p className="text-xs text-slate-500 leading-relaxed px-2 mb-6">
+                  <p className="text-xs text-slate-550 leading-relaxed px-2 mb-6 font-semibold">
                     {scoreResult.feedback} Progres kamu telah diperbarui di papan
                     peringkat secara *real-time*.
                   </p>
 
                   <button
                     onClick={handleBackToDashboard}
-                    className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
+                    className="w-full py-3.5 bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
                   >
                     Kembali ke Peta Jalur Belajar
                   </button>
@@ -770,7 +923,7 @@ export default function DynamicStagePage() {
                     Analisis Belum Tepat!
                   </h3>
 
-                  <div className="my-4 bg-rose-50 p-4 rounded-xl border border-rose-100">
+                  <div className="my-4 bg-[#FDEDEC] p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000]">
                     <p className="text-2xl font-black text-rose-600">
                       +0 Points
                     </p>
@@ -779,13 +932,13 @@ export default function DynamicStagePage() {
                     </p>
                   </div>
 
-                  <p className="text-xs text-slate-500 leading-relaxed px-2 mb-6">
+                  <p className="text-xs text-slate-550 leading-relaxed px-2 mb-6 font-semibold">
                     {scoreResult.feedback}
                   </p>
 
                   <button
                     onClick={() => setShowModal(false)}
-                    className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm cursor-pointer"
+                    className="w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
                   >
                     Coba Lagi
                   </button>
@@ -795,6 +948,20 @@ export default function DynamicStagePage() {
           </div>
         )}
       </div>
+
+      {/* FLOATING TUTORIAL HELP BUTTON */}
+      {!showGameplayGuide && !isAlreadySolved && (
+        <button
+          onClick={() => {
+            setGuideStep(1);
+            setShowGameplayGuide(true);
+          }}
+          className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#FDE293] hover:bg-[#fddb73] text-black border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer z-40"
+          title="Buka Petunjuk Bermain"
+        >
+          <HelpCircle size={22} className="stroke-[3]" />
+        </button>
+      )}
     </DndContext>
   );
 }

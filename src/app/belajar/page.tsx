@@ -77,12 +77,18 @@ export default function TopikSelectionPage() {
         setLoading(true);
         // 1. Ambil semua topik dari BE
         const topicsRes = await apiFetch("/topics");
-        const rawTopics = Array.isArray(topicsRes) ? topicsRes : (topicsRes?.data || []);
-        
+        const rawTopics = Array.isArray(topicsRes)
+          ? topicsRes
+          : topicsRes?.data || [];
+
         // 2. Ambil semua kasus dari BE untuk menghitung jumlah stage bertipe 'learning' per topik
         const casesRes = await apiFetch("/cases");
-        const rawCases = Array.isArray(casesRes) ? casesRes : (casesRes?.cases || casesRes?.data || []);
-        const learningCases = rawCases.filter((c: any) => c.type === "learning");
+        const rawCases = Array.isArray(casesRes)
+          ? casesRes
+          : casesRes?.cases || casesRes?.data || [];
+        const learningCases = rawCases.filter(
+          (c: any) => c.type === "learning",
+        );
 
         if (Array.isArray(rawTopics)) {
           const mapped = rawTopics.map((t: any, index: number) => {
@@ -90,15 +96,23 @@ export default function TopikSelectionPage() {
             const parts = (t.name || "").split("|");
             const title = parts[0] || "Topik Tanpa Nama";
             const icon = parts[1] || "📚";
-            const description = parts[2] || `Analisis problem solving dan bedah kasus kritis seputar tema ${title}.`;
+            const description =
+              parts[2] ||
+              `Analisis problem solving dan bedah kasus kritis seputar tema ${title}.`;
             const id = title.toLowerCase().replace(/\s+/g, "-");
 
             // Cari jumlah kasus bertipe learning untuk topik ini
             const matchTopic = (caseTopics: any[]) => {
               if (!caseTopics || !Array.isArray(caseTopics)) return false;
-              return caseTopics.some(ct => (ct.id === t.id) || (ct.name?.split("|")[0].toLowerCase() === title.toLowerCase()));
+              return caseTopics.some(
+                (ct) =>
+                  ct.id === t.id ||
+                  ct.name?.split("|")[0].toLowerCase() === title.toLowerCase(),
+              );
             };
-            const topicCasesCount = learningCases.filter((c: any) => matchTopic(c.topics)).length;
+            const topicCasesCount = learningCases.filter((c: any) =>
+              matchTopic(c.topics),
+            ).length;
 
             // Dapatkan warna preset berurutan berdasarkan index
             const color = colorPresets[index % colorPresets.length];
@@ -109,7 +123,7 @@ export default function TopikSelectionPage() {
               icon,
               description,
               totalStages: topicCasesCount || 5, // Fallback default ke 5 stage (data mock) jika di DB belum ada
-              ...color
+              ...color,
             };
           });
 
@@ -128,9 +142,8 @@ export default function TopikSelectionPage() {
   const handleSelectTema = (id: string) => {
     router.push(`/belajar/${id}`);
   };
-
   return (
-    <div className="min-h-screen bg-[#FFFDF9] flex items-center justify-center p-6 lg:p-12 relative">
+    <div className="min-h-screen bg-neogrid flex items-center justify-center p-6 lg:p-12 relative">
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
         {/* SISI KIRI: RUANG FOKUS UTAMA UNTUK MOTION GRAPHICS */}
         <section className="lg:col-span-5 flex flex-col justify-center items-center w-full">
@@ -150,7 +163,7 @@ export default function TopikSelectionPage() {
           <div className="flex justify-between items-center w-full">
             <button
               onClick={() => router.push("/")}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 font-sans rounded-xl text-xs font-bold uppercase tracking-wider text-slate-500 shadow-sm transition-all hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 text-black font-sans rounded-xl text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
             >
               Kembali
             </button>
@@ -160,7 +173,7 @@ export default function TopikSelectionPage() {
             <h1 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight leading-tight font-serif">
               Pilih Tema Utama Analisis
             </h1>
-            <p className="text-xs font-medium text-slate-500 leading-relaxed max-w-xl font-sans">
+            <p className="text-xs font-semibold text-black text-slate-650 leading-relaxed max-w-xl font-mono">
               Tentukan payung masalah yang ingin kamu bedah. Setiap tema
               menyediakan jalur petualangan linear dengan studi kasus yang makin
               menantang di tiap levelnya!
@@ -169,12 +182,14 @@ export default function TopikSelectionPage() {
 
           <div className="flex flex-col gap-4 w-full max-h-[480px] overflow-y-auto pr-1">
             {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center space-y-3 bg-white border-2 border-slate-200 rounded-3xl shadow-sm">
+              <div className="py-20 flex flex-col items-center justify-center space-y-3 bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0px_#000]">
                 <div className="w-6 h-6 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Memuat Tema Analisis...</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  Memuat Tema Analisis...
+                </span>
               </div>
             ) : topics.length === 0 ? (
-              <div className="py-20 text-center text-xs text-slate-400 font-semibold italic bg-white border-2 border-slate-200 rounded-3xl shadow-sm">
+              <div className="py-20 text-center text-xs text-slate-400 font-semibold italic bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0px_#000]">
                 Belum ada tema analisis terdaftar di database.
               </div>
             ) : (
@@ -183,14 +198,17 @@ export default function TopikSelectionPage() {
                   <div
                     key={tema.id}
                     onClick={() => handleSelectTema(tema.id)}
-                    className={`bg-white border-2 rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] border-slate-200 cursor-pointer bg-gradient-to-br ${tema.gradient} ${tema.borderColor} ${tema.shadowColor} hover:-translate-y-0.5`}
+                    className={`bg-white border-2 border-black rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] cursor-pointer bg-gradient-to-br ${tema.gradient} shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none`}
                   >
                     {/* Deskripsi Ikon & Ringkasan Topik */}
                     <div className="flex gap-4 items-center flex-1">
                       <div
-                        className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-white shadow-md transform -rotate-3 shrink-0 text-white`}
+                        className={`text-xl ${tema.iconBg} w-11 h-11 rounded-xl flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_#000] transform -rotate-3 shrink-0 text-white`}
                       >
-                        <DynamicIcon emoji={tema.icon} className="w-5 h-5 text-white" />
+                        <DynamicIcon
+                          emoji={tema.icon}
+                          className="w-5 h-5 text-white"
+                        />
                       </div>
                       <div>
                         <h3
@@ -198,7 +216,7 @@ export default function TopikSelectionPage() {
                         >
                           {tema.title}
                         </h3>
-                        <p className="text-[11px] font-medium text-slate-500 mt-0.5 leading-relaxed max-w-sm font-sans">
+                        <p className="text-[12px] font-semibold text-black text-slate-600 mt-0.5 leading-relaxed max-w-sm font-mono">
                           {tema.description}
                         </p>
                       </div>
@@ -207,7 +225,7 @@ export default function TopikSelectionPage() {
                     {/* Badge Indikator Informasi Kasus */}
                     <div className="shrink-0 text-right min-w-[85px] font-sans">
                       <div className="flex flex-col items-end gap-0.5">
-                        <span className="bg-white px-2 py-0.5 rounded-md border border-slate-200 text-indigo-600 shadow-sm text-[9px] font-black uppercase tracking-wider">
+                        <span className="bg-white px-2 py-0.5 rounded-md border-2 border-black text-black shadow-[1.5px_1.5px_0px_#000] text-[9px] font-black uppercase tracking-wider">
                           {tema.totalStages} Kasus
                         </span>
                       </div>
@@ -216,30 +234,25 @@ export default function TopikSelectionPage() {
                 ))}
 
                 {/* Kotak Locked (Future Updates) */}
-                <div
-                  className="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 min-h-[95px] cursor-not-allowed opacity-80"
-                >
+                <div className="bg-slate-50/50 border-2 border-dashed border-black rounded-2xl p-5 flex items-center justify-between gap-4 min-h-[95px] cursor-not-allowed opacity-80">
                   <div className="flex gap-4 items-center flex-1">
-                    <div
-                      className="text-lg bg-slate-200 w-11 h-11 rounded-xl flex items-center justify-center border border-slate-300/40 shadow-sm shrink-0"
-                    >
-                      <Lock size={16} className="text-slate-400" />
+                    <div className="text-lg bg-slate-200 w-11 h-11 rounded-xl flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_#000] shrink-0 animate-pulse">
+                      <Lock size={16} className="text-slate-500" />
                     </div>
                     <div>
-                      <h3
-                        className="text-sm font-black tracking-tight font-serif text-slate-400"
-                      >
+                      <h3 className="text-sm font-black tracking-tight font-serif text-slate-500">
                         Tema Baru (Segera Hadir)
                       </h3>
-                      <p className="text-[11px] font-medium text-slate-450 mt-0.5 leading-relaxed max-w-sm font-sans text-slate-400">
-                        Petualangan dan studi kasus baru sedang dirancang oleh tim analis.
+                      <p className="text-[11px] text-black font-medium text-slate-450 mt-0.5 leading-relaxed max-w-sm font-mono text-slate-450">
+                        Petualangan dan studi kasus baru sedang dirancang oleh
+                        tim analis.
                       </p>
                     </div>
                   </div>
 
                   <div className="shrink-0 text-right min-w-[85px] font-sans">
                     <div className="flex flex-col items-end gap-0.5">
-                      <span className="bg-slate-100 px-2 py-0.5 rounded-md border border-slate-250 text-slate-400 text-[9px] font-black uppercase tracking-wider">
+                      <span className="bg-slate-100 px-2 py-0.5 rounded-md border-2 border-dashed border-slate-350 text-slate-500 text-[9px] font-black uppercase tracking-wider">
                         Locked
                       </span>
                     </div>

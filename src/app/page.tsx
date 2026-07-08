@@ -301,7 +301,9 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
               {/* Step 1 */}
-              <div className="bg-[#FDEDEC] border-2 border-black p-6 rounded-2xl flex flex-col justify-between min-h-[140px] shadow-[3px_3px_0px_#000]">
+              <div className="relative overflow-hidden group bg-[#FDEDEC] border-2 border-black p-6 rounded-2xl flex flex-col justify-between min-h-[140px] shadow-[3px_3px_0px_#000] cursor-pointer transition-shadow duration-150 hover:shadow-[5px_5px_0px_#000]">
+                {/* Left accent bar — grows bottom → top */}
+                <div className="absolute left-0 bottom-0 w-[5px] h-0 group-hover:h-full transition-all duration-300 ease-out bg-red-400 rounded-tr-sm" />
                 <div className="space-y-2">
                   <h3 className="text-sm font-black text-black">
                     1. Bedah Kasus Nyata!
@@ -314,7 +316,9 @@ export default function LandingPage() {
               </div>
 
               {/* Step 2 */}
-              <div className="bg-emerald-100 border-2 border-black p-6 rounded-2xl flex flex-col justify-between min-h-[140px] shadow-[3px_3px_0px_#000]">
+              <div className="relative overflow-hidden group bg-emerald-100 border-2 border-black p-6 rounded-2xl flex flex-col justify-between min-h-[140px] shadow-[3px_3px_0px_#000] cursor-pointer transition-shadow duration-150 hover:shadow-[5px_5px_0px_#000]">
+                {/* Left accent bar — grows bottom → top */}
+                <div className="absolute left-0 bottom-0 w-[5px] h-0 group-hover:h-full transition-all duration-300 ease-out bg-emerald-500 rounded-tr-sm" />
                 <div className="space-y-2">
                   <h3 className="text-sm font-black text-black">
                     2. Formulasi 3 Poin Masalah Utama
@@ -327,7 +331,9 @@ export default function LandingPage() {
               </div>
 
               {/* Step 3 */}
-              <div className="bg-blue-100 border-2 border-black p-6 rounded-2xl flex flex-col justify-between min-h-[140px] shadow-[3px_3px_0px_#000]">
+              <div className="relative overflow-hidden group bg-blue-100 border-2 border-black p-6 rounded-2xl flex flex-col justify-between min-h-[140px] shadow-[3px_3px_0px_#000] cursor-pointer transition-shadow duration-150 hover:shadow-[5px_5px_0px_#000]">
+                {/* Left accent bar — grows bottom → top */}
+                <div className="absolute left-0 bottom-0 w-[5px] h-0 group-hover:h-full transition-all duration-300 ease-out bg-blue-500 rounded-tr-sm" />
                 <div className="space-y-2">
                   <h3 className="text-sm font-black text-black">
                     3. Bandingkan Perspektif

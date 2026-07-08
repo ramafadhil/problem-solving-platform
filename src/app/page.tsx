@@ -129,15 +129,16 @@ export default function LandingPage() {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2.5 bg-white text-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-xs font-black uppercase shrink-0"
+                  className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-xs font-black uppercase shrink-0"
                 >
                   Masuk
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-4 py-2.5 bg-[#00BC7D] text-white border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-xs font-black uppercase shrink-0"
+                  className="px-3 sm:px-4 py-2 sm:py-2.5 bg-[#00BC7D] text-white border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-xs font-black uppercase shrink-0"
                 >
-                  Mulai Sekarang
+                  <span className="hidden sm:inline">Mulai Sekarang</span>
+                  <span className="sm:hidden">Daftar</span>
                 </Link>
               </>
             )}
@@ -147,8 +148,8 @@ export default function LandingPage() {
 
       <main className="max-w-6xl mx-auto px-6 space-y-16 py-12">
         {/* 2. HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-4">
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center pt-4">
+          <div className="md:col-span-7 space-y-6 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border-2 border-black rounded-full shadow-[3px_3px_0px_#000] text-xs font-extrabold text-black">
               <Sparkles size={14} className="text-indigo-600" />
               <span>Belajar, diskusi, dan progres dalam satu tempat</span>
@@ -160,13 +161,13 @@ export default function LandingPage() {
               terstruktur!
             </h1>
 
-            <p className="text-sm font-semibold text-black leading-relaxed max-w-xl mx-auto lg:mx-0 font-mono">
+            <p className="text-sm font-semibold text-black leading-relaxed max-w-xl mx-auto md:mx-0 font-mono">
               Unravel menyatukan jalur belajar interaktif, berbagi perspektif,
               dan progres agar kamu bisa berlatih, berdiskusi, dan melihat
               perkembangan dari pengalaman yang konsisten.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
               <Link
                 href="/belajar"
                 className="px-6 py-3.5 bg-emerald-500 border-3 border-black hover:bg-emerald-600 text-white font-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm"
@@ -181,7 +182,7 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-4">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-4">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#D1F2D9] border-2 border-black rounded-full shadow-[2.5px_2.5px_0px_#000] text-xs font-black text-black select-none">
                 <Target size={14} className="text-black shrink-0" />
                 <span>100+ tantangan</span>
@@ -200,7 +201,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 w-full flex flex-col items-center justify-center">
+          <div className="md:col-span-5 w-full flex flex-col items-center justify-center">
             {/* Tablet-style container wrapper for the Lottie graph */}
             <div className="relative w-full max-w-[400px] bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col items-center justify-center">
               {/* Browser Mock Controls */}
@@ -284,7 +285,7 @@ export default function LandingPage() {
         </section>
         <section id="fitur" className="w-full pt-4">
           <div className="bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 sm:p-10 space-y-8">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2 text-white">
                 <span className="text-xs font-black text-[#00BC7D] uppercase tracking-widest block">
                   FITUR & EKOSISTEM
@@ -293,7 +294,7 @@ export default function LandingPage() {
                   Semua Alat Bantu Analisis untuk Mengasah Logikamu
                 </h2>
               </div>
-              <div className="shrink-0 self-start lg:self-center">
+              <div className="shrink-0 self-start md:self-center">
                 <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FDE293] border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] text-xs font-black text-black">
                   Fasilitas Belajar Terpadu
                 </span>
@@ -369,9 +370,9 @@ export default function LandingPage() {
 
         {/* 5. ALUR PENGALAMAN */}
         <section id="alur" className="w-full pt-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
             {/* Sisi Kiri */}
-            <div className="lg:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-8 flex flex-col justify-between gap-6">
+            <div className="md:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-8 flex flex-col justify-between gap-6">
               <div className="space-y-4">
                 <span className="text-xs font-black text-[#00BC7D] uppercase tracking-widest block">
                   ALUR PENGALAMAN
@@ -396,7 +397,7 @@ export default function LandingPage() {
             </div>
 
             {/* Sisi Kanan (3 Steps) */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-6">
               {/* Step 1 */}
               <div className="bg-white border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] flex flex-col items-start gap-4 min-h-[195px]">
                 <div className="w-8 h-8 rounded-full bg-[#FDE293] border-2 border-black flex items-center justify-center text-xs font-black shadow-[1.5px_1.5px_0px_#000] select-none">

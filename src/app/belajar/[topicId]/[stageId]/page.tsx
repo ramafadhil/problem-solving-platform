@@ -662,9 +662,9 @@ export default function DynamicStagePage() {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-4 relative">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8 items-start mt-4 relative">
         {/* KOLOM KIRI: Teks Studi Kasus & Pool Kartu Pilihan */}
-        <section className="lg:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col gap-6">
+        <section className="md:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col gap-6">
           <div className={`transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}>
             <span className={`text-xs font-black tracking-wider uppercase ${isAlreadySolved ? "text-emerald-600" : "text-indigo-600"}`}>
               Level {levelNum} - {isAlreadySolved ? "Peninjauan Analisis" : "Eksplorasi"}
@@ -725,7 +725,7 @@ export default function DynamicStagePage() {
         </section>
 
         {/* KOLOM KANAN: Tempat Peletakan DropZone / Tampilan Kunci Jawaban */}
-        <section className="lg:col-span-7 flex flex-col gap-4">
+        <section className="md:col-span-7 flex flex-col gap-4">
           <div className={`bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_#000] flex justify-between items-center transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}>
             <span className="text-sm font-black text-black">
               Kemajuan Analisis Jalur

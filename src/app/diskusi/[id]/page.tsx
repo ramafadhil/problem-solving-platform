@@ -268,20 +268,23 @@ export default function DetailKasusPage() {
   return (
     <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-indigo-650 selection:text-white">
       {/* NAVBAR */}
-      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-[4px_4px_0px_#000]">
-        <Link
-          href="/diskusi"
-          className="text-xs font-black uppercase tracking-wider text-black border-2 border-black bg-white hover:bg-slate-50 px-4 py-2 rounded-xl shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center gap-1 cursor-pointer"
-        >
-          Kembali ke Forum
-        </Link>
-        <NotificationBell />
+      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+          <Link
+            href="/diskusi"
+            className="text-xs font-black uppercase tracking-wider text-black border-2 border-black bg-white hover:bg-slate-50 px-3 sm:px-4 py-2 rounded-xl shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center gap-1 cursor-pointer"
+          >
+            <span className="hidden sm:inline">Kembali ke Forum</span>
+            <span className="sm:hidden">Kembali</span>
+          </Link>
+          <NotificationBell />
+        </div>
       </nav>
 
       {/* MAIN LAYOUT CONTAINER */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* SISI KIRI: DETAIL KASUS & SETTING PRIVASI JAWABAN (5 Kolom) */}
-        <section className="lg:col-span-5 space-y-6">
+        <section className="md:col-span-5 space-y-6">
           {/* KARTU DETAIL STUDI KASUS */}
           <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_#000] space-y-4">
             <div className="space-y-1">
@@ -360,7 +363,7 @@ export default function DetailKasusPage() {
         </section>
 
         {/* SISI KANAN: FORMULIR INPUT JAWABAN PERSPEKTIF 3 PILAR (7 Kolom) */}
-        <section className="lg:col-span-7 space-y-4">
+        <section className="md:col-span-7 space-y-4">
           <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_#000] space-y-4">
             <div className="space-y-1">
               <h3 className="text-sm font-black text-black uppercase tracking-wider">

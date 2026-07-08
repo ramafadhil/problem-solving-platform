@@ -339,46 +339,50 @@ export default function LearningDashboardPage() {
       : 0;
 
   return (
-    <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-4">
+    <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 items-start mt-4">
       {/* AREA KIRI: Peta Jalur Progres - Vertikal Centered */}
-      <section className="lg:col-span-8 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] min-h-[600px] overflow-hidden">
+      <section className="md:col-span-8 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] min-h-[600px] overflow-hidden">
         {/* Header */}
-        <div className="px-8 pt-7 pb-5 border-b-2 border-black flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="px-4 sm:px-8 pt-6 pb-5 border-b-2 border-black flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => router.push("/belajar")}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 text-black font-sans rounded-xl text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 text-black font-sans rounded-xl text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer whitespace-nowrap shrink-0"
             >
               Ubah Tema
             </button>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
+            <div className="min-w-0">
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
                 Jalur Belajar
               </p>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <span className="text-black flex items-center justify-center bg-white p-1.5 rounded-xl border-2 border-black shadow-[1.5px_1.5px_0px_#000]">
-                  <DynamicIcon emoji={topicIcon} size={18} />
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2 truncate">
+                <span className="text-black flex items-center justify-center bg-white p-1 rounded-xl border-2 border-black shadow-[1.5px_1.5px_0px_#000] shrink-0">
+                  <DynamicIcon emoji={topicIcon} size={16} />
                 </span>
-                <span>{namaTema || temaFallback.namaTema}</span>
+                <span className="truncate">{namaTema || temaFallback.namaTema}</span>
               </h2>
+            </div>
+          </div>
+          <div className="flex items-center justify-between sm:justify-end sm:text-right gap-4 border-t-2 border-dashed border-slate-100 sm:border-t-0 pt-3 sm:pt-0">
+            <div className="sm:hidden">
               {topicDesc && (
-                <p className="text-[11px] text-slate-500 mt-0.5 font-medium">
+                <p className="text-[10px] text-slate-500 font-medium line-clamp-1">
                   {topicDesc}
                 </p>
               )}
             </div>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
-              Level Aktif
-            </p>
-            <span className="text-2xl font-black text-[#00BC7D]">
-              {Math.min(highestCompletedStage + 1, stagesList.length || 1)}
-            </span>
-            <span className="text-slate-400 text-sm font-bold">
-              {" "}
-              / {stagesList.length || "—"}
-            </span>
+            <div className="flex-shrink-0 text-right">
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
+                Level Aktif
+              </p>
+              <span className="text-xl sm:text-2xl font-black text-[#00BC7D]">
+                {Math.min(highestCompletedStage + 1, stagesList.length || 1)}
+              </span>
+              <span className="text-slate-400 text-xs sm:text-sm font-bold">
+                {" "}
+                / {stagesList.length || "—"}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -540,7 +544,7 @@ export default function LearningDashboardPage() {
       </section>
 
       {/* AREA KANAN: Leaderboard + Progres */}
-      <section className="lg:col-span-4 flex flex-col gap-4">
+      <section className="md:col-span-4 flex flex-col gap-4">
         {/* Kartu Profil & XP Singkat */}
         <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] space-y-3">
           <div className="flex items-center gap-3">

@@ -482,47 +482,51 @@ function ProfileContent() {
   return (
     <div className="min-h-screen bg-neogrid text-black font-sans selection:bg-indigo-650 selection:text-white">
       {/* NAVBAR HEADER */}
-      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-[4px_4px_0px_#000]">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 flex items-center justify-center">
-            <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
-          </div>
-          <a
-            href="/"
-            className="font-black text-lg tracking-tight text-black hover:text-[#00BC7D] transition-colors"
-          >
-            Unravel
-          </a>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/diskusi"
-            className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-[#00BC7D] transition-colors"
-          >
-            Mode Diskusi
-          </Link>
-          <Link
-            href="/belajar"
-            className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-[#00BC7D] transition-colors"
-          >
-            Mode Belajar
-          </Link>
-          <NotificationBell />
-          {isOwnProfile ? (
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-800 border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 flex items-center justify-center">
+              <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
+            </div>
+            <a
+              href="/"
+              className="font-black text-lg tracking-tight text-black hover:text-[#00BC7D] transition-colors"
             >
-              Keluar Account
-            </button>
-          ) : (
+              Unravel
+            </a>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link
               href="/diskusi"
-              className="px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 text-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all"
+              className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-[#00BC7D] transition-colors hidden md:inline"
             >
-              Kembali ke Forum
+              Mode Diskusi
             </Link>
-          )}
+            <Link
+              href="/belajar"
+              className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-[#00BC7D] transition-colors hidden md:inline"
+            >
+              Mode Belajar
+            </Link>
+            <NotificationBell />
+            {isOwnProfile ? (
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-800 border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer whitespace-nowrap"
+              >
+                <span className="hidden sm:inline">Keluar Account</span>
+                <span className="sm:hidden">Keluar</span>
+              </button>
+            ) : (
+              <Link
+                href="/diskusi"
+                className="px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 text-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all whitespace-nowrap"
+              >
+                <span className="hidden sm:inline">Kembali ke Forum</span>
+                <span className="sm:hidden">Kembali</span>
+              </Link>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -541,9 +545,9 @@ function ProfileContent() {
             <span>{error}</span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {/* ================= SISI KIRI: IDENTITAS & STATS ================= */}
-            <section className="lg:col-span-4 space-y-6">
+            <section className="md:col-span-4 space-y-6">
               <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_#000] space-y-6 relative">
                 {/* TOMBOL PENGATURAN PRIVASI (GEAR) */}
                 {isOwnProfile && (
@@ -618,7 +622,7 @@ function ProfileContent() {
             </section>
 
             {/* ================= SISI KANAN: TAB CONTENT RIWAYAT ================= */}
-            <section className="lg:col-span-8 space-y-6">
+            <section className="md:col-span-8 space-y-6">
               <div className="flex items-center gap-2 p-1.5 bg-white border-2 border-black rounded-2xl w-fit shadow-[3px_3px_0px_#000]">
                 <button
                   onClick={() => setActiveTab("diskusi")}
@@ -628,7 +632,8 @@ function ProfileContent() {
                       : "text-slate-550 hover:text-black border-2 border-transparent"
                   }`}
                 >
-                  Jawaban Diskusi
+                  <span className="hidden sm:inline">Jawaban Diskusi</span>
+                  <span className="sm:hidden">Diskusi</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("belajar")}
@@ -638,7 +643,8 @@ function ProfileContent() {
                       : "text-slate-550 hover:text-black border-2 border-transparent"
                   }`}
                 >
-                  Progres Belajar
+                  <span className="hidden sm:inline">Progres Belajar</span>
+                  <span className="sm:hidden">Belajar</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("disimpan")}
@@ -648,7 +654,8 @@ function ProfileContent() {
                       : "text-slate-550 hover:text-black border-2 border-transparent"
                   }`}
                 >
-                  Kasus Disimpan
+                  <span className="hidden sm:inline">Kasus Disimpan</span>
+                  <span className="sm:hidden">Disimpan</span>
                 </button>
               </div>
 

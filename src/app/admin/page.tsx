@@ -311,29 +311,32 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-indigo-500 selection:text-white pb-20">
       {/* NAVBAR */}
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="Logo" className="w-14"/>
-          <Link href="/" className="font-black text-lg tracking-tight text-slate-900">
-            Unravel<span className="text-indigo-600"> Admin</span>
-          </Link>
-        </div>
-        <div className="flex items-center gap-3">
-          <NotificationBell />
-          <Link
-            href="/profile"
-            className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all shadow-sm"
-          >
-            Kembali ke Profil
-          </Link>
+      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo" className="w-14"/>
+            <Link href="/" className="font-black text-lg tracking-tight text-slate-900">
+              Unravel<span className="text-indigo-600"> Admin</span>
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <NotificationBell />
+            <Link
+              href="/profile"
+              className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all shadow-sm"
+            >
+              <span className="hidden sm:inline">Kembali ke Profil</span>
+              <span className="sm:hidden">Profil</span>
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* MAIN CONTAINER */}
-      <main className="max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-12 gap-8">
         
         {/* SISI KIRI: INPUT FORMS */}
-        <section className="lg:col-span-7 space-y-6">
+        <section className="md:col-span-7 space-y-6">
           
           {/* A. TAMBAH TOPIK BARU */}
           <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-6">
@@ -590,7 +593,7 @@ export default function AdminDashboardPage() {
         </section>
 
         {/* SISI KANAN: LIST TOPIK & KASUS YANG ADA */}
-        <section className="lg:col-span-5 space-y-6">
+        <section className="md:col-span-5 space-y-6">
           {/* DAFTAR TEMA TOPIK */}
           <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
             <div>

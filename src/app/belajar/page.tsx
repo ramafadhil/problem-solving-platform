@@ -143,12 +143,12 @@ export default function TopikSelectionPage() {
     router.push(`/belajar/${id}`);
   };
   return (
-    <div className="min-h-screen bg-neogrid flex items-center justify-center p-6 lg:p-12 relative">
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+    <div className="min-h-screen bg-neogrid flex items-center justify-center p-6 md:p-12 relative">
+      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-stretch">
         {/* SISI KIRI: RUANG FOKUS UTAMA UNTUK MOTION GRAPHICS */}
-        <section className="lg:col-span-5 flex flex-col justify-center items-center w-full">
-          <div className="w-full h-full min-h-[650px] flex items-center justify-center">
-            <div className="w-full max-w-[500px] aspect-square">
+        <section className="md:col-span-5 flex flex-col justify-center items-center w-full">
+          <div className="w-full md:h-full md:min-h-[650px] flex items-center justify-center">
+            <div className="w-full max-w-[240px] md:max-w-[500px] aspect-[4/3]">
               <DotLottieReact
                 src="/aset_learning.json"
                 loop={true}
@@ -159,7 +159,7 @@ export default function TopikSelectionPage() {
         </section>
 
         {/* SISI KANAN: MENU SELECTION DENGAN INDIKATOR JALUR LINEAR */}
-        <section className="lg:col-span-7 flex flex-col justify-center space-y-6 relative">
+        <section className="md:col-span-7 flex flex-col justify-center space-y-6 relative">
           <div className="flex justify-between items-center w-full">
             <button
               onClick={() => router.push("/")}
@@ -170,7 +170,7 @@ export default function TopikSelectionPage() {
           </div>
 
           <div className="space-y-3 mb-2">
-            <h1 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight leading-tight font-serif">
+            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight font-serif">
               Pilih Tema Utama Analisis
             </h1>
             <p className="text-xs font-semibold text-black text-slate-650 leading-relaxed max-w-xl font-mono">
@@ -198,7 +198,7 @@ export default function TopikSelectionPage() {
                   <div
                     key={tema.id}
                     onClick={() => handleSelectTema(tema.id)}
-                    className={`bg-white border-2 border-black rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] cursor-pointer bg-gradient-to-br ${tema.gradient} shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none`}
+                    className={`bg-white border-2 border-black rounded-2xl p-5 flex items-center justify-between transition-all duration-200 gap-4 min-h-[95px] cursor-pointer bg-gradient-to-br ${tema.gradient} shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none shrink-0`}
                   >
                     {/* Deskripsi Ikon & Ringkasan Topik */}
                     <div className="flex gap-4 items-center flex-1">
@@ -234,7 +234,7 @@ export default function TopikSelectionPage() {
                 ))}
 
                 {/* Kotak Locked (Future Updates) */}
-                <div className="bg-slate-50/50 border-2 border-dashed border-black rounded-2xl p-5 flex items-center justify-between gap-4 min-h-[95px] cursor-not-allowed opacity-80">
+                <div className="bg-slate-50/50 border-2 border-dashed border-black rounded-2xl p-5 flex items-center justify-between gap-4 min-h-[95px] cursor-not-allowed opacity-80 shrink-0">
                   <div className="flex gap-4 items-center flex-1">
                     <div className="text-lg bg-slate-200 w-11 h-11 rounded-xl flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_#000] shrink-0 animate-pulse">
                       <Lock size={16} className="text-slate-500" />

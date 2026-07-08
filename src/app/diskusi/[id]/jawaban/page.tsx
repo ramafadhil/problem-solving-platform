@@ -297,23 +297,26 @@ export default function JawabanUlasanPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-indigo-650 selection:text-white">
       {/* NAVBAR */}
-      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-[4px_4px_0px_#000]">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 flex items-center justify-center">
-            <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
+      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 flex items-center justify-center">
+              <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
+            </div>
+            <a href="/" className="font-black text-lg tracking-tight text-black">
+              Unravel<span className="text-[#00BC7D]"> Discuss</span>
+            </a>
           </div>
-          <a href="/" className="font-black text-lg tracking-tight text-black">
-            Unravel<span className="text-[#00BC7D]"> Discuss</span>
-          </a>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/diskusi"
-            className="px-4 py-2 bg-white border-2 border-black hover:bg-slate-50 rounded-xl text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
-          >
-            Daftar Kasus
-          </Link>
-          <NotificationBell />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/diskusi"
+              className="px-3 sm:px-4 py-2 bg-white border-2 border-black hover:bg-slate-50 rounded-xl text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+            >
+              <span className="hidden sm:inline">Daftar Kasus</span>
+              <span className="sm:hidden">Forum</span>
+            </Link>
+            <NotificationBell />
+          </div>
         </div>
       </nav>
 

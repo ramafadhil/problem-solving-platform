@@ -88,7 +88,7 @@ export default function NotificationBell() {
 
       {/* Floating Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_#000] z-[999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="fixed top-20 left-4 right-4 sm:absolute sm:top-auto sm:left-auto sm:right-0 sm:mt-3 sm:w-80 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_#000] z-[999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
           <div className="px-4 py-3 bg-indigo-50/50 border-b-2 border-black flex items-center justify-between">
             <span className="text-xs font-black text-black uppercase tracking-wider">

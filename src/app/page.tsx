@@ -494,15 +494,16 @@ export default function LandingPage() {
             </div>
 
             {/* Slides Content */}
-            <div className="min-h-[260px] flex flex-col justify-center gap-4 py-2">
+            <div className="min-h-[300px] flex flex-col justify-center gap-4 py-2">
               {currentSlide === 0 && (
                 <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
-                  <div className="w-44 h-44 flex items-center justify-center overflow-hidden mx-auto">
+                  <div className="w-64 h-64 flex items-center justify-center overflow-hidden mx-auto">
                     <DotLottieReact
                       src="/OB1.json"
                       loop
                       autoplay
-                      className="w-44 h-44"
+                      className="w-full h-full"
+                      style={{ transform: "scale(1.15)" }}
                       renderConfig={{
                         devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
                       }}
@@ -521,12 +522,13 @@ export default function LandingPage() {
 
               {currentSlide === 1 && (
                 <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
-                  <div className="w-44 h-44 flex items-center justify-center overflow-hidden mx-auto">
+                  <div className="w-64 h-64 flex items-center justify-center overflow-hidden mx-auto">
                     <DotLottieReact
                       src="/OB2.json"
                       loop
                       autoplay
-                      className="w-44 h-44"
+                      className="w-full h-full"
+                      style={{ transform: "scale(1.15)" }}
                       renderConfig={{
                         devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
                       }}
@@ -546,8 +548,8 @@ export default function LandingPage() {
 
               {currentSlide === 2 && (
                 <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
-                  <div className="w-44 h-44 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 mx-auto">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
+                  <div className="w-64 h-64 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 mx-auto">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
                       Mograph 3 Placeholder
                     </span>
                   </div>
@@ -563,8 +565,8 @@ export default function LandingPage() {
 
               {currentSlide === 3 && (
                 <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
-                  <div className="w-44 h-44 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 mx-auto">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
+                  <div className="w-64 h-64 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 mx-auto">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
                       Mograph 4 Placeholder
                     </span>
                   </div>

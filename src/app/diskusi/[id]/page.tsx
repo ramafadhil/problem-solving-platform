@@ -257,7 +257,7 @@ export default function DetailKasusPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FFFDF9] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#00BC7D] border-t-transparent rounded-full animate-spin"></div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
           Mengurai Paket Studi Kasus...
         </p>
@@ -266,7 +266,7 @@ export default function DetailKasusPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-indigo-650 selection:text-white">
+    <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-[#00BC7D] selection:text-white">
       {/* NAVBAR */}
       <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
@@ -376,16 +376,13 @@ export default function DetailKasusPage() {
             </div>
 
             {hasSubmitted ? (
-              <div className="p-4 bg-[#FDEDEC] border-2 border-black rounded-2xl flex items-center gap-3 animate-fade-in shadow-[3px_3px_0px_#000]">
-                <CheckCircle2
-                  size={20}
-                  className="text-indigo-650 shrink-0 animate-bounce"
-                />
+              <div className="p-4 bg-emerald-50 border-2 border-black rounded-2xl flex items-center gap-3 animate-fade-in shadow-[3px_3px_0px_#000]">
+                <CheckCircle2 size={20} className="text-[#00BC7D] shrink-0" />
                 <div>
-                  <p className="text-xs font-black text-indigo-700 uppercase">
+                  <p className="text-xs font-black text-emerald-700 uppercase">
                     Analisis Terkirim
                   </p>
-                  <p className="text-[10px] font-bold text-indigo-500">
+                  <p className="text-[10px] font-bold text-emerald-600">
                     Anda sudah memberikan jawaban untuk studi kasus ini.
                     Mengalihkan...
                   </p>
@@ -466,7 +463,7 @@ export default function DetailKasusPage() {
                         !acInput.trim() ||
                         !imInput.trim()
                       ? "bg-slate-300 text-slate-400 cursor-not-allowed shadow-none border-dashed border-slate-350"
-                      : "bg-indigo-650 text-white hover:bg-indigo-750"
+                      : "bg-[#00BC7D] text-white hover:bg-[#07A06E]"
                 }`}
               >
                 {hasSubmitted

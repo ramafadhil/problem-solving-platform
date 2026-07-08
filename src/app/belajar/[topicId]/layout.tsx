@@ -18,7 +18,7 @@ export default function BelajarLayout({
   const caseId = params?.caseId as string;
 
   return (
-    <div className="min-h-screen bg-neogrid text-black font-sans antialiased flex flex-col selection:bg-indigo-650 selection:text-white">
+    <div className="min-h-screen bg-neogrid text-black font-sans antialiased flex flex-col selection:bg-[#00BC7D] selection:text-white">
       {/* 1. NAVBAR HEADER */}
       <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
@@ -26,7 +26,10 @@ export default function BelajarLayout({
             <div className="w-11 h-11 flex items-center justify-center">
               <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
             </div>
-            <a href="/" className="font-black text-lg tracking-tight text-black">
+            <a
+              href="/"
+              className="font-black text-lg tracking-tight text-black"
+            >
               Unravel<span className="text-[#00BC7D]"> Learn</span>
             </a>
           </div>
@@ -36,7 +39,7 @@ export default function BelajarLayout({
             {caseId && (
               <span className="text-xs font-bold text-slate-500 hidden sm:inline">
                 Kasus Terpilih:{" "}
-                <strong className="text-indigo-600 bg-indigo-50 border-2 border-black px-2 py-1 rounded-lg shadow-[1.5px_1.5px_0px_#000]">
+                <strong className="text-[#00BC7D] bg-emerald-50/50 border-2 border-black px-2 py-1 rounded-lg shadow-[1.5px_1.5px_0px_#000]">
                   {caseId}
                 </strong>
               </span>

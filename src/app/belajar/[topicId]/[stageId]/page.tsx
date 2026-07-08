@@ -3,7 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
-import { Trophy, AlertTriangle, PartyPopper, Lightbulb, CheckCircle2, X, HelpCircle } from "lucide-react";
+import {
+  Trophy,
+  AlertTriangle,
+  PartyPopper,
+  Lightbulb,
+  CheckCircle2,
+  X,
+  HelpCircle,
+} from "lucide-react";
 import {
   DndContext,
   DragEndEvent,
@@ -92,9 +100,7 @@ function DraggableCard({ id, text }: { id: string; text: string }) {
       {...listeners}
       {...attributes}
       className={`px-4 py-3 bg-white border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] cursor-grab active:cursor-grabbing font-bold text-sm text-black transition-all active:translate-y-0.5 active:translate-x-0.5 active:shadow-none hover:bg-slate-50 ${
-        isDragging
-          ? "opacity-50 ring-2 ring-indigo-500/20 scale-105"
-          : ""
+        isDragging ? "opacity-50 ring-2 ring-[#00BC7D]/20 scale-105" : ""
       }`}
     >
       {text}
@@ -187,7 +193,7 @@ export default function DynamicStagePage() {
   // Fungsi pencocokan topik dari API dengan URL parameter
   const matchTopic = (caseTopics: any[], topicKey: string) => {
     if (!caseTopics || !Array.isArray(caseTopics)) return false;
-    return caseTopics.some(t => {
+    return caseTopics.some((t) => {
       const parts = (t.name || "").split("|");
       const title = parts[0] || "";
       const nameKey = title.toLowerCase().replace(/\s+/g, "-");
@@ -200,17 +206,21 @@ export default function DynamicStagePage() {
     const fetchStageCase = async () => {
       try {
         const casesRes = await apiFetch("/cases");
-        const casesList = Array.isArray(casesRes) ? casesRes : (casesRes?.cases || casesRes?.data || []);
+        const casesList = Array.isArray(casesRes)
+          ? casesRes
+          : casesRes?.cases || casesRes?.data || [];
         if (Array.isArray(casesList)) {
-          const filtered = casesList.filter((c: any) => c.type === "learning" && matchTopic(c.topics, temaKey));
+          const filtered = casesList.filter(
+            (c: any) => c.type === "learning" && matchTopic(c.topics, temaKey),
+          );
           if (filtered.length > 0) {
             // Urutkan berdasarkan ID secara ascending (Opsi A)
             filtered.sort((a, b) => Number(a.id) - Number(b.id));
             setTotalStages(filtered.length);
-            
+
             // Dapatkan kasus pada indeks levelNum - 1
             const activeCase = filtered[levelNum - 1] || filtered[0];
-            
+
             const logicBlocks = activeCase.logic_blocks || [];
             const keywords = logicBlocks.map((b: any) => b.content);
             const answers: Record<string, string> = {};
@@ -224,7 +234,9 @@ export default function DynamicStagePage() {
             });
 
             const paragraphs = activeCase.description
-              ? activeCase.description.split("\n").filter((p: string) => p.trim() !== "")
+              ? activeCase.description
+                  .split("\n")
+                  .filter((p: string) => p.trim() !== "")
               : [];
 
             setDynamicCase({
@@ -234,7 +246,7 @@ export default function DynamicStagePage() {
               pilihanKataKunci: keywords,
               kunciJawaban: answers,
               cardPoints: cardPoints,
-              cardBlockIds: cardBlockIds
+              cardBlockIds: cardBlockIds,
             });
             return;
           }
@@ -255,7 +267,7 @@ export default function DynamicStagePage() {
         pilihanKataKunci: kontenKasus.pilihanKataKunci,
         kunciJawaban: kontenKasus.kunciJawaban,
         cardPoints: mockPoints,
-        cardBlockIds: {}
+        cardBlockIds: {},
       });
     };
 
@@ -283,20 +295,34 @@ export default function DynamicStagePage() {
       const userSuffix = userId ? `_${userId}` : "";
 
       // Baca progress dari localStorage langsung (bukan dari state, agar tidak overwrite nilai lebih tinggi)
-      const storedProgress = localStorage.getItem(`progress_${temaKey}${userSuffix}`);
-      const storedProgressInt = storedProgress ? parseInt(storedProgress, 10) : 0;
+      const storedProgress = localStorage.getItem(
+        `progress_${temaKey}${userSuffix}`,
+      );
+      const storedProgressInt = storedProgress
+        ? parseInt(storedProgress, 10)
+        : 0;
 
       // Fungsi helper: update progress hanya jika nilai baru lebih tinggi
       const updateProgressSafely = (newLevel: number) => {
-        const current = parseInt(localStorage.getItem(`progress_${temaKey}${userSuffix}`) || "0", 10);
+        const current = parseInt(
+          localStorage.getItem(`progress_${temaKey}${userSuffix}`) || "0",
+          10,
+        );
         const updated = Math.max(current, newLevel);
-        localStorage.setItem(`progress_${temaKey}${userSuffix}`, String(updated));
+        localStorage.setItem(
+          `progress_${temaKey}${userSuffix}`,
+          String(updated),
+        );
         setHighestCompletedStage(updated);
       };
 
       // Kunci localStorage berbasis case ID (bukan posisi level) agar kebal terhadap perubahan urutan
-      const caseKey = dynamicCase.id ? `solved_case_${dynamicCase.id}${userSuffix}` : null;
-      const detailsKey = dynamicCase.id ? `solved_case_details_${dynamicCase.id}${userSuffix}` : null;
+      const caseKey = dynamicCase.id
+        ? `solved_case_${dynamicCase.id}${userSuffix}`
+        : null;
+      const detailsKey = dynamicCase.id
+        ? `solved_case_details_${dynamicCase.id}${userSuffix}`
+        : null;
 
       // 1. Cek localStorage berbasis case ID (cepat, sync)
       if (caseKey && localStorage.getItem(caseKey) === "true") {
@@ -322,18 +348,26 @@ export default function DynamicStagePage() {
       // 2. Cek backend jika ada case ID di database
       if (dynamicCase.id && userId) {
         try {
-          const perspectives = await apiFetch(`/cases/${dynamicCase.id}/perspectives`);
-          const list = Array.isArray(perspectives) ? perspectives : (perspectives?.data || []);
+          const perspectives = await apiFetch(
+            `/cases/${dynamicCase.id}/perspectives`,
+          );
+          const list = Array.isArray(perspectives)
+            ? perspectives
+            : perspectives?.data || [];
           if (Array.isArray(list)) {
             // Gunakan Number() untuk mencegah type mismatch antara string dan number
-            const userPerspective = list.find((p: any) => Number(p.user_id || p.UserID) === Number(userId));
+            const userPerspective = list.find(
+              (p: any) => Number(p.user_id || p.UserID) === Number(userId),
+            );
             if (userPerspective) {
               // Tandai case ID ini sebagai solved di localStorage
               if (caseKey) localStorage.setItem(caseKey, "true");
 
               // Ekstrak detail logic_block_id yang disubmit user
               const details = userPerspective.details || [];
-              const submittedIds = details.map((d: any) => d.logic_block_id || 0).filter((id: number) => id !== 0);
+              const submittedIds = details
+                .map((d: any) => d.logic_block_id || 0)
+                .filter((id: number) => id !== 0);
               setSubmittedCardIds(submittedIds);
               if (detailsKey) {
                 localStorage.setItem(detailsKey, JSON.stringify(submittedIds));
@@ -365,7 +399,9 @@ export default function DynamicStagePage() {
         impact: [],
       });
 
-      const gameplayGuidedKey = userId ? `unravel_gameplay_guided_${userId}` : "unravel_gameplay_guided";
+      const gameplayGuidedKey = userId
+        ? `unravel_gameplay_guided_${userId}`
+        : "unravel_gameplay_guided";
       const guided = localStorage.getItem(gameplayGuidedKey);
       if (!guided) {
         setShowGameplayGuide(true);
@@ -393,12 +429,14 @@ export default function DynamicStagePage() {
 
     setItems((prev) => {
       // 1. Ambil item dari source
-      const newSourceItems = prev[sourceZone].filter(item => item !== itemDragged);
-      
+      const newSourceItems = prev[sourceZone].filter(
+        (item) => item !== itemDragged,
+      );
+
       // 2. Jika target bukan pool dan sudah ada kartu lain, kembalikan kartu lama ke pool
       let newTargetItems = [...prev[targetZone]];
       let displacedItems: string[] = [];
-      
+
       if (targetZone !== "pool" && newTargetItems.length >= 1) {
         displacedItems = [...newTargetItems];
         newTargetItems = [itemDragged];
@@ -422,9 +460,24 @@ export default function DynamicStagePage() {
       return {
         ...prev,
         pool: newPool,
-        stakeholder: sourceZone === "stakeholder" ? newSourceItems : (targetZone === "stakeholder" ? newTargetItems : prev.stakeholder),
-        action: sourceZone === "action" ? newSourceItems : (targetZone === "action" ? newTargetItems : prev.action),
-        impact: sourceZone === "impact" ? newSourceItems : (targetZone === "impact" ? newTargetItems : prev.impact),
+        stakeholder:
+          sourceZone === "stakeholder"
+            ? newSourceItems
+            : targetZone === "stakeholder"
+              ? newTargetItems
+              : prev.stakeholder,
+        action:
+          sourceZone === "action"
+            ? newSourceItems
+            : targetZone === "action"
+              ? newTargetItems
+              : prev.action,
+        impact:
+          sourceZone === "impact"
+            ? newSourceItems
+            : targetZone === "impact"
+              ? newTargetItems
+              : prev.impact,
       };
     });
   }
@@ -435,9 +488,7 @@ export default function DynamicStagePage() {
     if (isAlreadySolved) return;
 
     const totalDitempatkan =
-      items.stakeholder.length +
-      items.action.length +
-      items.impact.length;
+      items.stakeholder.length + items.action.length + items.impact.length;
     if (totalDitempatkan < 2) {
       alert(
         "⚠️ Analisis belum lengkap! Taruh minimal 2 kartu kata kunci untuk mulai verifikasi.",
@@ -471,23 +522,36 @@ export default function DynamicStagePage() {
       const userSuffix = currentUserId ? `_${currentUserId}` : "";
 
       // Update progres lokal dulu (berbasis posisi level untuk dashboard)
-      const savedProgress = localStorage.getItem(`progress_${temaKey}${userSuffix}`);
-      const currentProgressInt = savedProgress ? parseInt(savedProgress, 10) : 0;
+      const savedProgress = localStorage.getItem(
+        `progress_${temaKey}${userSuffix}`,
+      );
+      const currentProgressInt = savedProgress
+        ? parseInt(savedProgress, 10)
+        : 0;
       if (levelNum > currentProgressInt) {
-        localStorage.setItem(`progress_${temaKey}${userSuffix}`, String(levelNum));
+        localStorage.setItem(
+          `progress_${temaKey}${userSuffix}`,
+          String(levelNum),
+        );
       }
       // Tandai case ID ini sebagai solved agar kebal terhadap perubahan urutan
       if (dynamicCase?.id) {
-        localStorage.setItem(`solved_case_${dynamicCase.id}${userSuffix}`, "true");
+        localStorage.setItem(
+          `solved_case_${dynamicCase.id}${userSuffix}`,
+          "true",
+        );
 
         // Simpan detail logic block ID yang ditempatkan oleh user
         const placedCardIds = [
-          ...items.stakeholder.map(c => dynamicCase.cardBlockIds?.[c] || 0),
-          ...items.action.map(c => dynamicCase.cardBlockIds?.[c] || 0),
-          ...items.impact.map(c => dynamicCase.cardBlockIds?.[c] || 0)
-        ].filter(id => id !== 0);
+          ...items.stakeholder.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
+          ...items.action.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
+          ...items.impact.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
+        ].filter((id) => id !== 0);
         setSubmittedCardIds(placedCardIds);
-        localStorage.setItem(`solved_case_details_${dynamicCase.id}${userSuffix}`, JSON.stringify(placedCardIds));
+        localStorage.setItem(
+          `solved_case_details_${dynamicCase.id}${userSuffix}`,
+          JSON.stringify(placedCardIds),
+        );
       }
 
       // Kirim ke backend dan pakai points_awarded dari respons untuk modal
@@ -498,47 +562,66 @@ export default function DynamicStagePage() {
             case_id: dynamicCase.id,
             is_public: true,
             details: [
-              ...items.stakeholder.map(content => ({
+              ...items.stakeholder.map((content) => ({
                 pillar_category: "Stakeholder",
                 content: content,
                 text_content: content,
-                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0
+                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
               })),
-              ...items.action.map(content => ({
+              ...items.action.map((content) => ({
                 pillar_category: "Action",
                 content: content,
                 text_content: content,
-                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0
+                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
               })),
-              ...items.impact.map(content => ({
+              ...items.impact.map((content) => ({
                 pillar_category: "Impact",
                 content: content,
                 text_content: content,
-                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0
-              }))
-            ]
+                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
+              })),
+            ],
+          }),
+        })
+          .then((res: any) => {
+            const backendPoints = res?.points_awarded ?? localScore;
+            const feedbackText = `Luar biasa! Anda berhasil menempatkan semua kartu dengan benar dan mendapatkan total +${backendPoints} Points di papan peringkat global.`;
+            setScoreResult({
+              pointsEarned: backendPoints,
+              feedback: feedbackText,
+              isSuccess: true,
+            });
+            setIsAlreadySolved(true);
           })
-        }).then((res: any) => {
-          const backendPoints = res?.points_awarded ?? localScore;
-          const feedbackText = `Luar biasa! Anda berhasil menempatkan semua kartu dengan benar dan mendapatkan total +${backendPoints} Points di papan peringkat global.`;
-          setScoreResult({ pointsEarned: backendPoints, feedback: feedbackText, isSuccess: true });
-          setIsAlreadySolved(true);
-        }).catch(err => {
-          console.error("Gagal mengirim progress belajar ke backend:", err);
-          // Fallback: tampilkan poin lokal jika backend gagal
-          const feedbackText = `Luar biasa! Anda berhasil menempatkan semua kartu dengan benar dan mendapatkan total +${localScore} Points.`;
-          setScoreResult({ pointsEarned: localScore, feedback: feedbackText, isSuccess: true });
-          setIsAlreadySolved(true);
-        });
+          .catch((err) => {
+            console.error("Gagal mengirim progress belajar ke backend:", err);
+            // Fallback: tampilkan poin lokal jika backend gagal
+            const feedbackText = `Luar biasa! Anda berhasil menempatkan semua kartu dengan benar dan mendapatkan total +${localScore} Points.`;
+            setScoreResult({
+              pointsEarned: localScore,
+              feedback: feedbackText,
+              isSuccess: true,
+            });
+            setIsAlreadySolved(true);
+          });
         // Tampilkan modal dulu, lalu update poin saat respons backend datang
-        setScoreResult({ pointsEarned: localScore, feedback: "Mengirim hasil ke server...", isSuccess: true });
+        setScoreResult({
+          pointsEarned: localScore,
+          feedback: "Mengirim hasil ke server...",
+          isSuccess: true,
+        });
         setShowModal(true);
         return;
       }
     } else {
       // Gagal atau belum benar semua
-      const feedbackText = "Ada penempatan pilar kartu yang belum tepat. Silakan analisis kembali hubungan pilar-pilar tersebut.";
-      setScoreResult({ pointsEarned: 0, feedback: feedbackText, isSuccess: false });
+      const feedbackText =
+        "Ada penempatan pilar kartu yang belum tepat. Silakan analisis kembali hubungan pilar-pilar tersebut.";
+      setScoreResult({
+        pointsEarned: 0,
+        feedback: feedbackText,
+        isSuccess: false,
+      });
       setShowModal(true);
     }
   };
@@ -558,7 +641,9 @@ export default function DynamicStagePage() {
           </span>
           <button
             onClick={() => {
-              const key = currentUserId ? `unravel_gameplay_guided_${currentUserId}` : "unravel_gameplay_guided";
+              const key = currentUserId
+                ? `unravel_gameplay_guided_${currentUserId}`
+                : "unravel_gameplay_guided";
               localStorage.setItem(key, "true");
               setShowGameplayGuide(false);
             }}
@@ -572,33 +657,46 @@ export default function DynamicStagePage() {
         <div className="space-y-2">
           {guideStep === 1 && (
             <>
-              <h4 className="text-sm font-black text-black font-sans">1. Membaca Deskripsi Kasus</h4>
+              <h4 className="text-sm font-black text-black font-sans">
+                1. Membaca Deskripsi Kasus
+              </h4>
               <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
-                Di sisi kiri ini, bacalah narasi permasalahan kasus dengan cermat untuk menemukan pilar-pilar penting.
+                Di sisi kiri ini, bacalah narasi permasalahan kasus dengan
+                cermat untuk menemukan pilar-pilar penting.
               </p>
             </>
           )}
           {guideStep === 2 && (
             <>
-              <h4 className="text-sm font-black text-black font-sans">2. Pilih Kata Kunci</h4>
+              <h4 className="text-sm font-black text-black font-sans">
+                2. Pilih Kata Kunci
+              </h4>
               <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
-                Di bawah teks narasi, terdapat beberapa pilihan kata kunci penting yang mewakili pilar analisis.
+                Di bawah teks narasi, terdapat beberapa pilihan kata kunci
+                penting yang mewakili pilar analisis.
               </p>
             </>
           )}
           {guideStep === 3 && (
             <>
-              <h4 className="text-sm font-black text-black font-sans">3. Seret ke Pilar Drop Zone</h4>
+              <h4 className="text-sm font-black text-black font-sans">
+                3. Seret ke Pilar Drop Zone
+              </h4>
               <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
-                Seret kata kunci tersebut dan letakkan (drop) ke dalam salah satu dari 3 kategori pilar di sebelah kanan: Stakeholder, Action, atau Impact.
+                Seret kata kunci tersebut dan letakkan (drop) ke dalam salah
+                satu dari 3 kategori pilar di sebelah kanan: Stakeholder,
+                Action, atau Impact.
               </p>
             </>
           )}
           {guideStep === 4 && (
             <>
-              <h4 className="text-sm font-black text-black font-sans">4. Lakukan Verifikasi</h4>
+              <h4 className="text-sm font-black text-black font-sans">
+                4. Lakukan Verifikasi
+              </h4>
               <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
-                Setelah semua pilar terisi, tekan tombol "Verifikasi" di bawah drop zone untuk mengevaluasi jawabanmu secara real-time.
+                Setelah semua pilar terisi, tekan tombol "Verifikasi" di bawah
+                drop zone untuk mengevaluasi jawabanmu secara real-time.
               </p>
             </>
           )}
@@ -611,7 +709,7 @@ export default function DynamicStagePage() {
               <span
                 key={step}
                 className={`w-2 h-2 rounded-full border border-black ${
-                  guideStep === step ? "bg-indigo-600" : "bg-white"
+                  guideStep === step ? "bg-[#00BC7D]" : "bg-white"
                 }`}
               />
             ))}
@@ -628,14 +726,16 @@ export default function DynamicStagePage() {
             {guideStep < 4 ? (
               <button
                 onClick={() => setGuideStep((prev) => prev + 1)}
-                className="px-3 py-1.5 bg-indigo-650 hover:bg-indigo-700 border-2 border-black text-white rounded-lg text-[10px] font-black uppercase shadow-[1.5px_1.5px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-[#00BC7D] hover:bg-[#07A06E] border-2 border-black text-white rounded-lg text-[10px] font-black uppercase shadow-[1.5px_1.5px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
               >
                 Lanjut
               </button>
             ) : (
               <button
                 onClick={() => {
-                  const key = currentUserId ? `unravel_gameplay_guided_${currentUserId}` : "unravel_gameplay_guided";
+                  const key = currentUserId
+                    ? `unravel_gameplay_guided_${currentUserId}`
+                    : "unravel_gameplay_guided";
                   localStorage.setItem(key, "true");
                   setShowGameplayGuide(false);
                 }}
@@ -665,21 +765,26 @@ export default function DynamicStagePage() {
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8 items-start mt-4 relative">
         {/* KOLOM KIRI: Teks Studi Kasus & Pool Kartu Pilihan */}
         <section className="md:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col gap-6">
-          <div className={`transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}>
-            <span className={`text-xs font-black tracking-wider uppercase ${isAlreadySolved ? "text-emerald-600" : "text-indigo-600"}`}>
-              Level {levelNum} - {isAlreadySolved ? "Peninjauan Analisis" : "Eksplorasi"}
+          <div
+            className={`transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}
+          >
+            <span
+              className={`text-xs font-black tracking-wider uppercase ${isAlreadySolved ? "text-emerald-600" : "text-[#00BC7D]"}`}
+            >
+              Level {levelNum} -{" "}
+              {isAlreadySolved ? "Peninjauan Analisis" : "Eksplorasi"}
             </span>
             <h2 className="text-2xl font-black text-slate-900 mt-1 font-serif">
               {dynamicCase?.judul}
             </h2>
           </div>
- 
+
           <article
             id="guide-narrative"
             className={`text-sm text-slate-700 leading-relaxed space-y-4 border-t-2 border-b-2 border-black py-4 font-mono transition-all duration-300 ${
               showGameplayGuide
                 ? guideStep === 1
-                  ? "ring-[4px] ring-indigo-600 ring-offset-4 rounded-lg bg-indigo-50/30 p-2 scale-[1.01] z-30 relative"
+                  ? "ring-[4px] ring-[#00BC7D] ring-offset-4 rounded-lg bg-emerald-50/20 p-2 scale-[1.01] z-30 relative"
                   : "blur-[2.5px] opacity-40 pointer-events-none"
                 : ""
             }`}
@@ -695,7 +800,7 @@ export default function DynamicStagePage() {
             className={`transition-all duration-300 ${
               showGameplayGuide
                 ? guideStep === 2
-                  ? "ring-[4px] ring-indigo-600 ring-offset-4 rounded-2xl p-3 bg-indigo-50/30 scale-[1.01] z-30 relative"
+                  ? "ring-[4px] ring-[#00BC7D] ring-offset-4 rounded-2xl p-3 bg-emerald-50/20 scale-[1.01] z-30 relative"
                   : "blur-[2.5px] opacity-40 pointer-events-none"
                 : ""
             }`}
@@ -706,7 +811,10 @@ export default function DynamicStagePage() {
             {isAlreadySolved ? (
               <div className="p-4 bg-emerald-100 border-2 border-black rounded-2xl text-xs text-emerald-900 font-extrabold flex items-center gap-2 shadow-[3px_3px_0px_#000]">
                 <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-                <span>Level ini sudah selesai dianalisis. Skor optimal telah terekam di papan peringkat.</span>
+                <span>
+                  Level ini sudah selesai dianalisis. Skor optimal telah terekam
+                  di papan peringkat.
+                </span>
               </div>
             ) : (
               <div className="flex flex-wrap gap-3">
@@ -726,23 +834,27 @@ export default function DynamicStagePage() {
 
         {/* KOLOM KANAN: Tempat Peletakan DropZone / Tampilan Kunci Jawaban */}
         <section className="md:col-span-7 flex flex-col gap-4">
-          <div className={`bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_#000] flex justify-between items-center transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}>
+          <div
+            className={`bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_#000] flex justify-between items-center transition-all duration-300 ${showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""}`}
+          >
             <span className="text-sm font-black text-black">
               Kemajuan Analisis Jalur
             </span>
-             <div className="flex gap-1.5 flex-wrap">
-              {Array.from({ length: totalStages }, (_, idx) => idx + 1).map((lvl) => {
-                const isActive = lvl === levelNum;
-                const isLvlSolved = lvl <= highestCompletedStage;
-                return (
-                  <div
-                    key={lvl}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black border-2 border-black shadow-[1.5px_1.5px_0px_#000] ${isActive ? "bg-indigo-650 text-white" : isLvlSolved ? "bg-[#00c853] text-white" : "bg-slate-100 text-slate-400 opacity-60 shadow-none border-dashed border-slate-350"}`}
-                  >
-                    {lvl}
-                  </div>
-                );
-              })}
+            <div className="flex gap-1.5 flex-wrap">
+              {Array.from({ length: totalStages }, (_, idx) => idx + 1).map(
+                (lvl) => {
+                  const isActive = lvl === levelNum;
+                  const isLvlSolved = lvl <= highestCompletedStage;
+                  return (
+                    <div
+                      key={lvl}
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black border-2 border-black shadow-[1.5px_1.5px_0px_#000] ${isActive ? "bg-rose-500 text-white" : isLvlSolved ? "bg-[#00c853] text-white" : "bg-slate-100 text-slate-400 opacity-60 shadow-none border-dashed border-slate-350"}`}
+                    >
+                      {lvl}
+                    </div>
+                  );
+                },
+              )}
             </div>
           </div>
 
@@ -752,11 +864,12 @@ export default function DynamicStagePage() {
               {[
                 { key: "stakeholder", title: "1. Stakeholder Utama" },
                 { key: "action", title: "2. Rencana Tindakan (Action)" },
-                { key: "impact", title: "3. Konsekuensi Capaian (Impact)" }
+                { key: "impact", title: "3. Konsekuensi Capaian (Impact)" },
               ].map((category) => {
                 const cardsInCategory = dynamicCase
                   ? Object.keys(dynamicCase.kunciJawaban).filter(
-                      (cardName) => dynamicCase.kunciJawaban[cardName] === category.key
+                      (cardName) =>
+                        dynamicCase.kunciJawaban[cardName] === category.key,
                     )
                   : [];
 
@@ -771,27 +884,32 @@ export default function DynamicStagePage() {
                     <div className="flex flex-col gap-2">
                       {cardsInCategory.map((cardName) => {
                         const points = dynamicCase?.cardPoints[cardName] || 0;
-                        const cardId = dynamicCase?.cardBlockIds?.[cardName] || 0;
-                        const isChosenByUser = submittedCardIds.includes(cardId);
+                        const cardId =
+                          dynamicCase?.cardBlockIds?.[cardName] || 0;
+                        const isChosenByUser =
+                          submittedCardIds.includes(cardId);
 
                         if (isChosenByUser) {
-                           return (
-                             <div
-                               key={cardName}
-                               className="px-4 py-3 bg-emerald-100 border-2 border-black rounded-xl flex items-center justify-between font-bold text-sm text-emerald-900 shadow-[2px_2px_0px_#000]"
-                             >
-                               <div className="flex items-center gap-2">
-                                 <CheckCircle2 size={16} className="text-emerald-750 shrink-0" />
-                                 <span>{cardName}</span>
-                                 <span className="text-[9px] bg-emerald-600 border border-black text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
-                                   Pilihanmu
-                                 </span>
-                               </div>
-                               <span className="text-xs bg-emerald-250 border border-black text-emerald-800 px-2.5 py-1 rounded-lg">
-                                 +{points} Points
-                               </span>
-                             </div>
-                           );
+                          return (
+                            <div
+                              key={cardName}
+                              className="px-4 py-3 bg-emerald-100 border-2 border-black rounded-xl flex items-center justify-between font-bold text-sm text-emerald-900 shadow-[2px_2px_0px_#000]"
+                            >
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2
+                                  size={16}
+                                  className="text-emerald-750 shrink-0"
+                                />
+                                <span>{cardName}</span>
+                                <span className="text-[9px] bg-emerald-600 border border-black text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
+                                  Pilihanmu
+                                </span>
+                              </div>
+                              <span className="text-xs bg-emerald-250 border border-black text-emerald-800 px-2.5 py-1 rounded-lg">
+                                +{points} Points
+                              </span>
+                            </div>
+                          );
                         } else {
                           return (
                             <div
@@ -799,7 +917,9 @@ export default function DynamicStagePage() {
                               className="px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-between font-semibold text-sm text-slate-400"
                             >
                               <div className="flex items-center gap-2">
-                                <span className="text-slate-400 font-bold">○</span>
+                                <span className="text-slate-400 font-bold">
+                                  ○
+                                </span>
                                 <span>{cardName}</span>
                                 <span className="text-[9px] bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                                   Alternatif
@@ -813,7 +933,9 @@ export default function DynamicStagePage() {
                         }
                       })}
                       {cardsInCategory.length === 0 && (
-                        <span className="text-xs text-slate-400 italic">Tidak ada kartu pada pilar ini.</span>
+                        <span className="text-xs text-slate-400 italic">
+                          Tidak ada kartu pada pilar ini.
+                        </span>
                       )}
                     </div>
                   </div>
@@ -821,33 +943,33 @@ export default function DynamicStagePage() {
               })}
             </div>
           ) : (
-             // Play Mode (Droppable Zones)
-             <div
-               id="guide-zones"
-               className={`flex flex-col gap-3 transition-all duration-300 ${
-                 showGameplayGuide
-                   ? guideStep === 3
-                     ? "ring-[4px] ring-indigo-600 ring-offset-4 rounded-2xl p-3 bg-indigo-50/30 scale-[1.01] z-30 relative"
-                     : "blur-[2.5px] opacity-40 pointer-events-none"
-                   : ""
-               }`}
-             >
-               <DroppableZone
-                 id="stakeholder"
-                 title="1. Stakeholder Utama"
-                 items={items.stakeholder}
-               />
-               <DroppableZone
-                 id="action"
-                 title="2. Rencana Tindakan (Action)"
-                 items={items.action}
-               />
-               <DroppableZone
-                 id="impact"
-                 title="3. Konsekuensi Capaian (Impact)"
-                 items={items.impact}
-               />
-             </div>
+            // Play Mode (Droppable Zones)
+            <div
+              id="guide-zones"
+              className={`flex flex-col gap-3 transition-all duration-300 ${
+                showGameplayGuide
+                  ? guideStep === 3
+                    ? "ring-[4px] ring-[#00BC7D] ring-offset-4 rounded-2xl p-3 bg-emerald-50/20 scale-[1.01] z-30 relative"
+                    : "blur-[2.5px] opacity-40 pointer-events-none"
+                  : ""
+              }`}
+            >
+              <DroppableZone
+                id="stakeholder"
+                title="1. Stakeholder Utama"
+                items={items.stakeholder}
+              />
+              <DroppableZone
+                id="action"
+                title="2. Rencana Tindakan (Action)"
+                items={items.action}
+              />
+              <DroppableZone
+                id="impact"
+                title="3. Konsekuensi Capaian (Impact)"
+                items={items.impact}
+              />
+            </div>
           )}
           {showGameplayGuide && guideStep === 3 && renderGuideBox()}
 
@@ -855,7 +977,9 @@ export default function DynamicStagePage() {
             <button
               onClick={() => router.push(`/belajar/${temaKey}`)}
               className={`w-full mt-2 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm font-black uppercase tracking-wider cursor-pointer transition-all duration-300 ${
-                showGameplayGuide ? "blur-[2.5px] opacity-40 pointer-events-none" : ""
+                showGameplayGuide
+                  ? "blur-[2.5px] opacity-40 pointer-events-none"
+                  : ""
               }`}
             >
               Kembali ke Peta Jalur Belajar
@@ -865,10 +989,10 @@ export default function DynamicStagePage() {
               <button
                 id="guide-verify"
                 onClick={handleVerification}
-                className={`w-full mt-2 py-3.5 bg-indigo-650 hover:bg-indigo-700 text-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm font-black uppercase tracking-wider cursor-pointer transition-all duration-300 ${
+                className={`w-full mt-2 py-3.5 bg-[#00BC7D] hover:bg-[#07A06E] text-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm font-black uppercase tracking-wider cursor-pointer transition-all duration-300 ${
                   showGameplayGuide
                     ? guideStep === 4
-                      ? "ring-[4px] ring-indigo-600 ring-offset-4 animate-pulse scale-[1.01] z-30 relative"
+                      ? "ring-[4px] ring-[#00BC7D] ring-offset-4 animate-pulse scale-[1.01] z-30 relative"
                       : "blur-[2.5px] opacity-40 pointer-events-none"
                     : ""
                 }`}
@@ -887,29 +1011,29 @@ export default function DynamicStagePage() {
               {scoreResult.isSuccess ? (
                 <>
                   <div className="text-amber-500 flex justify-center mb-2">
-                    <PartyPopper size={48} className="animate-bounce" />
+                    <PartyPopper size={48} />
                   </div>
                   <h3 className="text-lg font-black text-slate-900">
                     Analisis Selesai Diverifikasi!
                   </h3>
 
                   <div className="my-4 bg-[#FDEDEC] p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000]">
-                    <p className="text-2xl font-black text-indigo-650">
+                    <p className="text-2xl font-black text-[#00BC7D]">
                       +{scoreResult.pointsEarned} Points
                     </p>
-                    <p className="text-xs text-indigo-600 font-semibold mt-0.5">
+                    <p className="text-xs text-[#00BC7D] font-semibold mt-0.5">
                       Poin Berhasil Didapatkan
                     </p>
                   </div>
 
                   <p className="text-xs text-slate-550 leading-relaxed px-2 mb-6 font-semibold">
-                    {scoreResult.feedback} Progres kamu telah diperbarui di papan
-                    peringkat secara *real-time*.
+                    {scoreResult.feedback} Progres kamu telah diperbarui di
+                    papan peringkat secara *real-time*.
                   </p>
 
                   <button
                     onClick={handleBackToDashboard}
-                    className="w-full py-3.5 bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+                    className="w-full py-3.5 bg-[#00BC7D] hover:bg-[#07A06E] text-white text-xs font-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
                   >
                     Kembali ke Peta Jalur Belajar
                   </button>

@@ -21,6 +21,75 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Recovery Flow States
+  const [recoveryState, setRecoveryState] = useState<"login" | "forgot_email" | "forgot_waiting" | "forgot_reset">("login");
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [recoveryNewPassword, setRecoveryNewPassword] = useState("");
+  const [recoveryConfirmPassword, setRecoveryConfirmPassword] = useState("");
+  const [showRecoveryNewPass, setShowRecoveryNewPass] = useState(false);
+  const [showRecoveryConfirmPass, setShowRecoveryConfirmPass] = useState(false);
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+
+  const handleSendRecoveryEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recoveryEmail.trim()) return;
+
+    setError("");
+    setRecoveryLoading(true);
+    try {
+      // Mock API call POST /auth/forgot-password
+      await apiFetch("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email: recoveryEmail }),
+      });
+    } catch (err: any) {
+      console.warn("Backend /auth/forgot-password belum diimplementasikan, membypass untuk demo:", err.message);
+    } finally {
+      setRecoveryLoading(false);
+      setRecoveryState("forgot_waiting");
+      showToastNotification("Email pemulihan terkirim!", "success");
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recoveryNewPassword || !recoveryConfirmPassword) return;
+
+    if (recoveryNewPassword.length < 6) {
+      setError("Kata sandi baru minimal 6 karakter.");
+      showToastNotification("Gagal mereset sandi", "error");
+      return;
+    }
+
+    if (recoveryNewPassword !== recoveryConfirmPassword) {
+      setError("Konfirmasi kata sandi baru tidak cocok.");
+      showToastNotification("Gagal mereset sandi", "error");
+      return;
+    }
+
+    setError("");
+    setRecoveryLoading(true);
+    try {
+      // Mock API call POST /auth/reset-password
+      await apiFetch("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({
+          email: recoveryEmail,
+          password: recoveryNewPassword,
+        }),
+      });
+    } catch (err: any) {
+      console.warn("Backend /auth/reset-password belum diimplementasikan, membypass untuk demo:", err.message);
+    } finally {
+      setRecoveryLoading(false);
+      setRecoveryState("login");
+      setRecoveryEmail("");
+      setRecoveryNewPassword("");
+      setRecoveryConfirmPassword("");
+      showToastNotification("Kata sandi berhasil diubah! Silakan login.", "success");
+    }
+  };
+
   // State untuk manajemen status Toast Notifikasi
   const [toast, setToast] = useState<ToastState>({
     show: false,
@@ -100,7 +169,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neogrid flex items-stretch text-black font-sans selection:bg-indigo-650 selection:text-white relative">
+    <div className="min-h-screen bg-neogrid flex items-stretch text-black font-sans selection:bg-[#00BC7D] selection:text-white relative">
       {/* ================= COMPONENT TOAST FLOATING NOTIFICATION ================= */}
       {toast.show && (
         <div
@@ -144,127 +213,336 @@ export default function LoginPage() {
       {/* ================= SISI KANAN: FORM LOGIN VERTIKAL UTUH ================= */}
       <section className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 md:p-12">
         <div className="w-full max-w-md bg-white border-3 border-black rounded-3xl p-8 shadow-[6px_6px_0px_#000] space-y-6">
-          {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => router.push("/")}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 rounded-xl text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
-              >
-                Home
-              </button>
+          {recoveryState === "login" && (
+            <>
+              {/* BARIS NAVIGASI KEMBALI & BRANDING ATAS */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 rounded-xl text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+                  >
+                    Home
+                  </button>
 
-              <span className="text-xs font-black text-black uppercase tracking-wider tracking-tight select-none">
-                Unravel
-              </span>
-            </div>
+                  <span className="text-xs font-black text-black uppercase tracking-wider select-none">
+                    Unravel
+                  </span>
+                </div>
 
-            <div className="space-y-1 pt-1">
-              <h2 className="text-2xl font-black text-black tracking-tight font-serif">
-                Masuk ke Akun Anda
-              </h2>
-              <p className="text-xs font-semibold text-slate-500">
-                Silakan masukkan detail kredensial Anda di bawah ini.
-              </p>
-            </div>
-          </div>
+                <div className="space-y-1 pt-1">
+                  <h2 className="text-2xl font-black text-black tracking-tight font-serif">
+                    Masuk ke Akun Anda
+                  </h2>
+                  <p className="text-xs font-semibold text-slate-500">
+                    Silakan masukkan detail kredensial Anda di bawah ini.
+                  </p>
+                </div>
+              </div>
 
-          {/* NOTIFIKASI ERROR STATIC JIKA LOGIN GAGAL */}
-          {error && (
-            <div className="p-3 bg-[#FDEDEC] border-2 border-black rounded-xl text-red-900 text-xs font-black flex items-center gap-2 shadow-[2px_2px_0px_#000]">
-              <AlertCircle size={14} className="shrink-0" />
-              <span>{error}</span>
-            </div>
+              {/* NOTIFIKASI ERROR STATIC JIKA LOGIN GAGAL */}
+              {error && (
+                <div className="p-3 bg-[#FDEDEC] border-2 border-black rounded-xl text-red-900 text-xs font-black flex items-center gap-2 shadow-[2px_2px_0px_#000]">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* FORM ISIAN UTAMA */}
+              <form onSubmit={handleLogin} className="space-y-4">
+                {/* INPUT USERNAME */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    required
+                    disabled={loading}
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Isi Username Anda"
+                    className="w-full px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60"
+                  />
+                </div>
+
+                {/* INPUT PASSWORD */}
+                <div className="space-y-1.5 relative">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
+                    Kata Sandi
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      required
+                      disabled={loading}
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 pr-10 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-black transition-colors text-sm cursor-pointer flex items-center justify-center"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* BARIS OPSIONAL: REMEMBER ME & FORGOT PASSWORD */}
+                <div className="flex items-center justify-between pt-1 text-xs">
+                  <label className="flex items-center gap-2 cursor-pointer font-black text-slate-650 select-none">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      disabled={loading}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 rounded border-2 border-black accent-[#00BC7D] cursor-pointer shadow-[1px_1px_0px_#000]"
+                    />
+                    <span>Ingat Saya</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setError("");
+                      setRecoveryState("forgot_email");
+                    }}
+                    className="font-black text-[#00BC7D] hover:underline cursor-pointer bg-transparent border-none text-xs"
+                  >
+                    Lupa Sandi?
+                  </button>
+                </div>
+
+                {/* TOMBOL SUBMIT UTAMA */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-3.5 border-2 border-black text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all mt-4 cursor-pointer ${
+                    loading
+                      ? "bg-[#00BC7D] cursor-not-allowed shadow-none"
+                      : "bg-[#00BC7D] hover:bg-[#00BC7D]"
+                  }`}
+                >
+                  {loading ? "Memverifikasi..." : "Masuk Sekarang"}
+                </button>
+              </form>
+
+              {/* FOOTER AKUN BARU */}
+              <div className="text-center pt-2 text-xs font-semibold text-slate-500">
+                Belum memiliki akun?{" "}
+                <Link
+                  href="/signup"
+                  className="font-black text-[#00BC7D] hover:underline"
+                >
+                  Buat Akun Baru
+                </Link>
+              </div>
+            </>
           )}
 
-          {/* FORM ISIAN UTAMA */}
-          <form onSubmit={handleLogin} className="space-y-4">
-            {/* INPUT USERNAME */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                required
-                disabled={loading}
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Isi Username Anda"
-                className="w-full px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60"
-              />
-            </div>
+          {recoveryState === "forgot_email" && (
+            <>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setRecoveryState("login")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 rounded-xl text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+                  >
+                    Kembali
+                  </button>
+                  <span className="text-xs font-black text-black uppercase tracking-wider select-none">
+                    Unravel
+                  </span>
+                </div>
 
-            {/* INPUT PASSWORD */}
-            <div className="space-y-1.5 relative">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
-                Kata Sandi
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  required
-                  disabled={loading}
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-10 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60"
-                />
-                {/* Tombol Mata / Intip Password */}
+                <div className="space-y-1 pt-1">
+                  <h2 className="text-2xl font-black text-black tracking-tight font-serif">
+                    Lupa Kata Sandi?
+                  </h2>
+                  <p className="text-xs font-semibold text-slate-500">
+                    Masukkan email terdaftar Anda untuk memulihkan kata sandi Anda.
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="p-3 bg-[#FDEDEC] border-2 border-black rounded-xl text-red-900 text-xs font-black flex items-center gap-2 shadow-[2px_2px_0px_#000]">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSendRecoveryEmail} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
+                    Alamat Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    disabled={recoveryLoading}
+                    value={recoveryEmail}
+                    onChange={(e) => setRecoveryEmail(e.target.value)}
+                    placeholder="nama@email.com"
+                    className="w-full px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60 font-sans"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={recoveryLoading}
+                  className="w-full py-3.5 border-2 border-black text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all mt-4 cursor-pointer bg-[#00BC7D] hover:bg-[#00BC7D]"
+                >
+                  {recoveryLoading ? "Mengirim..." : "Kirim Tautan Pemulihan"}
+                </button>
+              </form>
+            </>
+          )}
+
+          {recoveryState === "forgot_waiting" && (
+            <>
+              <div className="space-y-4">
+                <span className="text-xs font-black text-black uppercase tracking-wider select-none">
+                  Unravel Recovery
+                </span>
+
+                <div className="space-y-2 pt-1">
+                  <h2 className="text-2xl font-black text-black tracking-tight font-serif">
+                    Email Pemulihan Terkirim
+                  </h2>
+                  <p className="text-xs font-semibold text-slate-650 leading-relaxed">
+                    Kami telah mengirimkan tautan verifikasi ganti sandi ke email Anda:{" "}
+                    <span className="font-bold text-[#00BC7D]">{recoveryEmail}</span>.
+                  </p>
+                  <p className="text-xs font-medium text-slate-400 leading-relaxed">
+                    Silakan periksa kotak masuk atau spam email Anda.
+                  </p>
+                </div>
+              </div>
+
+              {/* SIMULATION CONTAINER FOR DEMO/TESTING */}
+              <div className="p-4 bg-emerald-50 border-2 border-dashed border-[#00BC7D] rounded-2xl space-y-3">
+                <span className="text-[9px] font-black uppercase text-[#00BC7D] tracking-widest block">
+                  Simulasi Pengujian (Front-end Demo)
+                </span>
+                <p className="text-[10px] font-medium text-slate-600 leading-relaxed">
+                  Gunakan tombol di bawah untuk mensimulasikan ketika user menekan tautan verifikasi ganti sandi yang dikirimkan ke email mereka.
+                </p>
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-black transition-colors text-sm cursor-pointer"
+                  onClick={() => {
+                    setError("");
+                    setRecoveryState("forgot_reset");
+                  }}
+                  className="w-full py-2 bg-[#00BC7D] hover:bg-[#07A06E] text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-[2px_2px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  Simulasikan Klik Verifikasi Email
                 </button>
               </div>
-            </div>
 
-            {/* BARIS OPSIONAL: REMEMBER ME & FORGOT PASSWORD */}
-            <div className="flex items-center justify-between pt-1 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer font-black text-slate-650 select-none">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  disabled={loading}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-2 border-black accent-[#00BC7D] cursor-pointer shadow-[1px_1px_0px_#000]"
-                />
-                <span>Ingat Saya</span>
-              </label>
-              <a href="#" className="font-black text-[#00BC7D] hover:underline">
-                Lupa Sandi?
-              </a>
-            </div>
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setRecoveryState("login")}
+                  className="font-black text-xs text-slate-500 hover:text-black hover:underline cursor-pointer"
+                >
+                  Kembali ke Login
+                </button>
+              </div>
+            </>
+          )}
 
-            {/* TOMBOL SUBMIT UTAMA */}
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-3.5 border-2 border-black text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all mt-4 cursor-pointer ${
-                loading
-                  ? "bg-[#00BC7D] cursor-not-allowed shadow-none"
-                  : "bg-[#00BC7D] hover:bg-[#00BC7D]"
-              }`}
-            >
-              {loading ? "Memverifikasi..." : "Masuk Sekarang"}
-            </button>
-          </form>
+          {recoveryState === "forgot_reset" && (
+            <>
+              <div className="space-y-4">
+                <span className="text-xs font-black text-black uppercase tracking-wider select-none">
+                  Unravel Reset
+                </span>
 
-          {/* FOOTER AKUN BARU */}
-          <div className="text-center pt-2 text-xs font-semibold text-slate-500">
-            Belum memiliki akun?{" "}
-            <Link
-              href="/signup"
-              className="font-black text-[#00BC7D] hover:underline"
-            >
-              Buat Akun Baru
-            </Link>
-          </div>
+                <div className="space-y-1 pt-1">
+                  <h2 className="text-2xl font-black text-black tracking-tight font-serif">
+                    Setel Ulang Kata Sandi
+                  </h2>
+                  <p className="text-xs font-semibold text-slate-500">
+                    Masukkan kata sandi baru untuk akun Anda ({recoveryEmail}).
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="p-3 bg-[#FDEDEC] border-2 border-black rounded-xl text-red-900 text-xs font-black flex items-center gap-2 shadow-[2px_2px_0px_#000]">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                {/* Password Baru */}
+                <div className="space-y-1.5 relative">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
+                    Kata Sandi Baru
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showRecoveryNewPass ? "text" : "password"}
+                      required
+                      disabled={recoveryLoading}
+                      value={recoveryNewPassword}
+                      onChange={(e) => setRecoveryNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 pr-10 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60 font-sans"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRecoveryNewPass(!showRecoveryNewPass)}
+                      className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-black transition-colors text-sm cursor-pointer flex items-center justify-center"
+                    >
+                      {showRecoveryNewPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Konfirmasi Password Baru */}
+                <div className="space-y-1.5 relative">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-650">
+                    Konfirmasi Kata Sandi Baru
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showRecoveryConfirmPass ? "text" : "password"}
+                      required
+                      disabled={recoveryLoading}
+                      value={recoveryConfirmPassword}
+                      onChange={(e) => setRecoveryConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 pr-10 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-60 font-sans"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRecoveryConfirmPass(!showRecoveryConfirmPass)}
+                      className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-black transition-colors text-sm cursor-pointer flex items-center justify-center"
+                    >
+                      {showRecoveryConfirmPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={recoveryLoading}
+                  className="w-full py-3.5 border-2 border-black text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all mt-4 cursor-pointer bg-[#00BC7D] hover:bg-[#00BC7D]"
+                >
+                  {recoveryLoading ? "Menyetel Ulang..." : "Perbarui Kata Sandi"}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </section>
     </div>

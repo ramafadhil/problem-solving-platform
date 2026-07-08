@@ -24,7 +24,7 @@ export default function NotificationBell() {
     try {
       const res = await apiFetch("/notifications");
       // Backend returns either direct array or { data: [] }
-      const list = Array.isArray(res) ? res : (res?.data || []);
+      const list = Array.isArray(res) ? res : res?.data || [];
       if (Array.isArray(list)) {
         setNotifications(list);
       }
@@ -61,7 +61,10 @@ export default function NotificationBell() {
   // Click outside to close
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -69,18 +72,18 @@ export default function NotificationBell() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.is_read).length;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 rounded-xl bg-white border-2 border-black text-black hover:bg-indigo-50 flex items-center justify-center relative cursor-pointer transition-all shadow-[2px_2px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none select-none"
+        className="w-10 h-10 rounded-xl bg-white border-2 border-black text-black hover:bg-emerald-250 flex items-center justify-center relative cursor-pointer transition-all shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none select-none"
       >
         <Bell size={18} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-indigo-600 border border-black text-[9px] font-black text-white flex items-center justify-center animate-bounce">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-indigo-500 border border-black text-[9px] font-black text-white flex items-center justify-center">
             {unreadCount}
           </span>
         )}
@@ -90,7 +93,7 @@ export default function NotificationBell() {
       {isOpen && (
         <div className="fixed top-20 left-4 right-4 sm:absolute sm:top-auto sm:left-auto sm:right-0 sm:mt-3 sm:w-80 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_#000] z-[999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
-          <div className="px-4 py-3 bg-indigo-50/50 border-b-2 border-black flex items-center justify-between">
+          <div className="px-4 py-3 bg-emerald-50/30 border-b-2 border-black flex items-center justify-between">
             <span className="text-xs font-black text-black uppercase tracking-wider">
               Notifikasi
             </span>
@@ -119,7 +122,7 @@ export default function NotificationBell() {
                   key={notif.id}
                   onClick={() => handleNotifClick(notif.case_id)}
                   className={`p-3.5 hover:bg-slate-50 cursor-pointer transition-colors flex flex-col gap-1 text-left ${
-                    !notif.is_read ? "bg-indigo-50/20" : ""
+                    !notif.is_read ? "bg-emerald-50/20" : ""
                   }`}
                 >
                   <p className="text-xs font-extrabold text-slate-700 leading-normal">
@@ -129,7 +132,9 @@ export default function NotificationBell() {
                     {new Date(notif.created_at).toLocaleTimeString("id-ID", {
                       hour: "2-digit",
                       minute: "2-digit",
-                    })} - {new Date(notif.created_at).toLocaleDateString("id-ID", {
+                    })}{" "}
+                    -{" "}
+                    {new Date(notif.created_at).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "short",
                     })}

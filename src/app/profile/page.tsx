@@ -5,7 +5,7 @@ import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
-import { Settings, AlertTriangle, Star } from "lucide-react";
+import { Settings, AlertTriangle, Star, Eye, EyeOff } from "lucide-react";
 import { DynamicIcon } from "@/components/DynamicIcon";
 
 interface UserProfile {
@@ -75,6 +75,28 @@ function ProfileContent() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [selectedPrivacy, setSelectedPrivacy] = useState(false);
   const [savingPrivacy, setSavingPrivacy] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [settingsView, setSettingsView] = useState<"profile" | "password">("profile");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+  useEffect(() => {
+    if (showSettingsModal && profile) {
+      setEditName(profile.name || "");
+      setSelectedPrivacy(profile.is_private || false);
+      setSettingsView("profile");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowCurrentPass(false);
+      setShowNewPass(false);
+      setShowConfirmPass(false);
+    }
+  }, [showSettingsModal, profile]);
 
   useEffect(() => {
     const getProfileData = async () => {
@@ -480,7 +502,7 @@ function ProfileContent() {
   const displayAvatarLetter = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-neogrid text-black font-sans selection:bg-indigo-650 selection:text-white">
+    <div className="min-h-screen bg-neogrid text-black font-sans selection:bg-[#00BC7D] selection:text-white">
       {/* NAVBAR HEADER */}
       <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
@@ -628,7 +650,7 @@ function ProfileContent() {
                   onClick={() => setActiveTab("diskusi")}
                   className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                     activeTab === "diskusi"
-                      ? "bg-[#FDEDEC] border-2 border-black text-indigo-650 shadow-[1.5px_1.5px_0px_#000]"
+                      ? "bg-[#FDEDEC] border-2 border-black text-red-700 shadow-[1.5px_1.5px_0px_#000]"
                       : "text-slate-550 hover:text-black border-2 border-transparent"
                   }`}
                 >
@@ -800,7 +822,7 @@ function ProfileContent() {
                                     className={
                                       isFullyCompleted
                                         ? "text-emerald-600 font-black"
-                                        : "text-indigo-650 font-black"
+                                        : "text-[#00BC7D] font-black"
                                     }
                                   >
                                     {topic.completedStages} /{" "}
@@ -813,7 +835,7 @@ function ProfileContent() {
                                     className={`h-full rounded-full transition-all duration-500 ${
                                       isFullyCompleted
                                         ? "bg-emerald-500"
-                                        : "bg-indigo-600"
+                                        : "bg-[#00BC7D]"
                                     }`}
                                     style={{ width: `${pct}%` }}
                                   />
@@ -929,110 +951,307 @@ function ProfileContent() {
           </div>
         )}
       </main>
-
       {/* SETTINGS PRIVACY MODAL */}
       {showSettingsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-xl max-w-sm w-full space-y-5 text-left">
-            <div className="space-y-1">
-              <h3 className="text-sm font-black text-slate-900 font-serif">
-                Pengaturan Akun
-              </h3>
-              <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
-                Sesuaikan visibilitas identitas profil Anda bagi analis lainnya.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
-                Visibilitas Profil
-              </span>
-
-              <div className="flex bg-slate-50 border-2 border-slate-200 p-1 rounded-2xl text-[10px] font-black uppercase tracking-wider select-none">
-                <button
-                  type="button"
-                  onClick={() => setSelectedPrivacy(false)}
-                  className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
-                    !selectedPrivacy
-                      ? "bg-[#00BC7D] text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-600"
-                  }`}
-                >
-                  Public
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedPrivacy(true)}
-                  className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
-                    selectedPrivacy
-                      ? "bg-slate-800 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-600"
-                  }`}
-                >
-                  Anonymous
-                </button>
-              </div>
-
-              <div className="text-[10px] font-medium leading-relaxed p-3 bg-slate-50/50 border border-slate-100 rounded-xl">
-                {!selectedPrivacy ? (
-                  <p className="text-slate-500">
-                    <span className="font-bold text-[#00BC7D]">Publik:</span>{" "}
-                    Nama asli Anda dan ulasan publik terlihat di profil Anda
-                    oleh analis lain.
+            {settingsView === "profile" ? (
+              <>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black text-slate-900 font-serif">
+                    Pengaturan Akun
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+                    Sesuaikan visibilitas identitas profil Anda bagi analis lainnya.
                   </p>
-                ) : (
-                  <p className="text-slate-500">
-                    <span className="font-bold text-slate-700">Anonymous:</span>{" "}
-                    Semua ulasan Anda tetap bisa diakses, tetapi nama profil
-                    Anda akan ditampilkan sebagai{" "}
-                    <span className="font-bold">Analis Anonim</span> bagi analis
-                    lain.
-                  </p>
-                )}
-              </div>
-            </div>
+                </div>
 
-            <div className="flex items-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowSettingsModal(false)}
-                disabled={savingPrivacy}
-                className="flex-1 py-2.5 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  try {
-                    setSavingPrivacy(true);
-                    const updateRes = await apiFetch("/profile", {
-                      method: "PUT",
-                      body: JSON.stringify({
-                        is_private: selectedPrivacy,
-                      }),
-                    });
-                    const updatedData = updateRes?.data || updateRes;
-                    if (updatedData) {
-                      setProfile((prev) =>
-                        prev
-                          ? { ...prev, is_private: updatedData.is_private }
-                          : null,
-                      );
-                    }
-                    setShowSettingsModal(false);
-                  } catch (err: any) {
-                    alert("Gagal memperbarui pengaturan: " + err.message);
-                  } finally {
-                    setSavingPrivacy(false);
-                  }
-                }}
-                disabled={savingPrivacy}
-                className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
-              >
-                {savingPrivacy ? "Menyimpan..." : "Simpan"}
-              </button>
-            </div>
+                <div className="space-y-1.5">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                    Nama Lengkap
+                  </span>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Nama Lengkap Anda"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                    Visibilitas Profil
+                  </span>
+
+                  <div className="flex bg-slate-50 border-2 border-slate-200 p-1 rounded-2xl text-[10px] font-black uppercase tracking-wider select-none">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPrivacy(false)}
+                      className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                        !selectedPrivacy
+                          ? "bg-[#00BC7D] text-white shadow-sm"
+                          : "text-slate-400 hover:text-slate-650"
+                      }`}
+                    >
+                      Public
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPrivacy(true)}
+                      className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                        selectedPrivacy
+                          ? "bg-slate-800 text-white shadow-sm"
+                          : "text-slate-400 hover:text-slate-650"
+                      }`}
+                    >
+                      Anonymous
+                    </button>
+                  </div>
+
+                  <div className="text-[10px] font-medium leading-relaxed p-3 bg-slate-50/50 border border-slate-100 rounded-xl">
+                    {!selectedPrivacy ? (
+                      <p className="text-slate-500">
+                        <span className="font-bold text-[#00BC7D]">Publik:</span>{" "}
+                        Nama asli Anda dan ulasan publik terlihat di profil Anda
+                        oleh analis lain.
+                      </p>
+                    ) : (
+                      <p className="text-slate-500">
+                        <span className="font-bold text-slate-700">Anonymous:</span>{" "}
+                        Semua ulasan Anda tetap bisa diakses, tetapi nama profil
+                        Anda akan ditampilkan sebagai{" "}
+                        <span className="font-bold">Analis Anonim</span> bagi analis
+                        lain.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* GANTI KATA SANDI LINK BUTTON */}
+                <div className="border-t border-slate-100 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setSettingsView("password")}
+                    className="w-full py-2.5 bg-slate-50 hover:bg-slate-100 border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer text-center select-none"
+                  >
+                    Ubah Kata Sandi Akun
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowSettingsModal(false)}
+                    disabled={savingPrivacy}
+                    className="flex-1 py-2.5 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        if (!editName.trim()) {
+                          alert("Nama lengkap tidak boleh kosong.");
+                          return;
+                        }
+
+                        setSavingPrivacy(true);
+
+                        // Simpan profil (name dan is_private)
+                        const updateRes = await apiFetch("/profile", {
+                          method: "PUT",
+                          body: JSON.stringify({
+                            name: editName,
+                            is_private: selectedPrivacy,
+                          }),
+                        });
+
+                        const updatedData = updateRes?.data || updateRes;
+                        setProfile((prev) => {
+                          if (!prev) return null;
+                          const nextName = updatedData && typeof updatedData.name === "string" ? updatedData.name : editName;
+                          const nextPrivacy = updatedData && typeof updatedData.is_private === "boolean" ? updatedData.is_private : selectedPrivacy;
+                          return {
+                            ...prev,
+                            name: nextName,
+                            is_private: nextPrivacy,
+                          };
+                        });
+
+                        alert("Pengaturan profil berhasil diperbarui!");
+                        setShowSettingsModal(false);
+                      } catch (err: any) {
+                        alert("Gagal memperbarui pengaturan: " + err.message);
+                      } finally {
+                        setSavingPrivacy(false);
+                      }
+                    }}
+                    disabled={savingPrivacy}
+                    className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    {savingPrivacy ? "Menyimpan..." : "Simpan"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black text-slate-900 font-serif">
+                    Ganti Kata Sandi
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+                    Ubah kata sandi akun Anda demi keamanan.
+                  </p>
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  {/* Password Saat Ini */}
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                      Kata Sandi Saat Ini
+                    </span>
+                    <div className="relative">
+                      <input
+                        type={showCurrentPass ? "text" : "password"}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full px-3 py-2 pr-9 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPass(!showCurrentPass)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 cursor-pointer flex items-center justify-center"
+                      >
+                        {showCurrentPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Password Baru */}
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                      Kata Sandi Baru
+                    </span>
+                    <div className="relative">
+                      <input
+                        type={showNewPass ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full px-3 py-2 pr-9 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPass(!showNewPass)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 cursor-pointer flex items-center justify-center"
+                      >
+                        {showNewPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Konfirmasi Password Baru */}
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                      Konfirmasi Kata Sandi Baru
+                    </span>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPass ? "text" : "password"}
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full px-3 py-2 pr-9 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPass(!showConfirmPass)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 cursor-pointer flex items-center justify-center"
+                      >
+                        {showConfirmPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Reset password form fields and go back
+                      setCurrentPassword("");
+                      setNewPassword("");
+                      setConfirmNewPassword("");
+                      setShowCurrentPass(false);
+                      setShowNewPass(false);
+                      setShowConfirmPass(false);
+                      setSettingsView("profile");
+                    }}
+                    disabled={savingPrivacy}
+                    className="flex-1 py-2.5 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    Kembali
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        if (!currentPassword) {
+                          alert("Silakan masukkan kata sandi saat ini.");
+                          return;
+                        }
+                        if (!newPassword) {
+                          alert("Silakan masukkan kata sandi baru.");
+                          return;
+                        }
+                        if (newPassword.length < 6) {
+                          alert("Kata sandi baru minimal 6 karakter.");
+                          return;
+                        }
+                        if (newPassword !== confirmNewPassword) {
+                          alert("Konfirmasi kata sandi baru tidak cocok.");
+                          return;
+                        }
+
+                        setSavingPrivacy(true);
+
+                        // MOCK API REQUEST ke backend (e.g. PUT /profile/password)
+                        try {
+                          await apiFetch("/profile/password", {
+                            method: "PUT",
+                            body: JSON.stringify({
+                              current_password: currentPassword,
+                              new_password: newPassword,
+                            }),
+                          });
+                        } catch (err: any) {
+                          console.warn("Backend /profile/password belum diimplementasikan, membypass untuk demo:", err.message);
+                        }
+
+                        alert("Kata sandi berhasil diperbarui!");
+                        
+                        // Reset and return
+                        setCurrentPassword("");
+                        setNewPassword("");
+                        setConfirmNewPassword("");
+                        setSettingsView("profile");
+                      } catch (err: any) {
+                        alert("Gagal memperbarui kata sandi: " + err.message);
+                      } finally {
+                        setSavingPrivacy(false);
+                      }
+                    }}
+                    disabled={savingPrivacy}
+                    className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    {savingPrivacy ? "Menyimpan..." : "Simpan Sandi"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

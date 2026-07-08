@@ -15,7 +15,7 @@ export default function BuatKasusPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  
+
   // 🌟 State dipecah menjadi 3 kategori sesuai arahan konsep FE
   const [stakeholder, setStakeholder] = useState("");
   const [action, setAction] = useState("");
@@ -33,7 +33,9 @@ export default function BuatKasusPage() {
     const fetchTopics = async () => {
       try {
         const topicsRes = await apiFetch("/topics");
-        const list = Array.isArray(topicsRes) ? topicsRes : (topicsRes?.data || []);
+        const list = Array.isArray(topicsRes)
+          ? topicsRes
+          : topicsRes?.data || [];
         if (Array.isArray(list)) {
           setTopics(list);
         }
@@ -46,7 +48,15 @@ export default function BuatKasusPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId) return;
+    if (
+      !title.trim() ||
+      !description.trim() ||
+      !stakeholder.trim() ||
+      !action.trim() ||
+      !impact.trim() ||
+      !selectedTopicId
+    )
+      return;
 
     setError("");
     setLoading(true);
@@ -61,7 +71,7 @@ export default function BuatKasusPage() {
         body: JSON.stringify({
           title: title,
           description: description,
-          topic_ids: [parseInt(selectedTopicId, 10)]
+          topic_ids: [parseInt(selectedTopicId, 10)],
         }),
       });
 
@@ -79,19 +89,19 @@ export default function BuatKasusPage() {
               {
                 pillar_category: "Stakeholder",
                 content: stakeholder,
-                text_content: stakeholder
+                text_content: stakeholder,
               },
               {
                 pillar_category: "Action",
                 content: action,
-                text_content: action
+                text_content: action,
               },
               {
                 pillar_category: "Impact",
                 content: impact,
-                text_content: impact
-              }
-            ]
+                text_content: impact,
+              },
+            ],
           }),
         });
       }
@@ -115,39 +125,49 @@ export default function BuatKasusPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-indigo-500 selection:text-white">
-      <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-sm">
-        <Link href="/diskusi" className="text-xs font-black uppercase tracking-wider text-indigo-600 hover:underline flex items-center gap-1">
-        Batalkan & Kembali
-        </Link>
-        <NotificationBell />
+    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans flex flex-col selection:bg-[#00BC7D] selection:text-white">
+      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+          <Link
+            href="/diskusi"
+            className="text-xs font-black uppercase tracking-wider text-[#00BC7D] hover:underline flex items-center gap-1"
+          >
+            Batalkan & Kembali
+          </Link>
+          <NotificationBell />
+        </div>
       </nav>
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">
         <div className="bg-white border-2 border-slate-200 p-6 md:p-8 rounded-3xl shadow-sm space-y-6">
           <div className="space-y-1">
-            <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">Ajukan Studi Kasus Baru!</h2>
+            <h2 className="text-xl font-black tracking-tight text-slate-900 font-serif">
+              Ajukan Studi Kasus Baru!
+            </h2>
             <p className="text-xs font-medium text-slate-400 leading-relaxed">
-              Tuliskan studi kasus beserta analisis kerangka terstruktur awal untuk memantik diskusi kritis.
+              Tuliskan studi kasus beserta analisis kerangka terstruktur awal
+              untuk memantik diskusi kritis.
             </p>
           </div>
 
           {success && (
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 text-xs font-semibold text-center">
-            Studi Kasus & argumen berhasil diterbitkan!
+              Studi Kasus & argumen berhasil diterbitkan!
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* INPUT TOPIK/TEMA */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tema Kategori Topik</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Tema Kategori Topik
+              </label>
               <select
                 required
                 disabled={loading || success}
                 value={selectedTopicId}
                 onChange={(e) => setSelectedTopicId(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all cursor-pointer"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all cursor-pointer"
               >
                 <option value="">Pilih Tema Topik...</option>
                 {topics.map((t) => {
@@ -164,7 +184,9 @@ export default function BuatKasusPage() {
 
             {/* INPUT JUDUL */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Judul Studi Kasus</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Judul Studi Kasus
+              </label>
               <input
                 type="text"
                 required
@@ -172,13 +194,15 @@ export default function BuatKasusPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex: Dilema Etika Penggunaan Kuota Air Bersih di Wilayah Industri"
-                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all"
               />
             </div>
 
             {/* INPUT DESKRIPSI MASALAH */}
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Deskripsi Kasus & Data Pendukung</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Deskripsi Kasus & Data Pendukung
+              </label>
               <textarea
                 required
                 disabled={loading || success}
@@ -186,17 +210,21 @@ export default function BuatKasusPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={5}
                 placeholder="Latar belakang masalah, fakta lapangan, atau data pendukung kasus..."
-                className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none leading-relaxed"
+                className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all resize-none leading-relaxed"
               />
             </div>
 
             {/* AREA 3 PILAR ARGUMEN STRUKTUR FE */}
             <div className="pt-4 border-t border-slate-100 space-y-4">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Kerangka Analisis Awal</h4>
-              
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-[#00BC7D]">
+                Kerangka Analisis Awal
+              </h4>
+
               {/* 1. STAKEHOLDER */}
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">1. Aktor Utama / Stakeholder Terdampak</label>
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">
+                  1. Aktor Utama / Stakeholder Terdampak
+                </label>
                 <input
                   type="text"
                   required
@@ -204,13 +232,15 @@ export default function BuatKasusPage() {
                   value={stakeholder}
                   onChange={(e) => setStakeholder(e.target.value)}
                   placeholder="Siapa saja pihak kunci yang terlibat di dalam pusaran masalah ini?"
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all"
                 />
               </div>
 
               {/* 2. ACTION */}
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">2. Solusi Aksi / Intervensi Strategis (Action)</label>
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">
+                  2. Solusi Aksi / Intervensi Strategis (Action)
+                </label>
                 <textarea
                   required
                   disabled={loading || success}
@@ -224,7 +254,9 @@ export default function BuatKasusPage() {
 
               {/* 3. IMPACT */}
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">3. Dampak Resiko / Output Capaian (Impact)</label>
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-400">
+                  3. Dampak Resiko / Output Capaian (Impact)
+                </label>
                 <textarea
                   required
                   disabled={loading || success}
@@ -239,14 +271,32 @@ export default function BuatKasusPage() {
 
             <button
               type="submit"
-              disabled={loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId}
+              disabled={
+                loading ||
+                success ||
+                !title.trim() ||
+                !description.trim() ||
+                !stakeholder.trim() ||
+                !action.trim() ||
+                !impact.trim() ||
+                !selectedTopicId
+              }
               className={`w-full py-3.5 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-sm transition-all mt-4 ${
-                loading || success || !title.trim() || !description.trim() || !stakeholder.trim() || !action.trim() || !impact.trim() || !selectedTopicId
+                loading ||
+                success ||
+                !title.trim() ||
+                !description.trim() ||
+                !stakeholder.trim() ||
+                !action.trim() ||
+                !impact.trim() ||
+                !selectedTopicId
                   ? "bg-slate-300 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[4px_4px_0px_0px_rgba(196,30,58,0.3)] hover:-translate-y-0.5"
+                  : "bg-[#00BC7D] hover:bg-[#07A06E] hover:shadow-[4px_4px_0px_0px_rgba(0,188,125,0.3)] hover:-translate-y-0.5"
               }`}
             >
-              {loading ? "Menerbitkan Kasus..." : "Terbitkan Kasus & 3 Pilar Analisis"}
+              {loading
+                ? "Menerbitkan Kasus..."
+                : "Terbitkan Kasus & 3 Pilar Analisis"}
             </button>
           </form>
         </div>

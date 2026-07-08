@@ -355,7 +355,7 @@ export default function DaftarKasusPage() {
   const processedKasus = getProcessedKasus();
 
   return (
-    <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-indigo-650 selection:text-white">
+    <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-[#00BC7D] selection:text-white">
       {/* LEARNING GATE OVERLAY — Muncul jika belum selesaikan 1 stage learning */}
       {gateChecked && isLearningGated && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -383,8 +383,8 @@ export default function DaftarKasusPage() {
             </div>
 
             {/* Tip card */}
-            <div className="w-full bg-indigo-50 border-2 border-black rounded-xl p-4 text-left shadow-[2px_2px_0px_#000]">
-              <p className="text-[11px] font-black uppercase tracking-wider text-indigo-600 mb-1">
+            <div className="w-full bg-emerald-50 border-2 border-black rounded-xl p-4 text-left shadow-[2px_2px_0px_#000]">
+              <p className="text-[11px] font-black uppercase tracking-wider text-[#00BC7D] mb-1">
                 Kenapa?
               </p>
               <p className="text-xs font-semibold text-slate-700 leading-relaxed">
@@ -396,7 +396,7 @@ export default function DaftarKasusPage() {
             {/* CTA Button */}
             <button
               onClick={() => router.push("/belajar")}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-indigo-650 hover:bg-indigo-700 text-white text-sm font-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#00BC7D] hover:bg-[#07A06E] text-white text-sm font-black border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
             >
               <BookOpen size={16} />
               Mulai Mode Belajar Sekarang
@@ -419,7 +419,10 @@ export default function DaftarKasusPage() {
             <div className="w-11 h-11 flex items-center justify-center">
               <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
             </div>
-            <a href="/" className="font-black text-lg tracking-tight text-black">
+            <a
+              href="/"
+              className="font-black text-lg tracking-tight text-black"
+            >
               Unravel<span className="text-[#00BC7D]"> Discuss</span>
             </a>
           </div>
@@ -459,7 +462,7 @@ export default function DaftarKasusPage() {
           </div>
           <button
             onClick={() => router.push("/diskusi/buat")}
-            className="px-5 py-3 bg-emerald-100 hover:bg-indigo-750 text-black font-black text-xs border-2 border-black uppercase tracking-wider rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all shrink-0 cursor-pointer"
+            className="px-5 py-3 bg-emerald-100 hover:bg-[#07A06E] text-black font-black text-xs border-2 border-black uppercase tracking-wider rounded-xl shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all shrink-0 cursor-pointer"
           >
             + Buat Studi Kasus Baru
           </button>
@@ -521,7 +524,7 @@ export default function DaftarKasusPage() {
         {/* AREA DAFTAR KASUS */}
         {loading ? (
           <div className="w-full py-20 flex flex-col items-center justify-center space-y-3 bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0px_#000] max-w-md mx-auto">
-            <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-[#00BC7D] border-t-transparent rounded-full animate-spin"></div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest animate-pulse">
               Memuat diskusi...
             </p>

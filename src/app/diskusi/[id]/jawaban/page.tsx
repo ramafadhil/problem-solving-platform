@@ -286,7 +286,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FFFDF9] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#00BC7D] border-t-transparent rounded-full animate-spin"></div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
           Menyelaraskan Forum Ulasan...
         </p>
@@ -295,7 +295,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-indigo-650 selection:text-white">
+    <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-[#00BC7D] selection:text-white">
       {/* NAVBAR */}
       <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
@@ -303,7 +303,10 @@ export default function JawabanUlasanPage({ params }: PageProps) {
             <div className="w-11 h-11 flex items-center justify-center">
               <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
             </div>
-            <a href="/" className="font-black text-lg tracking-tight text-black">
+            <a
+              href="/"
+              className="font-black text-lg tracking-tight text-black"
+            >
               Unravel<span className="text-[#00BC7D]"> Discuss</span>
             </a>
           </div>
@@ -356,7 +359,7 @@ export default function JawabanUlasanPage({ params }: PageProps) {
                         ? "/profile"
                         : `/profile?userId=${item.userId}`
                     }
-                    className="w-9 h-9 rounded-full bg-[#FDEDEC] border-2 border-black flex items-center justify-center font-black text-xs text-indigo-650 shadow-[1px_1px_0px_#000] shrink-0 hover:scale-105 transition-all"
+                    className="w-9 h-9 rounded-full bg-emerald-50 border-2 border-black flex items-center justify-center font-black text-xs text-[#00BC7D] shadow-[1px_1px_0px_#000] shrink-0 hover:scale-105 transition-all"
                   >
                     {item.author.charAt(0).toUpperCase()}
                   </Link>

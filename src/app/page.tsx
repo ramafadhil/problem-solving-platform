@@ -67,7 +67,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neogrid text-black font-sans selection:bg-indigo-600 selection:text-white pb-16">
+    <div className="min-h-screen bg-neogrid text-black font-sans selection:bg-[#00BC7D] selection:text-white pb-16">
       {/* 1. NAVBAR HEADER SECTION */}
       <nav className="w-full bg-white border-b-4 border-black px-4 sm:px-8 py-4 relative z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
@@ -112,7 +112,7 @@ export default function LandingPage() {
               <>
                 <button
                   onClick={handleLogout}
-                  className="text-black hover:text-indigo-600 transition-colors py-2 hidden sm:inline-block cursor-pointer font-bold mr-2 text-xs"
+                  className="text-black hover:text-[#00BC7D] transition-colors py-2 hidden sm:inline-block cursor-pointer font-bold mr-2 text-xs"
                 >
                   Keluar
                 </button>
@@ -151,7 +151,7 @@ export default function LandingPage() {
         <section className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center pt-4">
           <div className="md:col-span-7 space-y-6 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border-2 border-black rounded-full shadow-[3px_3px_0px_#000] text-xs font-extrabold text-black">
-              <Sparkles size={14} className="text-indigo-600" />
+              <Sparkles size={14} className="text-[#00BC7D]" />
               <span>Belajar, diskusi, dan progres dalam satu tempat</span>
             </div>
 
@@ -478,7 +478,7 @@ export default function LandingPage() {
           <div className="bg-[#FFFDF9] border-[4px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] w-full max-w-lg p-6 sm:p-8 flex flex-col gap-6 relative select-none animate-in fade-in zoom-in-95 duration-200">
             {/* Header / Top Controls */}
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 border-2 border-black px-2.5 py-1 rounded-lg shadow-[1.5px_1.5px_0px_#000]">
+              <span className="text-xs font-black uppercase tracking-widest text-white bg-[#00BC7D] border-2 border-black px-2.5 py-1 rounded-lg shadow-[1.5px_1.5px_0px_#000]">
                 Tutorial
               </span>
               <button
@@ -567,7 +567,7 @@ export default function LandingPage() {
                   <span
                     key={slideIdx}
                     className={`w-2.5 h-2.5 rounded-full border border-black shadow-[0.5px_0.5px_0px_#000] transition-colors ${
-                      currentSlide === slideIdx ? "bg-indigo-600" : "bg-white"
+                      currentSlide === slideIdx ? "bg-[#00BC7D]" : "bg-white"
                     }`}
                   />
                 ))}
@@ -587,7 +587,7 @@ export default function LandingPage() {
                 {currentSlide < 3 ? (
                   <button
                     onClick={() => setCurrentSlide((prev) => prev + 1)}
-                    className="px-4 py-2 bg-indigo-650 hover:bg-indigo-700 border-2 border-black text-white rounded-xl text-xs font-black uppercase shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+                    className="px-4 py-2 bg-[#00BC7D] hover:bg-[#07A06E] border-2 border-black text-white rounded-xl text-xs font-black uppercase shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
                   >
                     Lanjut
                   </button>

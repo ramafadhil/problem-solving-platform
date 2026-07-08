@@ -280,7 +280,7 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FFFDF9] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#00BC7D] border-t-transparent rounded-full animate-spin"></div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Memverifikasi Hak Akses...</p>
       </div>
     );
@@ -299,7 +299,7 @@ export default function AdminDashboardPage() {
           </div>
           <button
             onClick={() => router.push("/login")}
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md text-xs uppercase tracking-wider transition-colors"
+            className="w-full py-3 bg-[#00BC7D] hover:bg-[#07A06E] text-white font-bold rounded-xl shadow-md text-xs uppercase tracking-wider transition-colors"
           >
             Login Sebagai Admin
           </button>
@@ -309,21 +309,21 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-indigo-500 selection:text-white pb-20">
+    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 font-sans selection:bg-[#00BC7D] selection:text-white pb-20">
       {/* NAVBAR */}
       <nav className="w-full border-b-2 border-slate-200 bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
             <img src="/logo.svg" alt="Logo" className="w-14"/>
             <Link href="/" className="font-black text-lg tracking-tight text-slate-900">
-              Unravel<span className="text-indigo-600"> Admin</span>
+              Unravel<span className="text-[#00BC7D]"> Admin</span>
             </Link>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <NotificationBell />
             <Link
               href="/profile"
-              className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all shadow-sm"
+              className="px-3 py-1.5 bg-slate-50 border-2 border-slate-200 hover:border-[#00BC7D] hover:text-[#00BC7D] rounded-xl text-[10px] font-black uppercase tracking-wider text-slate-600 transition-all shadow-sm"
             >
               <span className="hidden sm:inline">Kembali ke Profil</span>
               <span className="sm:hidden">Profil</span>
@@ -355,7 +355,7 @@ export default function AdminDashboardPage() {
                     placeholder="Contoh: Kesehatan, Pertanian, Seni"
                     value={newTopicName}
                     onChange={(e) => setNewTopicName(e.target.value)}
-                    className="w-full h-[38px] px-4 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors"
+                    className="w-full h-[38px] px-4 bg-slate-50/50 border border-slate-200 focus:border-[#00BC7D] rounded-xl text-xs font-semibold focus:outline-none transition-colors"
                   />
                 </div>
                 {/* Ikon Emoji - Toggle Button + Popover */}
@@ -365,10 +365,10 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setShowEmojiPicker(v => !v)}
-                      className="w-full h-[38px] bg-slate-50/50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 rounded-xl transition-all flex items-center justify-center gap-1.5 group"
+                      className="w-full h-[38px] bg-slate-50/50 hover:bg-emerald-50 border border-slate-200 hover:border-[#00BC7D] rounded-xl transition-all flex items-center justify-center gap-1.5 group"
                     >
                       <span className="text-slate-700 flex items-center justify-center"><DynamicIcon emoji={newTopicIcon} size={16} /></span>
-                      <span className="text-[9px] font-black text-slate-400 group-hover:text-indigo-500 uppercase tracking-wider leading-none">{showEmojiPicker ? "▲" : "▼"}</span>
+                      <span className="text-[9px] font-black text-slate-400 group-hover:text-[#00BC7D] uppercase tracking-wider leading-none">{showEmojiPicker ? "▲" : "▼"}</span>
                     </button>
 
                     {/* Popover Dropdown */}
@@ -391,9 +391,9 @@ export default function AdminDashboardPage() {
                                   setNewTopicIcon(emoji);
                                   setShowEmojiPicker(false);
                                 }}
-                                className={`p-1.5 rounded-xl transition-all hover:bg-indigo-50 hover:scale-110 active:scale-95 flex items-center justify-center ${
+                                className={`p-1.5 rounded-xl transition-all hover:bg-emerald-50 hover:scale-110 active:scale-95 flex items-center justify-center ${
                                   newTopicIcon === emoji
-                                    ? "bg-indigo-100 ring-2 ring-indigo-400 shadow-sm"
+                                    ? "bg-emerald-100 ring-2 ring-[#00BC7D] shadow-sm"
                                     : ""
                                 }`}
                               >
@@ -416,7 +416,7 @@ export default function AdminDashboardPage() {
                   placeholder="Tuliskan deskripsi untuk ditampilkan di papan pemilihan belajar."
                   value={newTopicDescription}
                   onChange={(e) => setNewTopicDescription(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-[#00BC7D] rounded-xl text-xs font-semibold focus:outline-none transition-colors resize-none"
                 />
               </div>
 
@@ -459,7 +459,7 @@ export default function AdminDashboardPage() {
                   placeholder="Contoh: Kebocoran Data Kredensial Pengguna"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-[#00BC7D] rounded-xl text-xs font-semibold focus:outline-none transition-colors"
                 />
               </div>
 
@@ -469,7 +469,7 @@ export default function AdminDashboardPage() {
                 <select
                   value={topicId}
                   onChange={(e) => setTopicId(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-[#00BC7D] rounded-xl text-xs font-semibold focus:outline-none transition-colors"
                 >
                   {topics.map(t => {
                     const parts = t.name.split("|");
@@ -492,7 +492,7 @@ export default function AdminDashboardPage() {
                 <select
                   value={difficultyLevel}
                   onChange={(e) => setDifficultyLevel(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-[#00BC7D] rounded-xl text-xs font-semibold focus:outline-none transition-colors"
                 >
                   <option value="1">Level 1 (Eksplorasi)</option>
                   <option value="2">Level 2 (Penerapan)</option>
@@ -508,7 +508,7 @@ export default function AdminDashboardPage() {
                   placeholder="Tuliskan cerita/narasi permasalahan. Gunakan enter untuk memisah paragraf."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 focus:border-[#00BC7D] rounded-xl text-xs font-semibold focus:outline-none transition-colors resize-none"
                 />
               </div>
 
@@ -518,7 +518,7 @@ export default function AdminDashboardPage() {
                   <button
                     type="button"
                     onClick={addCard}
-                    className="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-wider border border-indigo-200/50 transition-colors shadow-sm"
+                    className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-[#00BC7D] rounded-xl text-[10px] font-black uppercase tracking-wider border border-[#00BC7D]/30 transition-colors shadow-sm"
                   >
                     + Tambah Kartu
                   </button>
@@ -584,7 +584,7 @@ export default function AdminDashboardPage() {
 
               <button
                 type="submit"
-                className="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md text-xs uppercase tracking-wider transition-all transform hover:-translate-y-0.5 active:scale-95"
+                className="w-full mt-2 py-3 bg-[#00BC7D] hover:bg-[#07A06E] text-white font-bold rounded-xl shadow-md text-xs uppercase tracking-wider transition-all transform hover:-translate-y-0.5 active:scale-95"
               >
                 Terbitkan Studi Kasus
               </button>
@@ -646,7 +646,7 @@ export default function AdminDashboardPage() {
 
             {listLoading ? (
               <div className="py-12 flex justify-center">
-                <div className="w-6 h-6 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                 <div className="w-6 h-6 border-3 border-[#00BC7D] border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : cases.length === 0 ? (
               <div className="py-12 text-center text-xs text-slate-400 font-semibold italic bg-slate-50/20 rounded-2xl border border-dashed border-slate-200">
@@ -661,7 +661,7 @@ export default function AdminDashboardPage() {
                     <div key={c.id} className="border border-slate-100 rounded-2xl p-4 bg-slate-50/30 flex flex-col justify-between gap-3 shadow-sm hover:border-slate-200 transition-colors">
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="bg-indigo-50 border border-indigo-100 text-indigo-600 font-extrabold text-[9px] px-1.5 py-0.5 rounded">
+                           <span className="bg-emerald-50 border border-emerald-100 text-[#00BC7D] font-extrabold text-[9px] px-1.5 py-0.5 rounded">
                             {topicName}
                           </span>
                           <span className="text-[8px] font-bold text-slate-400">ID: {c.id}</span>

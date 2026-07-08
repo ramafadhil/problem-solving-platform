@@ -405,7 +405,7 @@ export default function LearningDashboardPage() {
                 const nodeColor = isCompleted
                   ? "bg-[#00c853] border-black text-white shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none"
                   : isActive
-                    ? "bg-indigo-600 border-black text-white shadow-[3px_3px_0px_#000] animate-pulse hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none"
+                    ? "bg-rose-400 border-black text-white shadow-[3px_3px_0px_#000] animate-pulse hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none"
                     : "bg-white border-black text-slate-400 opacity-60";
 
                 const nodeIcon = isCompleted ? (
@@ -459,7 +459,7 @@ export default function LearningDashboardPage() {
                                 isCompleted
                                   ? "text-emerald-700"
                                   : isActive
-                                    ? "text-indigo-600"
+                                    ? "text-red-700"
                                     : "text-slate-400"
                               }`}
                             >
@@ -489,7 +489,7 @@ export default function LearningDashboardPage() {
                               isCompleted
                                 ? "bg-emerald-250 text-emerald-800"
                                 : isActive
-                                  ? "bg-[#FDEDEC] text-indigo-700"
+                                  ? "bg-[#FDEDEC] text-red-700"
                                   : "bg-slate-100 text-slate-400 border-dashed opacity-60 shadow-none"
                             }`}
                           >
@@ -548,7 +548,7 @@ export default function LearningDashboardPage() {
         {/* Kartu Profil & XP Singkat */}
         <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#FDEDEC] border-2 border-black flex items-center justify-center font-black text-indigo-600 text-base uppercase shadow-[1.5px_1.5px_0px_#000]">
+            <div className="w-10 h-10 rounded-full bg-emerald-50 border-2 border-black flex items-center justify-center font-black text-[#00BC7D] text-base uppercase shadow-[1.5px_1.5px_0px_#000]">
               {userName.charAt(0) || "?"}
             </div>
             <div className="flex-1 min-w-0">
@@ -726,21 +726,21 @@ export default function LearningDashboardPage() {
                       const avatarLetter = displayName.charAt(0).toUpperCase();
 
                       return (
-                        <div className="flex items-center gap-3 p-3 rounded-xl border-2 border-black bg-[#FDEDEC] shadow-[2.5px_2.5px_0px_#000]">
-                          <span className="text-xs font-black text-indigo-650 w-5 text-center flex-shrink-0">
+                        <div className="flex items-center gap-3 p-3 rounded-xl border-2 border-black bg-emerald-50 shadow-[2.5px_2.5px_0px_#000]">
+                          <span className="text-xs font-black text-[#00BC7D] w-5 text-center flex-shrink-0">
                             #{myRank}
                           </span>
                           <div className="w-8 h-8 rounded-full border-2 border-black bg-[#FDE293] text-black flex items-center justify-center font-black text-xs uppercase flex-shrink-0 shadow-[1px_1px_0px_#000]">
                             {avatarLetter}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-extrabold text-indigo-900 truncate">
+                            <p className="text-xs font-extrabold text-slate-900 truncate">
                               {displayName}{" "}
-                              <span className="text-[9px] font-bold text-indigo-600">
+                              <span className="text-[9px] font-bold text-[#00BC7D]">
                                 (Kamu)
                               </span>
                             </p>
-                            <p className="text-[10px] text-indigo-600 font-semibold">
+                            <p className="text-[10px] text-[#00BC7D] font-semibold">
                               {myUserObj.total_points} Points
                             </p>
                           </div>
@@ -755,7 +755,7 @@ export default function LearningDashboardPage() {
 
           {/* Info Poin Global */}
           <div className="mt-4 pt-3.5 border-t-2 border-black flex items-start gap-2 text-[10px] text-slate-700 leading-relaxed font-sans font-semibold">
-            <span className="text-indigo-650 mt-0.5 flex-shrink-0 flex items-center justify-center">
+            <span className="text-[#00BC7D] mt-0.5 flex-shrink-0 flex items-center justify-center">
               <Lightbulb size={12} fill="currentColor" />
             </span>
             <span>

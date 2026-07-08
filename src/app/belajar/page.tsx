@@ -35,7 +35,7 @@ export default function TopikSelectionPage() {
       shadowColor: "hover:shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]",
     },
     {
-      gradient: "from-blue-50 to-indigo-50",
+      gradient: "from-blue-50 to-blue-100",
       borderColor: "hover:border-blue-400",
       iconBg: "bg-blue-500",
       textColor: "text-blue-900",
@@ -183,7 +183,7 @@ export default function TopikSelectionPage() {
           <div className="flex flex-col gap-4 w-full max-h-[480px] overflow-y-auto pr-1">
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center space-y-3 bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0px_#000]">
-                <div className="w-6 h-6 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-3 border-[#00BC7D] border-t-transparent rounded-full animate-spin"></div>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   Memuat Tema Analisis...
                 </span>

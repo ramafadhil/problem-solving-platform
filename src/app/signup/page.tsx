@@ -110,7 +110,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neogrid flex items-stretch text-black font-sans selection:bg-indigo-650 selection:text-white relative">
+    <div className="min-h-screen bg-neogrid flex items-stretch text-black font-sans selection:bg-[#00BC7D] selection:text-white relative">
       {/* ================= COMPONENT TOAST FLOATING NOTIFICATION ================= */}
       {toast.show && (
         <div

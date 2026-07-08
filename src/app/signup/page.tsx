@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface ToastState {
   show: boolean;
@@ -59,7 +60,10 @@ export default function SignupPage() {
       // Auto-login: langsung login dengan kredensial yang sama setelah registrasi berhasil
       const loginData = await apiFetch("/login", {
         method: "POST",
-        body: JSON.stringify({ username: formData.username, password: formData.password }),
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
       });
 
       if (loginData?.token) {
@@ -130,11 +134,11 @@ export default function SignupPage() {
         <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:16px_16px]"></div>
 
         <div className="relative text-center space-y-4 max-w-sm">
-          <div className="w-64 h-08 rounded-3xl flex items-center justify-center  mx-auto overflow-hidden p-6">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              className="w-full h-full object-contain"
+          <div className="w-64 h-64 flex items-center justify-center mx-auto overflow-hidden">
+            <DotLottieReact
+              src="/loginnsignup.json"
+              loop={true}
+              autoplay={true}
             />
           </div>
           <h2 className="text-xl font-black text-black font-serif tracking-tight pt-2">
@@ -271,7 +275,7 @@ export default function SignupPage() {
                   type="checkbox"
                   required
                   disabled={loading}
-                  className="w-4 h-4 rounded border-2 border-black accent-indigo-650 cursor-pointer shadow-[1px_1px_0px_#000]"
+                  className="w-4 h-4 rounded border-2 border-black accent-[#00BC7D] cursor-pointer shadow-[1px_1px_0px_#000]"
                 />
                 <span className="text-[11px]">
                   Saya menyetujui Ketentuan Layanan
@@ -285,8 +289,8 @@ export default function SignupPage() {
               disabled={loading}
               className={`w-full py-3.5 border-2 border-black text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all mt-4 cursor-pointer ${
                 loading
-                  ? "bg-indigo-400 cursor-not-allowed shadow-none"
-                  : "bg-indigo-600 hover:bg-indigo-750"
+                  ? "bg-[#00BC7D] cursor-not-allowed shadow-none"
+                  : "bg-[#00BC7D] hover:bg-[#00BC7D]"
               }`}
             >
               {loading ? "Memproses Pendaftaran..." : "Daftar Akun Baru"}
@@ -298,7 +302,7 @@ export default function SignupPage() {
             Sudah memiliki akun sebelumnya?{" "}
             <Link
               href="/login"
-              className="font-black text-indigo-650 hover:underline"
+              className="font-black text-[#00BC7D] hover:underline"
             >
               Masuk Di Sini
             </Link>

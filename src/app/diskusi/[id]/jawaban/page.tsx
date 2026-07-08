@@ -90,17 +90,21 @@ export default function JawabanUlasanPage({ params }: PageProps) {
           console.error("Gagal mengambil data profile:", e);
         }
 
-        let perspectivesList: any[] = [];
+        let perspectivesRaw: any = null;
         try {
-          perspectivesList = await apiFetch(`/cases/${caseId}/perspectives`);
+          perspectivesRaw = await apiFetch(`/cases/${caseId}/perspectives`);
         } catch (e) {
           console.error("Gagal mengambil data perspektif dari server:", e);
         }
 
+        const perspectivesList = Array.isArray(perspectivesRaw)
+          ? perspectivesRaw
+          : perspectivesRaw?.data || perspectivesRaw?.perspectives || [];
+
         const myPerspective =
           Array.isArray(perspectivesList) && userId
             ? perspectivesList.find(
-                (p: any) => (p.user_id || p.UserID) === userId,
+                (p: any) => Number(p.user_id || p.UserID) === Number(userId),
               )
             : null;
 

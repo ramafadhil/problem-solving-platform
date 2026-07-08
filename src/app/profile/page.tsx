@@ -199,12 +199,16 @@ function ProfileContent() {
               (x: any) => x.type !== "learning",
             )) {
               try {
-                const perspectives = await apiFetch(
+                const perspectivesRes = await apiFetch(
                   `/cases/${c.id}/perspectives`,
                 );
-                if (Array.isArray(perspectives)) {
-                  const myPerspective = perspectives.find(
-                    (p: any) => (p.user_id || p.UserID) === userId,
+                const list = Array.isArray(perspectivesRes)
+                  ? perspectivesRes
+                  : perspectivesRes?.data || perspectivesRes?.perspectives || [];
+
+                if (Array.isArray(list)) {
+                  const myPerspective = list.find(
+                    (p: any) => Number(p.user_id || p.UserID) === Number(userId),
                   );
                   if (myPerspective) {
                     const category =
@@ -285,12 +289,16 @@ function ProfileContent() {
               (x: any) => x.type !== "learning",
             )) {
               try {
-                const perspectives = await apiFetch(
+                const perspectivesRes = await apiFetch(
                   `/cases/${c.id}/perspectives`,
                 );
-                if (Array.isArray(perspectives)) {
-                  const targetPerspective = perspectives.find(
-                    (p: any) => (p.user_id || p.UserID) === targetUserId,
+                const list = Array.isArray(perspectivesRes)
+                  ? perspectivesRes
+                  : perspectivesRes?.data || perspectivesRes?.perspectives || [];
+
+                if (Array.isArray(list)) {
+                  const targetPerspective = list.find(
+                    (p: any) => Number(p.user_id || p.UserID) === Number(targetUserId),
                   );
                   if (targetPerspective) {
                     if (!targetUserFound && targetPerspective.user) {

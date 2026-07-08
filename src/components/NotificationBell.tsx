@@ -26,7 +26,52 @@ export default function NotificationBell() {
       // Backend returns either direct array or { data: [] }
       const list = Array.isArray(res) ? res : res?.data || [];
       if (Array.isArray(list)) {
-        setNotifications(list);
+        let myId: number | null = null;
+        try {
+          const profile = await apiFetch("/me");
+          myId = Number(profile?.data?.id || profile?.id || 0);
+        } catch (e) {
+          console.error("Gagal mengambil profile di notifikasi:", e);
+        }
+
+        if (!myId) {
+          setNotifications(list);
+          return;
+        }
+
+        const filteredList: NotificationItem[] = [];
+        for (const notif of list) {
+          const msg = notif.message.toLowerCase();
+          if (
+            notif.case_id &&
+            (msg.includes("argumen") ||
+              msg.includes("perspektif") ||
+              msg.includes("menjawab") ||
+              msg.includes("mengisi"))
+          ) {
+            try {
+              const perspectivesRes = await apiFetch(`/cases/${notif.case_id}/perspectives`);
+              const pList = Array.isArray(perspectivesRes)
+                ? perspectivesRes
+                : perspectivesRes?.data || perspectivesRes?.perspectives || [];
+
+              const hasPublicOtherPerspective = pList.some(
+                (p: any) =>
+                  Number(p.user_id || p.UserID) !== myId &&
+                  (p.is_public === true || p.is_public === 1 || String(p.is_public) === "true")
+              );
+
+              if (hasPublicOtherPerspective) {
+                filteredList.push(notif);
+              }
+            } catch (err) {
+              filteredList.push(notif);
+            }
+          } else {
+            filteredList.push(notif);
+          }
+        }
+        setNotifications(filteredList);
       }
     } catch (err) {
       console.error("Gagal mengambil notifikasi:", err);

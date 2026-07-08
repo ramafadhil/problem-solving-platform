@@ -17,6 +17,8 @@ import {
   Heart,
   X,
   HelpCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -27,6 +29,25 @@ export default function LandingPage() {
   const [onboardingKey, setOnboardingKey] = useState<string>(
     "unravel_welcome_onboarded",
   );
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  // States for sequential/staggered Lottie rendering in Alur Pengalaman section
+  const [playStep1, setPlayStep1] = useState(false);
+  const [playStep2, setPlayStep2] = useState(false);
+  const [playStep3, setPlayStep3] = useState(false);
+
+  useEffect(() => {
+    // Trigger animations sequentially
+    const t1 = setTimeout(() => setPlayStep1(true), 200);
+    const t2 = setTimeout(() => setPlayStep2(true), 1400);
+    const t3 = setTimeout(() => setPlayStep3(true), 2600);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, []);
 
   useEffect(() => {
     // Mengecek apakah cookie token tersedia di browser saat landing page dimuat
@@ -123,6 +144,12 @@ export default function LandingPage() {
               className="hover:underline decoration-2 underline-offset-4 decoration-[#00BC7D] transition-all py-2"
             >
               Konten
+            </a>
+            <a
+              href="#faq"
+              className="hover:underline decoration-2 underline-offset-4 decoration-[#00BC7D] transition-all py-2"
+            >
+              FAQ
             </a>
           </div>
 
@@ -621,6 +648,19 @@ export default function LandingPage() {
                     Mulai dari tema yang paling dekat dengan kebutuhanmu.
                   </p>
                 </div>
+                <div className="w-full h-32 flex items-center justify-center mt-auto select-none pointer-events-none scale-[1.25] transform-gpu">
+                  {playStep1 && (
+                    <DotLottieReact
+                      src="/pilihtopik.json"
+                      loop={true}
+                      autoplay={true}
+                      className="w-full h-full"
+                      renderConfig={{
+                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                      }}
+                    />
+                  )}
+                </div>
               </div>
 
               {/* Step 2 */}
@@ -636,6 +676,19 @@ export default function LandingPage() {
                     Latih kemampuan analisis lewat jalur belajar yang sudah
                     terarah.
                   </p>
+                </div>
+                <div className="w-full h-32 flex items-center justify-center mt-auto select-none pointer-events-none">
+                  {playStep2 && (
+                    <DotLottieReact
+                      src="/selesaikanstage.json"
+                      loop={true}
+                      autoplay={true}
+                      className="w-full h-full"
+                      renderConfig={{
+                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                      }}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -653,12 +706,99 @@ export default function LandingPage() {
                     tingkatkan keahlianmu.
                   </p>
                 </div>
+                <div className="w-full h-32 flex items-center justify-center mt-auto select-none pointer-events-none">
+                  {playStep3 && (
+                    <DotLottieReact
+                      src="/kumpulpoin.json"
+                      loop={true}
+                      autoplay={true}
+                      className="w-full h-full"
+                      renderConfig={{
+                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 6. FOOTER SECTION */}
+        {/* 6. FAQ SECTION */}
+        <section id="faq" className="w-full pt-4 relative">
+          {/* Doodle decoration: bracket } on right edge */}
+          <div className="absolute top-12 -right-6 pointer-events-none select-none opacity-[0.20] hidden lg:block">
+            <svg width="24" height="70" viewBox="0 0 24 70" fill="none" className="rotate-180">
+              <path d="M18 4 C10 4, 8 10, 8 18 L8 30 C8 34, 4 35, 4 35 C4 35, 8 36, 8 40 L8 52 C8 60, 10 66, 18 66" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+            </svg>
+          </div>
+
+          <div className="bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 sm:p-10 space-y-8">
+            <div className="text-center md:text-left space-y-2">
+              <span className="text-xs font-black text-[#00BC7D] uppercase tracking-widest block">
+                PERTANYAAN UMUM
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-black tracking-tight font-serif">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xs font-semibold text-slate-500 font-mono">
+                Punya pertanyaan lain? Berikut rangkuman hal-hal yang sering ditanyakan analis pemula.
+              </p>
+            </div>
+
+            <div className="space-y-4 max-w-4xl mx-auto md:mx-0">
+              {[
+                {
+                  q: "Apa itu Unravel?",
+                  a: "Unravel adalah platform pembelajaran interaktif berbasis studi kasus yang membantu kamu melatih logika analisis masalah secara terstruktur menggunakan 3 pilar utama: Stakeholder, Action, dan Impact."
+                },
+                {
+                  q: "Bagaimana cara kerja Mode Belajar?",
+                  a: "Di Mode Belajar, kamu memilih suatu tema topik lalu menyelesaikan stage demi stage dengan cara drag-and-drop kartu kata kunci ke kategori pilar yang benar. Poin akan diberikan setelah analisis terverifikasi benar."
+                },
+                {
+                  q: "Apa perbedaan antara Mode Belajar dan Mode Diskusi?",
+                  a: "Mode Belajar adalah alur terpandu dengan kunci jawaban pasti untuk melatih logika dasarmu. Mode Diskusi adalah forum terbuka di mana kamu bisa membagikan argumen analisis pribadimu untuk studi kasus umum dan membandingkannya dengan analisis milik analis lain secara global."
+                },
+                {
+                  q: "Apakah platform ini sepenuhnya gratis?",
+                  a: "Ya! Seluruh modul belajar, studi kasus, forum diskusi, dan fitur profil di Unravel dapat diakses secara gratis oleh siapa saja."
+                },
+                {
+                  q: "Bagaimana cara mendapatkan Points?",
+                  a: "Kamu mendapatkan Points setiap kali menyelesaikan stage di Mode Belajar atau membagikan perspektif analisis berkualitas di Mode Diskusi yang dibaca oleh analis lain."
+                }
+              ].map((faq, idx) => {
+                const isOpen = activeFaq === idx;
+                return (
+                  <div
+                    key={idx}
+                    className="border-2 border-black rounded-2xl overflow-hidden shadow-[2px_2px_0px_#000] hover:shadow-[4px_4px_0px_#000] transition-all bg-white"
+                  >
+                    <button
+                      onClick={() => setActiveFaq(isOpen ? null : idx)}
+                      className="w-full px-6 py-4 flex items-center justify-between text-left font-black text-sm text-black hover:bg-slate-50 transition-colors cursor-pointer select-none"
+                    >
+                      <span>{faq.q}</span>
+                      {isOpen ? <ChevronUp size={16} className="stroke-[3]" /> : <ChevronDown size={16} className="stroke-[3]" />}
+                    </button>
+                    <div
+                      className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        isOpen ? "max-h-[300px] border-t-2 border-black" : "max-h-0"
+                      }`}
+                    >
+                      <p className="p-6 text-xs font-semibold text-slate-700 leading-relaxed font-mono bg-slate-50/50">
+                        {faq.a}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 7. FOOTER SECTION */}
         <section id="footer" className="w-full pt-4">
           <div className="bg-white border-2 border-black rounded-2xl shadow-[4px_4px_0px_#000] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xs font-extrabold text-black">

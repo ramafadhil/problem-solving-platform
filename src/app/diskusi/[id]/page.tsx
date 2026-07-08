@@ -128,9 +128,13 @@ export default function DetailKasusPage() {
         const userId = profile?.data?.id || profile?.id;
 
         if (userId) {
-          const perspectives = await apiFetch(`/cases/${caseId}/perspectives`);
-          const matchingResponse = Array.isArray(perspectives)
-            ? perspectives.find((p: any) => p.UserID === userId)
+          const perspectivesRes = await apiFetch(`/cases/${caseId}/perspectives`);
+          const list = Array.isArray(perspectivesRes)
+            ? perspectivesRes
+            : perspectivesRes?.data || perspectivesRes?.perspectives || [];
+
+          const matchingResponse = Array.isArray(list)
+            ? list.find((p: any) => Number(p.user_id || p.UserID) === Number(userId))
             : null;
 
           if (matchingResponse) {

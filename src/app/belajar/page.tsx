@@ -153,6 +153,12 @@ export default function TopikSelectionPage() {
                 src="/aset_learning.json"
                 loop={true}
                 autoplay={true}
+                renderConfig={{
+                  devicePixelRatio:
+                    typeof window !== "undefined"
+                      ? window.devicePixelRatio || 2
+                      : 2,
+                }}
               />
             </div>
           </div>

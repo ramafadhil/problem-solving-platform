@@ -289,7 +289,7 @@ export default function LandingPage() {
 
           <div className="md:col-span-5 w-full flex flex-col items-center justify-center">
             {/* Tablet-style container wrapper for the Lottie graph */}
-            <div className="relative w-full max-w-[400px] bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col items-center justify-center">
+            <div className="relative w-full max-w-[400px] bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 flex flex-col items-center justify-center overflow-hidden">
               {/* Browser Mock Controls */}
               <div className="absolute top-4 left-4 flex gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-[#EC7063] border border-black"></span>
@@ -297,13 +297,21 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-[#8EE4AF] border border-black"></span>
               </div>
 
-              <div className="w-full max-w-[270px] aspect-square mt-4 select-none pointer-events-none flex items-center justify-center">
-                <DotLottieReact
-                  src="/HeroS.json"
-                  loop={true}
-                  autoplay={true}
-                  className="w-[410px] h-[410px]"
-                />
+              <div className="w-[calc(100%+48px)] -mx-6 mt-4 select-none pointer-events-none flex items-center justify-center relative" style={{ height: "270px" }}>
+                <div className="absolute inset-0 flex items-center justify-center scale-[1.5]">
+                  <DotLottieReact
+                    src="/HeroS.json"
+                    loop={true}
+                    autoplay={true}
+                    style={{ width: "100%", height: "100%" }}
+                    renderConfig={{
+                      devicePixelRatio:
+                        typeof window !== "undefined"
+                          ? (window.devicePixelRatio || 2) * 1.5
+                          : 3,
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>

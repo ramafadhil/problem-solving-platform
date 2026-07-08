@@ -41,7 +41,7 @@ body {
 /* Neobrutalism Utilities */
 .bg-neogrid {
   background-color: #FFFDF9;
-  background-size: 32px 32px;
+  background-size: 52px 52px;
   background-image: 
     linear-gradient(to right, rgba(196, 30, 58, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(196, 30, 58, 0.05) 1px, transparent 1px);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import NotificationBell from "@/components/NotificationBell";
 import { apiFetch } from "@/utils/api";
@@ -57,6 +57,26 @@ export default function LandingPage() {
     };
 
     checkOnboarding();
+  }, []);
+
+  // 3D tilt handler for feature cards
+  const handleTilt = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotateX = ((y - cy) / cy) * -6;
+    const rotateY = ((x - cx) / cx) * 6;
+    card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.02)`;
+    card.style.boxShadow = `6px 6px 0px #000`;
+  }, []);
+
+  const handleTiltReset = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    card.style.transform = ``;
+    card.style.boxShadow = ``;
   }, []);
 
   const handleLogout = () => {
@@ -148,7 +168,29 @@ export default function LandingPage() {
 
       <main className="max-w-6xl mx-auto px-6 space-y-16 py-12">
         {/* 2. HERO SECTION */}
-        <section className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center pt-4">
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center pt-4 relative">
+          {/* Doodle: top-right organic blob */}
+          <div className="absolute -top-6 -right-8 pointer-events-none select-none opacity-[0.18] hidden md:block">
+            <svg width="110" height="110" viewBox="0 0 110 110" fill="none">
+              <path d="M70 15 C95 10, 108 35, 102 60 C96 85, 70 100, 48 95 C26 90, 8 72, 10 50 C12 28, 45 20, 70 15Z" fill="#00BC7D"/>
+            </svg>
+          </div>
+          {/* Doodle: bottom-left starburst asterisk — repositioned to top-left, clear of badge pills */}
+          <div className="absolute top-2 -left-8 pointer-events-none select-none opacity-[0.22] hidden md:block">
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+              <line x1="26" y1="4" x2="26" y2="48" stroke="black" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="4" y1="26" x2="48" y2="26" stroke="black" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="10" y1="10" x2="42" y2="42" stroke="black" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="42" y1="10" x2="10" y2="42" stroke="black" strokeWidth="3" strokeLinecap="round"/>
+            </svg>
+          </div>
+          {/* Doodle: small ring beside hero (upper-right area) */}
+          <div className="absolute top-10 right-[42%] pointer-events-none select-none opacity-[0.20] hidden lg:block">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="13" stroke="#00BC7D" strokeWidth="3.5"/>
+              <circle cx="18" cy="18" r="5" stroke="#00BC7D" strokeWidth="2"/>
+            </svg>
+          </div>
           <div className="md:col-span-7 space-y-6 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border-2 border-black rounded-full shadow-[3px_3px_0px_#000] text-xs font-extrabold text-black">
               <Sparkles size={14} className="text-[#00BC7D]" />
@@ -158,7 +200,10 @@ export default function LandingPage() {
             <h1 className="text-4xl md:text-5xl lg:text-[54px] font-black text-black leading-[1.1] tracking-tight font-serif">
               Belajar menganalisis <br className="hidden md:inline" />
               kasus secara <br className="hidden md:inline" />
-              terstruktur!
+              <span className="relative inline-block">
+                <span className="relative z-10">terstruktur!</span>
+                <span className="absolute inset-x-0 bottom-1 h-[45%] -skew-x-2 bg-[#00BC7D]/20 rounded-sm -z-0" />
+              </span>
             </h1>
 
             <p className="text-sm font-semibold text-black leading-relaxed max-w-xl mx-auto md:mx-0 font-mono">
@@ -223,7 +268,20 @@ export default function LandingPage() {
         </section>
 
         {/* 3. METODOLOGI BELAJAR */}
-        <section id="kenapa" className="w-full pt-4">
+        <section id="kenapa" className="w-full pt-4 relative">
+          {/* Doodle: 4-pointed diamond top-right */}
+          <div className="absolute -top-3 -right-4 pointer-events-none select-none opacity-[0.25] hidden md:block">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <path d="M22 2 L30 22 L22 42 L14 22 Z" stroke="black" strokeWidth="2.5" fill="none"/>
+              <path d="M2 22 L22 30 L42 22 L22 14 Z" stroke="black" strokeWidth="2.5" fill="none"/>
+            </svg>
+          </div>
+          {/* Doodle: squiggle bottom-left */}
+          <div className="absolute -bottom-2 -left-5 pointer-events-none select-none opacity-[0.20] hidden md:block">
+            <svg width="80" height="28" viewBox="0 0 80 28" fill="none">
+              <path d="M4 14 C12 4, 20 24, 28 14 C36 4, 44 24, 52 14 C60 4, 68 24, 76 14" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+            </svg>
+          </div>
           <div className="bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 sm:p-10 space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2">
@@ -283,7 +341,19 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section id="fitur" className="w-full pt-4">
+        <section id="fitur" className="w-full pt-4 relative">
+          {/* Doodle: bracket { on left edge */}
+          <div className="absolute top-8 -left-6 pointer-events-none select-none opacity-[0.20] hidden lg:block">
+            <svg width="24" height="70" viewBox="0 0 24 70" fill="none">
+              <path d="M18 4 C10 4, 8 10, 8 18 L8 30 C8 34, 4 35, 4 35 C4 35, 8 36, 8 40 L8 52 C8 60, 10 66, 18 66" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+            </svg>
+          </div>
+          {/* Doodle: small yellow blob top-right */}
+          <div className="absolute -top-4 -right-4 pointer-events-none select-none opacity-[0.22] hidden md:block">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <path d="M38 8 C52 12, 58 26, 54 40 C50 54, 36 62, 22 58 C8 54, 2 38, 8 24 C14 10, 24 4, 38 8Z" fill="#FDE293"/>
+            </svg>
+          </div>
           <div className="bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-6 sm:p-10 space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2 text-white">
@@ -303,7 +373,12 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2">
               {/* Card 1 */}
-              <div className="bg-[#FDE293] border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between">
+              <div
+                className="bg-[#FDE293] border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between"
+                style={{ transition: "transform 0.15s ease, box-shadow 0.15s ease" }}
+                onMouseMove={handleTilt}
+                onMouseLeave={handleTiltReset}
+              >
                 <div className="space-y-4">
                   <div className="w-12 h-12 bg-white border-2 border-black rounded-xl flex items-center justify-center shadow-[2px_2px_0px_#000]">
                     <Compass size={24} className="text-black" />
@@ -319,7 +394,12 @@ export default function LandingPage() {
               </div>
 
               {/* Card 2 */}
-              <div className="bg-emerald-100 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between">
+              <div
+                className="bg-emerald-100 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between"
+                style={{ transition: "transform 0.15s ease, box-shadow 0.15s ease" }}
+                onMouseMove={handleTilt}
+                onMouseLeave={handleTiltReset}
+              >
                 <div className="space-y-4">
                   <div className="w-12 h-12 bg-white border-2 border-black rounded-xl flex items-center justify-center shadow-[2px_2px_0px_#000]">
                     <MessageSquare size={24} className="text-black" />
@@ -334,7 +414,12 @@ export default function LandingPage() {
               </div>
 
               {/* Card 3 */}
-              <div className="bg-blue-100 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between">
+              <div
+                className="bg-blue-100 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between"
+                style={{ transition: "transform 0.15s ease, box-shadow 0.15s ease" }}
+                onMouseMove={handleTilt}
+                onMouseLeave={handleTiltReset}
+              >
                 <div className="space-y-4">
                   <div className="w-12 h-12 bg-white border-2 border-black rounded-xl flex items-center justify-center shadow-[2px_2px_0px_#000]">
                     <BarChart3 size={24} className="text-black" />
@@ -350,7 +435,12 @@ export default function LandingPage() {
               </div>
 
               {/* Card 4 */}
-              <div className="bg-[#FDEDEC] border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between">
+              <div
+                className="bg-[#FDEDEC] border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_#000] text-black flex flex-col gap-6 justify-between"
+                style={{ transition: "transform 0.15s ease, box-shadow 0.15s ease" }}
+                onMouseMove={handleTilt}
+                onMouseLeave={handleTiltReset}
+              >
                 <div className="space-y-4">
                   <div className="w-12 h-12 bg-white border-2 border-black rounded-xl flex items-center justify-center shadow-[2px_2px_0px_#000]">
                     <Trophy size={24} className="text-black" />
@@ -369,7 +459,20 @@ export default function LandingPage() {
         </section>
 
         {/* 5. ALUR PENGALAMAN */}
-        <section id="alur" className="w-full pt-4">
+        <section id="alur" className="w-full pt-4 relative">
+          {/* Doodle: down arrow accent — repositioned above section, away from cards */}
+          <div className="absolute -top-10 right-4 pointer-events-none select-none opacity-[0.25] hidden md:block">
+            <svg width="28" height="48" viewBox="0 0 28 48" fill="none">
+              <line x1="14" y1="4" x2="14" y2="38" stroke="black" strokeWidth="3" strokeLinecap="round"/>
+              <polyline points="4,28 14,44 24,28" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            </svg>
+          </div>
+          {/* Doodle: pink blob lower-left */}
+          <div className="absolute bottom-4 -left-6 pointer-events-none select-none opacity-[0.18] hidden lg:block">
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+              <path d="M42 6 C60 8, 70 24, 68 42 C66 58, 52 70, 34 68 C16 66, 4 52, 6 34 C8 16, 24 4, 42 6Z" fill="#FADBD8"/>
+            </svg>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
             {/* Sisi Kiri */}
             <div className="md:col-span-5 bg-white border-[3px] border-black rounded-[24px] shadow-[8px_8px_0px_#000] p-8 flex flex-col justify-between gap-6">

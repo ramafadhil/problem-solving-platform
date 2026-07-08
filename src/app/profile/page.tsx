@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
+import Navbar from "@/components/Navbar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 import {
@@ -84,9 +84,9 @@ function ProfileContent() {
   const [selectedPrivacy, setSelectedPrivacy] = useState(false);
   const [savingPrivacy, setSavingPrivacy] = useState(false);
   const [editName, setEditName] = useState("");
-  const [settingsView, setSettingsView] = useState<"profile" | "password">(
-    "profile",
-  );
+  const [settingsView, setSettingsView] = useState<
+    "profile" | "password" | "logout_confirm"
+  >("profile");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -204,11 +204,14 @@ function ProfileContent() {
                 );
                 const list = Array.isArray(perspectivesRes)
                   ? perspectivesRes
-                  : perspectivesRes?.data || perspectivesRes?.perspectives || [];
+                  : perspectivesRes?.data ||
+                    perspectivesRes?.perspectives ||
+                    [];
 
                 if (Array.isArray(list)) {
                   const myPerspective = list.find(
-                    (p: any) => Number(p.user_id || p.UserID) === Number(userId),
+                    (p: any) =>
+                      Number(p.user_id || p.UserID) === Number(userId),
                   );
                   if (myPerspective) {
                     const category =
@@ -294,11 +297,14 @@ function ProfileContent() {
                 );
                 const list = Array.isArray(perspectivesRes)
                   ? perspectivesRes
-                  : perspectivesRes?.data || perspectivesRes?.perspectives || [];
+                  : perspectivesRes?.data ||
+                    perspectivesRes?.perspectives ||
+                    [];
 
                 if (Array.isArray(list)) {
                   const targetPerspective = list.find(
-                    (p: any) => Number(p.user_id || p.UserID) === Number(targetUserId),
+                    (p: any) =>
+                      Number(p.user_id || p.UserID) === Number(targetUserId),
                   );
                   if (targetPerspective) {
                     if (!targetUserFound && targetPerspective.user) {
@@ -547,53 +553,7 @@ function ProfileContent() {
   return (
     <div className="min-h-screen bg-neogrid text-black font-sans selection:bg-[#00BC7D] selection:text-white">
       {/* NAVBAR HEADER */}
-      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 flex items-center justify-center">
-              <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
-            </div>
-            <a
-              href="/"
-              className="font-black text-lg tracking-tight text-black hover:text-[#00BC7D] transition-colors"
-            >
-              Unravel
-            </a>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              href="/diskusi"
-              className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-[#00BC7D] transition-colors hidden md:inline"
-            >
-              Mode Diskusi
-            </Link>
-            <Link
-              href="/belajar"
-              className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-[#00BC7D] transition-colors hidden md:inline"
-            >
-              Mode Belajar
-            </Link>
-            <NotificationBell />
-            {isOwnProfile ? (
-              <button
-                onClick={handleLogout}
-                className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-800 border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer whitespace-nowrap"
-              >
-                <span className="hidden sm:inline">Keluar Account</span>
-                <span className="sm:hidden">Keluar</span>
-              </button>
-            ) : (
-              <Link
-                href="/diskusi"
-                className="px-3 py-1.5 bg-white border-2 border-black hover:bg-slate-50 text-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all whitespace-nowrap"
-              >
-                <span className="hidden sm:inline">Kembali ke Forum</span>
-                <span className="sm:hidden">Kembali</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* MAIN CONTAINER */}
       <main className="max-w-6xl w-full mx-auto px-6 py-10">
@@ -997,21 +957,21 @@ function ProfileContent() {
       {/* SETTINGS PRIVACY MODAL */}
       {showSettingsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-xl max-w-sm w-full space-y-5 text-left">
+          <div className="bg-[#FFFDF9] border-[3px] border-black p-6 md:p-8 rounded-[24px] shadow-[8px_8px_0px_#000] max-w-sm w-full space-y-5 text-left animate-in fade-in zoom-in-95 duration-200">
             {settingsView === "profile" ? (
               <>
                 <div className="space-y-1">
                   <h3 className="text-sm font-black text-slate-900 font-serif">
                     Pengaturan Akun
                   </h3>
-                  <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+                  <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
                     Sesuaikan visibilitas identitas profil Anda bagi analis
                     lainnya.
                   </p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                  <span className="text-[9px] font-black uppercase text-slate-600 tracking-wider block">
                     Nama Lengkap
                   </span>
                   <input
@@ -1019,23 +979,23 @@ function ProfileContent() {
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     placeholder="Nama Lengkap Anda"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                    className="w-full px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:border-[#00BC7D] transition-all shadow-[2px_2px_0px_#000]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider block">
+                  <span className="text-[9px] font-black uppercase text-slate-600 tracking-wider block">
                     Visibilitas Profil
                   </span>
 
-                  <div className="flex bg-slate-50 border-2 border-slate-200 p-1 rounded-2xl text-[10px] font-black uppercase tracking-wider select-none">
+                  <div className="flex bg-slate-100 border-2 border-black p-1 rounded-xl text-[10px] font-black uppercase tracking-wider select-none">
                     <button
                       type="button"
                       onClick={() => setSelectedPrivacy(false)}
-                      className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                      className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                         !selectedPrivacy
-                          ? "bg-[#00BC7D] text-white shadow-sm"
-                          : "text-slate-400 hover:text-slate-650"
+                          ? "bg-[#00BC7D] text-white border-2 border-black shadow-[1.5px_1.5px_0px_#000]"
+                          : "text-slate-500 hover:text-black"
                       }`}
                     >
                       Public
@@ -1043,33 +1003,33 @@ function ProfileContent() {
                     <button
                       type="button"
                       onClick={() => setSelectedPrivacy(true)}
-                      className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                      className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                         selectedPrivacy
-                          ? "bg-slate-800 text-white shadow-sm"
-                          : "text-slate-400 hover:text-slate-650"
+                          ? "bg-black text-white border-2 border-black shadow-[1.5px_1.5px_0px_#000]"
+                          : "text-slate-500 hover:text-black"
                       }`}
                     >
                       Anonymous
                     </button>
                   </div>
 
-                  <div className="text-[10px] font-medium leading-relaxed p-3 bg-slate-50/50 border border-slate-100 rounded-xl">
+                  <div className="text-[10px] font-semibold leading-relaxed p-3 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_#000]">
                     {!selectedPrivacy ? (
-                      <p className="text-slate-500">
-                        <span className="font-bold text-[#00BC7D]">
+                      <p className="text-slate-600">
+                        <span className="font-black text-[#00BC7D]">
                           Publik:
                         </span>{" "}
                         Nama asli Anda dan ulasan publik terlihat di profil Anda
                         oleh analis lain.
                       </p>
                     ) : (
-                      <p className="text-slate-500">
-                        <span className="font-bold text-slate-700">
+                      <p className="text-slate-600">
+                        <span className="font-black text-black">
                           Anonymous:
                         </span>{" "}
                         Semua ulasan Anda tetap bisa diakses, tetapi nama profil
                         Anda akan ditampilkan sebagai{" "}
-                        <span className="font-bold">Analis Anonim</span> bagi
+                        <span className="font-black">Analis Anonim</span> bagi
                         analis lain.
                       </p>
                     )}
@@ -1077,13 +1037,20 @@ function ProfileContent() {
                 </div>
 
                 {/* GANTI KATA SANDI LINK BUTTON */}
-                <div className="border-t border-slate-100 pt-4">
+                <div className="border-t border-slate-100 pt-4 space-y-2">
                   <button
                     type="button"
                     onClick={() => setSettingsView("password")}
                     className="w-full py-2.5 bg-slate-50 hover:bg-slate-100 border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer text-center select-none"
                   >
                     Ubah Kata Sandi Akun
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSettingsView("logout_confirm")}
+                    className="w-full py-2.5 bg-red-50 hover:bg-red-100 border-2 border-red-500 rounded-xl text-[10px] font-black uppercase tracking-wider text-red-650 shadow-[2px_2px_0px_#EF4444] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer text-center select-none"
+                  >
+                    Keluar Akun (Logout)
                   </button>
                 </div>
 
@@ -1092,7 +1059,7 @@ function ProfileContent() {
                     type="button"
                     onClick={() => setShowSettingsModal(false)}
                     disabled={savingPrivacy}
-                    className="flex-1 py-2.5 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 cursor-pointer"
+                    className="flex-1 py-2.5 bg-white hover:bg-slate-50 border-2 border-black text-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all disabled:opacity-50 cursor-pointer"
                   >
                     Batal
                   </button>
@@ -1153,13 +1120,13 @@ function ProfileContent() {
                       }
                     }}
                     disabled={savingPrivacy}
-                    className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     {savingPrivacy ? "Menyimpan..." : "Simpan"}
                   </button>
                 </div>
               </>
-            ) : (
+            ) : settingsView === "password" ? (
               <>
                 <div className="space-y-1">
                   <h3 className="text-sm font-black text-slate-900 font-serif">
@@ -1182,7 +1149,7 @@ function ProfileContent() {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-3 py-2 pr-9 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                        className="w-full px-4 py-3 pr-9 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:border-[#00BC7D] transition-all shadow-[2px_2px_0px_#000]"
                       />
                       <button
                         type="button"
@@ -1209,7 +1176,7 @@ function ProfileContent() {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-3 py-2 pr-9 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                        className="w-full px-4 py-3 pr-9 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:border-[#00BC7D] transition-all shadow-[2px_2px_0px_#000]"
                       />
                       <button
                         type="button"
@@ -1232,7 +1199,7 @@ function ProfileContent() {
                         value={confirmNewPassword}
                         onChange={(e) => setConfirmNewPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-3 py-2 pr-9 bg-slate-50 border-2 border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#00BC7D] focus:bg-white transition-all font-sans text-slate-800"
+                        className="w-full px-4 py-3 pr-9 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:border-[#00BC7D] transition-all shadow-[2px_2px_0px_#000]"
                       />
                       <button
                         type="button"
@@ -1338,9 +1305,38 @@ function ProfileContent() {
                       }
                     }}
                     disabled={savingPrivacy}
-                    className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 py-2.5 bg-[#00BC7D] hover:bg-[#00BC7D]/90 text-white border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     {savingPrivacy ? "Menyimpan..." : "Simpan Sandi"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-black text-red-650 font-serif">
+                    Konfirmasi Keluar
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                    Apakah Anda yakin ingin keluar dari akun Anda? Anda harus
+                    masuk kembali untuk mengakses fitur belajar dan diskusi.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setSettingsView("profile")}
+                    className="flex-grow py-2.5 bg-white hover:bg-slate-50 border-2 border-black text-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer text-center select-none"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex-grow py-2.5 bg-red-500 hover:bg-red-600 border-2 border-black text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer text-center select-none"
+                  >
+                    Ya, Keluar
                   </button>
                 </div>
               </>

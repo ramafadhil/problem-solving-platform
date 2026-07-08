@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
+import Navbar from "@/components/Navbar";
 import { useRouter, useParams } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 import { CheckCircle2 } from "lucide-react";
@@ -272,18 +272,7 @@ export default function DetailKasusPage() {
   return (
     <div className="min-h-screen bg-neogrid text-black font-sans flex flex-col selection:bg-[#00BC7D] selection:text-white">
       {/* NAVBAR */}
-      <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-4 sm:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
-          <Link
-            href="/diskusi"
-            className="text-xs font-black uppercase tracking-wider text-black border-2 border-black bg-white hover:bg-slate-50 px-3 sm:px-4 py-2 rounded-xl shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center gap-1 cursor-pointer"
-          >
-            <span className="hidden sm:inline">Kembali ke Forum</span>
-            <span className="sm:hidden">Kembali</span>
-          </Link>
-          <NotificationBell />
-        </div>
-      </nav>
+      <Navbar />
 
       {/* MAIN LAYOUT CONTAINER */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import NotificationBell from "@/components/NotificationBell";
+import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/utils/api";
 import { ArrowLeft, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
@@ -180,18 +180,7 @@ export default function BuatKasusPage() {
         </div>
       )}
 
-      <nav className="w-full bg-white border-b-4 border-black px-4 sm:px-8 py-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
-          <Link
-            href="/diskusi"
-            className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-black hover:text-[#00BC7D] transition-colors"
-          >
-            <ArrowLeft size={16} className="stroke-[3]" />
-            Kembali ke Diskusi
-          </Link>
-          <NotificationBell />
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">
         <div className="bg-white border-[3px] border-black p-6 md:p-8 rounded-[24px] shadow-[8px_8px_0px_#000] space-y-6">

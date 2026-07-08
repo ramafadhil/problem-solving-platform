@@ -182,7 +182,17 @@ export default function BuatKasusPage() {
 
       <Navbar />
 
-      <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12">
+      <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-12 space-y-4">
+        {/* KEMBALI BUTTON */}
+        <div className="flex justify-start">
+          <Link
+            href="/diskusi"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-black rounded-xl text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+          >
+            ← Kembali ke Forum Diskusi
+          </Link>
+        </div>
+
         <div className="bg-white border-[3px] border-black p-6 md:p-8 rounded-[24px] shadow-[8px_8px_0px_#000] space-y-6">
           <div className="space-y-1">
             <h2 className="text-2xl md:text-3xl font-serif font-black text-black leading-tight tracking-tight">

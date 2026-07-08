@@ -304,7 +304,17 @@ export default function JawabanUlasanPage({ params }: PageProps) {
       <Navbar />
 
       {/* MAIN CONTAINER */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 space-y-6">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 space-y-4">
+        {/* KEMBALI BUTTON */}
+        <div className="flex justify-start">
+          <Link
+            href="/diskusi"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-black rounded-xl text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all cursor-pointer"
+          >
+            ← Kembali ke Forum Diskusi
+          </Link>
+        </div>
+
         {/* HEADER AREA */}
         <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_#000] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="space-y-1">

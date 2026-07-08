@@ -494,16 +494,24 @@ export default function LandingPage() {
             </div>
 
             {/* Slides Content */}
-            <div className="min-h-[220px] flex flex-col justify-center gap-4 py-2">
+            <div className="min-h-[260px] flex flex-col justify-center gap-4 py-2">
               {currentSlide === 0 && (
-                <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
-                  <div className="w-14 h-14 rounded-2xl bg-[#D1F2D9] border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                    <Sparkles size={28} className="text-black" />
+                <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
+                  <div className="w-44 h-44 flex items-center justify-center overflow-hidden mx-auto">
+                    <DotLottieReact
+                      src="/OB1.json"
+                      loop
+                      autoplay
+                      className="w-44 h-44"
+                      renderConfig={{
+                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                      }}
+                    />
                   </div>
-                  <h3 className="text-xl font-black text-black leading-snug font-serif">
+                  <h3 className="text-base font-black text-black leading-snug font-serif">
                     Selamat datang di Unravel!
                   </h3>
-                  <p className="text-xs font-semibold text-slate-700 leading-relaxed font-mono">
+                  <p className="text-[11px] font-semibold text-slate-500 leading-relaxed font-mono max-w-sm">
                     Platform gamifikasi interaktif untuk melatih logika berpikir
                     kritis kamu dalam membedah berbagai studi kasus dunia nyata
                     secara terstruktur.
@@ -512,14 +520,22 @@ export default function LandingPage() {
               )}
 
               {currentSlide === 1 && (
-                <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
-                  <div className="w-14 h-14 rounded-2xl bg-[#FDE293] border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                    <Compass size={28} className="text-black" />
+                <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
+                  <div className="w-44 h-44 flex items-center justify-center overflow-hidden mx-auto">
+                    <DotLottieReact
+                      src="/OB2.json"
+                      loop
+                      autoplay
+                      className="w-44 h-44"
+                      renderConfig={{
+                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                      }}
+                    />
                   </div>
-                  <h3 className="text-xl font-black text-black leading-snug font-serif">
+                  <h3 className="text-base font-black text-black leading-snug font-serif">
                     Mode Belajar
                   </h3>
-                  <p className="text-xs font-semibold text-slate-700 leading-relaxed font-mono">
+                  <p className="text-[11px] font-semibold text-slate-500 leading-relaxed font-mono max-w-sm">
                     Di sini kamu memecahkan tantangan dengan drag-and-drop kata
                     kunci kasus ke pilar <strong>Stakeholder</strong>,{" "}
                     <strong>Action</strong>, dan <strong>Impact</strong> yang
@@ -529,14 +545,16 @@ export default function LandingPage() {
               )}
 
               {currentSlide === 2 && (
-                <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
-                  <div className="w-14 h-14 rounded-2xl bg-[#D6EAF8] border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                    <MessageSquare size={28} className="text-black" />
+                <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
+                  <div className="w-44 h-44 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 mx-auto">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
+                      Mograph 3 Placeholder
+                    </span>
                   </div>
-                  <h3 className="text-xl font-black text-black leading-snug font-serif">
+                  <h3 className="text-base font-black text-black leading-snug font-serif">
                     Mode Diskusi
                   </h3>
-                  <p className="text-xs font-semibold text-slate-700 leading-relaxed font-mono">
+                  <p className="text-[11px] font-semibold text-slate-500 leading-relaxed font-mono max-w-sm">
                     Bandingkan jawabanmu dan temukan perspektif baru dari ribuan
                     analis lain secara global.
                   </p>
@@ -544,14 +562,16 @@ export default function LandingPage() {
               )}
 
               {currentSlide === 3 && (
-                <div className="space-y-4 animate-in slide-in-from-right-4 duration-200">
-                  <div className="w-14 h-14 rounded-2xl bg-[#FADBD8] border-2 border-black flex items-center justify-center shadow-[3px_3px_0px_#000]">
-                    <Trophy size={28} className="text-black" />
+                <div className="space-y-3 animate-in slide-in-from-right-4 duration-200 flex flex-col items-center text-center">
+                  <div className="w-44 h-44 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 mx-auto">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
+                      Mograph 4 Placeholder
+                    </span>
                   </div>
-                  <h3 className="text-xl font-black text-black leading-snug font-serif">
+                  <h3 className="text-base font-black text-black leading-snug font-serif">
                     Points!
                   </h3>
-                  <p className="text-xs font-semibold text-slate-700 leading-relaxed font-mono">
+                  <p className="text-[11px] font-semibold text-slate-500 leading-relaxed font-mono max-w-sm">
                     Kumpulkan poin dari setiap kasus yang berhasil kamu
                     selesaikan dan naikkan peringkat globalmu!
                   </p>

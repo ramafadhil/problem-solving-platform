@@ -143,7 +143,7 @@ export default function DaftarKasusPage() {
               if (userPerspective) {
                 hasSolvedBackend = true;
                 localStorage.setItem(
-                  `solved_case_${lCase.id}${userSuffix}`,
+                  `solved_case_${lCase.id}_${userId}`,
                   "true",
                 );
                 break;

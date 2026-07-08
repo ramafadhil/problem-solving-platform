@@ -38,30 +38,35 @@ export default function DetailKasusPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
-  // State untuk form input 3 pilar respons
-  const [shInput, setShInput] = useState("");
-  const [acInput, setAcInput] = useState("");
-  const [imInput, setImInput] = useState("");
+  // State untuk form input 4 pilar respons
+  const [tuInput, setTuInput] = useState("");
+  const [maInput, setMaInput] = useState("");
+  const [soInput, setSoInput] = useState("");
+  const [stInput, setStInput] = useState("");
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
   const [isPublic, setIsPublic] = useState<boolean>(true);
 
-  // Fungsi pembongkar teks argumen gabungan 3 pilar dari backend
+  // Fungsi pembongkar teks argumen gabungan 4 pilar dari backend
   const parseCombinedArgument = (text: string) => {
-    const stakeholderMatch = text.match(
-      /\[STAKEHOLDER\]:\s*([\s\S]*?)(?=\n\n\[ACTION\]|$)/i,
+    const tujuanMatch = text.match(
+      /\[TUJUAN\]:\s*([\s\S]*?)(?=\n\n\[MASALAH\]|$)/i,
     );
-    const actionMatch = text.match(
-      /\[ACTION\]:\s*([\s\S]*?)(?=\n\n\[IMPACT\]|$)/i,
+    const masalahMatch = text.match(
+      /\[MASALAH\]:\s*([\s\S]*?)(?=\n\n\[SOLUSI\]|$)/i,
     );
-    const impactMatch = text.match(/\[IMPACT\]:\s*([\s\S]*?)$/i);
+    const solusiMatch = text.match(
+      /\[SOLUSI\]:\s*([\s\S]*?)(?=\n\n\[STAKEHOLDER\]|$)/i,
+    );
+    const stakeholderMatch = text.match(/\[STAKEHOLDER\]:\s*([\s\S]*?)$/i);
 
     return {
-      stakeholder: stakeholderMatch ? stakeholderMatch[1].trim() : "",
-      action: actionMatch ? actionMatch[1].trim() : "",
-      impact: impactMatch ? impactMatch[1].trim() : text, // Fallback jika teks biasa tanpa pilar resmi
+      tujuan: tujuanMatch ? tujuanMatch[1].trim() : "",
+      masalah: masalahMatch ? masalahMatch[1].trim() : "",
+      solusi: solusiMatch ? solusiMatch[1].trim() : "",
+      stakeholder: stakeholderMatch ? stakeholderMatch[1].trim() : text, // Fallback jika teks biasa tanpa pilar resmi
     };
   };
 
@@ -107,9 +112,10 @@ export default function DetailKasusPage() {
           const savedArg = localStorage.getItem(`submitted_argument_${caseId}`);
           if (savedArg) {
             const parsed = parseCombinedArgument(savedArg);
-            setShInput(parsed.stakeholder);
-            setAcInput(parsed.action);
-            setImInput(parsed.impact);
+            setTuInput(parsed.tujuan);
+            setMaInput(parsed.masalah);
+            setSoInput(parsed.solusi);
+            setStInput(parsed.stakeholder);
           }
           const savedIsPublic = localStorage.getItem(
             `submitted_is_public_${caseId}`,
@@ -140,39 +146,47 @@ export default function DetailKasusPage() {
           if (matchingResponse) {
             setHasSubmitted(true);
 
+            const tujuanDetail = matchingResponse.details?.find(
+              (d: any) => d.pillar_category === "Tujuan",
+            );
+            const masalahDetail = matchingResponse.details?.find(
+              (d: any) => d.pillar_category === "Masalah",
+            );
+            const solusiDetail = matchingResponse.details?.find(
+              (d: any) => d.pillar_category === "Solusi",
+            );
             const stakeholderDetail = matchingResponse.details?.find(
               (d: any) =>
                 d.pillar_category === "Stakeholder" ||
                 d.pillar_category === "Teknis",
             );
-            const actionDetail = matchingResponse.details?.find(
-              (d: any) =>
-                d.pillar_category === "Action" || d.pillar_category === "Etika",
-            );
-            const impactDetail = matchingResponse.details?.find(
-              (d: any) => d.pillar_category === "Impact",
-            );
 
-            const sh =
-              stakeholderDetail?.content ||
-              stakeholderDetail?.text_content ||
+            const tu =
+              tujuanDetail?.content ||
+              tujuanDetail?.text_content ||
               matchingResponse.details?.[0]?.content ||
               matchingResponse.details?.[0]?.text_content ||
               "";
-            const ac =
-              actionDetail?.content ||
-              actionDetail?.text_content ||
+            const ma =
+              masalahDetail?.content ||
+              masalahDetail?.text_content ||
               matchingResponse.details?.[1]?.content ||
               matchingResponse.details?.[1]?.text_content ||
               "";
-            const im =
-              impactDetail?.content ||
-              impactDetail?.text_content ||
+            const so =
+              solusiDetail?.content ||
+              solusiDetail?.text_content ||
               matchingResponse.details?.[2]?.content ||
               matchingResponse.details?.[2]?.text_content ||
               "";
+            const st =
+              stakeholderDetail?.content ||
+              stakeholderDetail?.text_content ||
+              matchingResponse.details?.[3]?.content ||
+              matchingResponse.details?.[3]?.text_content ||
+              "";
 
-            const fullArg = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+            const fullArg = `[TUJUAN]: ${tu}\n\n[MASALAH]: ${ma}\n\n[SOLUSI]: ${so}\n\n[STAKEHOLDER]: ${st}`;
             const responseIsPublic =
               matchingResponse.is_public !== undefined
                 ? matchingResponse.is_public
@@ -188,9 +202,10 @@ export default function DetailKasusPage() {
               localStorage.setItem(`submitted_argument_${caseId}`, fullArg);
             }
 
-            setShInput(sh);
-            setAcInput(ac);
-            setImInput(im);
+            setTuInput(tu);
+            setMaInput(ma);
+            setSoInput(so);
+            setStInput(st);
             router.push(`/diskusi/${caseId}/jawaban`);
           }
         }
@@ -204,13 +219,13 @@ export default function DetailKasusPage() {
 
   const handleSubmitPerspektif = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!shInput.trim() || !acInput.trim() || !imInput.trim()) return;
+    if (!tuInput.trim() || !maInput.trim() || !soInput.trim() || !stInput.trim()) return;
 
     setError("");
     setSubmitting(true);
 
     // Satukan input form FE menjadi satu kesatuan format string untuk kebutuhan BE
-    const combinedArgument = `[STAKEHOLDER]: ${shInput}\n\n[ACTION]: ${acInput}\n\n[IMPACT]: ${imInput}`;
+    const combinedArgument = `[TUJUAN]: ${tuInput}\n\n[MASALAH]: ${maInput}\n\n[SOLUSI]: ${soInput}\n\n[STAKEHOLDER]: ${stInput}`;
 
     try {
       // Menembak endpoint POST /api/perspectives
@@ -221,19 +236,24 @@ export default function DetailKasusPage() {
           is_public: isPublic,
           details: [
             {
+              pillar_category: "Tujuan",
+              content: tuInput,
+              text_content: tuInput,
+            },
+            {
+              pillar_category: "Masalah",
+              content: maInput,
+              text_content: maInput,
+            },
+            {
+              pillar_category: "Solusi",
+              content: soInput,
+              text_content: soInput,
+            },
+            {
               pillar_category: "Stakeholder",
-              content: shInput,
-              text_content: shInput,
-            },
-            {
-              pillar_category: "Action",
-              content: acInput,
-              text_content: acInput,
-            },
-            {
-              pillar_category: "Impact",
-              content: imInput,
-              text_content: imInput,
+              content: stInput,
+              text_content: stInput,
             },
           ],
         }),
@@ -355,7 +375,7 @@ export default function DetailKasusPage() {
           </div>
         </section>
 
-        {/* SISI KANAN: FORMULIR INPUT JAWABAN PERSPEKTIF 3 PILAR (7 Kolom) */}
+        {/* SISI KANAN: FORMULIR INPUT JAWABAN PERSPEKTIF 4 PILAR (7 Kolom) */}
         <section className="md:col-span-7 space-y-4">
           <div className="bg-white border-2 border-black p-6 rounded-3xl shadow-[4px_4px_0px_#000] space-y-4">
             <div className="space-y-1">
@@ -363,7 +383,7 @@ export default function DetailKasusPage() {
                 Uraikan Argumen Anda
               </h3>
               <p className="text-[11px] font-semibold text-slate-550 leading-relaxed font-mono">
-                Bedah kasus ini ke dalam format analisis 3 pilar objektif khas
+                Bedah kasus ini ke dalam format analisis 4 pilar objektif khas
                 Unravel sebelum disiarkan ke server global.
               </p>
             </div>
@@ -391,51 +411,67 @@ export default function DetailKasusPage() {
             ) : null}
 
             <form onSubmit={handleSubmitPerspektif} className="space-y-4">
-              {/* 1. STAKEHOLDER INPUT */}
+              {/* 1. TUJUAN INPUT */}
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-wider text-slate-650">
-                  1. Stakeholder Utama
+                  1. Tujuan Utama
                 </label>
                 <input
                   type="text"
                   required
                   disabled={submitting || hasSubmitted}
-                  value={shInput}
-                  onChange={(e) => setShInput(e.target.value)}
-                  placeholder="Aktor/Pihak kunci terdampak..."
+                  value={tuInput}
+                  onChange={(e) => setTuInput(e.target.value)}
+                  placeholder="Apa tujuan atau target yang ingin dicapai?"
                   className="w-full px-3 py-2.5 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-75 disabled:cursor-not-allowed"
                 />
               </div>
 
-              {/* 2. ACTION INPUT */}
+              {/* 2. MASALAH INPUT */}
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-wider text-black">
-                  2. Rencana Tindakan (Action)
+                  2. Inti Masalah
                 </label>
                 <textarea
                   required
                   disabled={submitting || hasSubmitted}
-                  value={acInput}
-                  onChange={(e) => setAcInput(e.target.value)}
+                  value={maInput}
+                  onChange={(e) => setMaInput(e.target.value)}
                   rows={3}
-                  placeholder="Langkah strategis operasional menurut anda..."
+                  placeholder="Apa akar masalah atau konflik utama yang perlu diselesaikan?"
                   className="w-full p-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all resize-none leading-relaxed disabled:opacity-75 disabled:cursor-not-allowed"
                 />
               </div>
 
-              {/* 3. IMPACT INPUT */}
+              {/* 3. SOLUSI INPUT */}
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-wider text-black">
-                  3. Konsekuensi Capaian (Impact)
+                  3. Rumusan Solusi
                 </label>
                 <textarea
                   required
                   disabled={submitting || hasSubmitted}
-                  value={imInput}
-                  onChange={(e) => setImInput(e.target.value)}
+                  value={soInput}
+                  onChange={(e) => setSoInput(e.target.value)}
                   rows={3}
-                  placeholder="Efek domino positif/negatif yang diprediksi..."
+                  placeholder="Langkah nyata atau intervensi strategis apa yang kamu usulkan?"
                   className="w-full p-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all resize-none leading-relaxed disabled:opacity-75 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              {/* 4. STAKEHOLDER INPUT */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wider text-black">
+                  4. Stakeholder Terdampak
+                </label>
+                <input
+                  type="text"
+                  required
+                  disabled={submitting || hasSubmitted}
+                  value={stInput}
+                  onChange={(e) => setStInput(e.target.value)}
+                  placeholder="Aktor/Pihak kunci yang terlibat atau terdampak..."
+                  className="w-full px-3 py-2.5 bg-white border-2 border-black rounded-xl text-xs font-bold text-black focus:outline-none focus:bg-slate-50 shadow-[2px_2px_0px_#000] transition-all disabled:opacity-75 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -444,17 +480,19 @@ export default function DetailKasusPage() {
                 disabled={
                   submitting ||
                   hasSubmitted ||
-                  !shInput.trim() ||
-                  !acInput.trim() ||
-                  !imInput.trim()
+                  !tuInput.trim() ||
+                  !maInput.trim() ||
+                  !soInput.trim() ||
+                  !stInput.trim()
                 }
                 className={`w-full py-3.5 text-xs font-black border-2 border-black uppercase tracking-widest rounded-xl shadow-[3px_3px_0px_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all mt-2 cursor-pointer ${
                   hasSubmitted
                     ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border-dashed border-slate-350"
                     : submitting ||
-                        !shInput.trim() ||
-                        !acInput.trim() ||
-                        !imInput.trim()
+                        !tuInput.trim() ||
+                        !maInput.trim() ||
+                        !soInput.trim() ||
+                        !stInput.trim()
                       ? "bg-slate-300 text-slate-400 cursor-not-allowed shadow-none border-dashed border-slate-350"
                       : "bg-[#00BC7D] text-white hover:bg-[#07A06E]"
                 }`}

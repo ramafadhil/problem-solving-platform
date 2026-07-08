@@ -82,9 +82,10 @@ export default function AdminDashboardPage() {
 
   // Dynamic Cards State
   const [cards, setCards] = useState<Array<{ category: string; content: string; points: number }>>([
+    { category: "tujuan", content: "", points: 50 },
+    { category: "masalah", content: "", points: 50 },
+    { category: "solusi", content: "", points: 50 },
     { category: "stakeholder", content: "", points: 50 },
-    { category: "action", content: "", points: 50 },
-    { category: "impact", content: "", points: 50 },
   ]);
 
   // List & Topics State
@@ -157,7 +158,7 @@ export default function AdminDashboardPage() {
   };
 
   const addCard = () => {
-    setCards([...cards, { category: "stakeholder", content: "", points: 50 }]);
+    setCards([...cards, { category: "tujuan", content: "", points: 50 }]);
   };
 
   const removeCard = (index: number) => {
@@ -245,9 +246,10 @@ export default function AdminDashboardPage() {
       setDescription("");
       setDifficultyLevel("1");
       setCards([
+        { category: "tujuan", content: "", points: 50 },
+        { category: "masalah", content: "", points: 50 },
+        { category: "solusi", content: "", points: 50 },
         { category: "stakeholder", content: "", points: 50 },
-        { category: "action", content: "", points: 50 },
-        { category: "impact", content: "", points: 50 },
       ]);
       
       // Refresh List
@@ -581,9 +583,10 @@ export default function AdminDashboardPage() {
                             onChange={(e) => handleCardChange(index, "category", e.target.value)}
                             className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-colors"
                           >
+                            <option value="tujuan">Tujuan</option>
+                            <option value="masalah">Masalah</option>
+                            <option value="solusi">Solusi</option>
                             <option value="stakeholder">Stakeholder</option>
-                            <option value="action">Action</option>
-                            <option value="impact">Impact</option>
                           </select>
                         </div>
 

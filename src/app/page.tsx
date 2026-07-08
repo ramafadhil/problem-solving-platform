@@ -204,7 +204,7 @@ export default function LandingPage() {
                 href="/belajar"
                 className="px-6 py-3.5 bg-emerald-500 border-3 border-black hover:bg-emerald-600 text-white font-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all text-sm"
               >
-                {isLoggedIn ? "Lanjutkan Belajar" : "Lanjutkan Belajar"}
+                {isLoggedIn ? "Mulai Belajar" : "Mulai Belajar"}
               </Link>
               <Link
                 href="/diskusi"
@@ -243,7 +243,10 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-[#8EE4AF] border border-black"></span>
               </div>
 
-              <div className="w-[calc(100%+48px)] -mx-6 mt-4 select-none pointer-events-none flex items-center justify-center relative" style={{ height: "270px" }}>
+              <div
+                className="w-[calc(100%+48px)] -mx-6 mt-4 select-none pointer-events-none flex items-center justify-center relative"
+                style={{ height: "270px" }}
+              >
                 <div className="absolute inset-0 flex items-center justify-center scale-[1.5]">
                   <DotLottieReact
                     src="/HeroS.json"
@@ -333,11 +336,11 @@ export default function LandingPage() {
                 <div className="absolute left-0 bottom-0 w-[5px] h-0 group-hover:h-full transition-all duration-300 ease-out bg-emerald-500 rounded-tr-sm" />
                 <div className="space-y-2">
                   <h3 className="text-sm font-black text-black">
-                    2. Formulasi 3 Poin Masalah Utama
+                    2. Formulasi 4 Pilar Analisis
                   </h3>
                   <p className="text-xs font-semibold text-slate-700 leading-relaxed font-mono">
-                    Kelompokkan kata kunci ke dalam zona Stakeholder, Action,
-                    dan Impact secara tepat.
+                    Kelompokkan kata kunci ke dalam zona Tujuan, Masalah,
+                    Solusi, dan Stakeholder secara tepat.
                   </p>
                 </div>
               </div>
@@ -413,7 +416,7 @@ export default function LandingPage() {
                     <Compass size={24} className="text-black" />
                   </div>
                   <h3 className="text-sm font-black text-black font-serif leading-tight">
-                    Jalur Belajar Gamifikasi
+                    Jalur Belajar Interaktif
                   </h3>
                   <p className="text-xs font-semibold text-slate-700 leading-relaxed font-mono">
                     Pecahkan tantangan studi kasus secara interaktif lewat game
@@ -575,7 +578,10 @@ export default function LandingPage() {
                       autoplay={true}
                       className="w-full h-full"
                       renderConfig={{
-                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                        devicePixelRatio:
+                          typeof window !== "undefined"
+                            ? window.devicePixelRatio || 2
+                            : 2,
                       }}
                     />
                   )}
@@ -604,7 +610,10 @@ export default function LandingPage() {
                       autoplay={true}
                       className="w-full h-full"
                       renderConfig={{
-                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                        devicePixelRatio:
+                          typeof window !== "undefined"
+                            ? window.devicePixelRatio || 2
+                            : 2,
                       }}
                     />
                   )}
@@ -633,7 +642,10 @@ export default function LandingPage() {
                       autoplay={true}
                       className="w-full h-full"
                       renderConfig={{
-                        devicePixelRatio: typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2
+                        devicePixelRatio:
+                          typeof window !== "undefined"
+                            ? window.devicePixelRatio || 2
+                            : 2,
                       }}
                     />
                   )}
@@ -647,8 +659,20 @@ export default function LandingPage() {
         <section id="faq" className="w-full pt-4 relative">
           {/* Doodle decoration: bracket } on right edge */}
           <div className="absolute top-12 -right-6 pointer-events-none select-none opacity-[0.20] hidden lg:block">
-            <svg width="24" height="70" viewBox="0 0 24 70" fill="none" className="rotate-180">
-              <path d="M18 4 C10 4, 8 10, 8 18 L8 30 C8 34, 4 35, 4 35 C4 35, 8 36, 8 40 L8 52 C8 60, 10 66, 18 66" stroke="black" strokeWidth="3" strokeLinecap="round" fill="none"/>
+            <svg
+              width="24"
+              height="70"
+              viewBox="0 0 24 70"
+              fill="none"
+              className="rotate-180"
+            >
+              <path
+                d="M18 4 C10 4, 8 10, 8 18 L8 30 C8 34, 4 35, 4 35 C4 35, 8 36, 8 40 L8 52 C8 60, 10 66, 18 66"
+                stroke="black"
+                strokeWidth="3"
+                strokeLinecap="round"
+                fill="none"
+              />
             </svg>
           </div>
 
@@ -661,7 +685,8 @@ export default function LandingPage() {
                 Frequently Asked Questions
               </h2>
               <p className="text-xs font-semibold text-slate-500 font-mono">
-                Punya pertanyaan lain? Berikut rangkuman hal-hal yang sering ditanyakan analis pemula.
+                Punya pertanyaan lain? Berikut rangkuman hal-hal yang sering
+                ditanyakan analis pemula.
               </p>
             </div>
 
@@ -669,24 +694,24 @@ export default function LandingPage() {
               {[
                 {
                   q: "Apa itu Unravel?",
-                  a: "Unravel adalah platform pembelajaran interaktif berbasis studi kasus yang membantu kamu melatih logika analisis masalah secara terstruktur menggunakan 3 pilar utama: Stakeholder, Action, dan Impact."
+                  a: "Unravel adalah platform pembelajaran interaktif berbasis studi kasus yang membantu kamu melatih logika analisis masalah secara terstruktur menggunakan 4 pilar utama: Tujuan, Masalah, Solusi, dan Stakeholder.",
                 },
                 {
                   q: "Bagaimana cara kerja Mode Belajar?",
-                  a: "Di Mode Belajar, kamu memilih suatu tema topik lalu menyelesaikan stage demi stage dengan cara drag-and-drop kartu kata kunci ke kategori pilar yang benar. Poin akan diberikan setelah analisis terverifikasi benar."
+                  a: "Di Mode Belajar, kamu memilih suatu tema topik lalu menyelesaikan stage demi stage dengan cara drag-and-drop kartu kata kunci ke kategori pilar yang benar. Poin akan diberikan setelah analisis terverifikasi benar.",
                 },
                 {
                   q: "Apa perbedaan antara Mode Belajar dan Mode Diskusi?",
-                  a: "Mode Belajar adalah alur terpandu dengan kunci jawaban pasti untuk melatih logika dasarmu. Mode Diskusi adalah forum terbuka di mana kamu bisa membagikan argumen analisis pribadimu untuk studi kasus umum dan membandingkannya dengan analisis milik analis lain secara global."
+                  a: "Mode Belajar adalah alur terpandu dengan kunci jawaban pasti untuk melatih logika dasarmu. Mode Diskusi adalah forum terbuka di mana kamu bisa membagikan argumen analisis pribadimu untuk studi kasus umum dan membandingkannya dengan analisis milik analis lain secara global.",
                 },
                 {
                   q: "Apakah platform ini sepenuhnya gratis?",
-                  a: "Ya! Seluruh modul belajar, studi kasus, forum diskusi, dan fitur profil di Unravel dapat diakses secara gratis oleh siapa saja."
+                  a: "Ya! Seluruh modul belajar, studi kasus, forum diskusi, dan fitur profil di Unravel dapat diakses secara gratis oleh siapa saja.",
                 },
                 {
                   q: "Bagaimana cara mendapatkan Points?",
-                  a: "Kamu mendapatkan Points setiap kali menyelesaikan stage di Mode Belajar atau membagikan perspektif analisis berkualitas di Mode Diskusi yang dibaca oleh analis lain."
-                }
+                  a: "Kamu mendapatkan Points setiap kali menyelesaikan stage di Mode Belajar atau membagikan perspektif analisis berkualitas di Mode Diskusi yang dapat dibaca oleh analis lain.",
+                },
               ].map((faq, idx) => {
                 const isOpen = activeFaq === idx;
                 return (
@@ -699,11 +724,17 @@ export default function LandingPage() {
                       className="w-full px-6 py-4 flex items-center justify-between text-left font-black text-sm text-black hover:bg-slate-50 transition-colors cursor-pointer select-none"
                     >
                       <span>{faq.q}</span>
-                      {isOpen ? <ChevronUp size={16} className="stroke-[3]" /> : <ChevronDown size={16} className="stroke-[3]" />}
+                      {isOpen ? (
+                        <ChevronUp size={16} className="stroke-[3]" />
+                      ) : (
+                        <ChevronDown size={16} className="stroke-[3]" />
+                      )}
                     </button>
                     <div
                       className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                        isOpen ? "max-h-[300px] border-t-2 border-black" : "max-h-0"
+                        isOpen
+                          ? "max-h-[300px] border-t-2 border-black"
+                          : "max-h-0"
                       }`}
                     >
                       <p className="p-6 text-xs font-semibold text-slate-700 leading-relaxed font-mono bg-slate-50/50">
@@ -785,9 +816,9 @@ export default function LandingPage() {
                     Selamat datang di Unravel!
                   </h3>
                   <p className="text-[11px] font-semibold text-slate-500 leading-relaxed font-mono max-w-sm">
-                    Platform gamifikasi interaktif untuk melatih logika berpikir
-                    kritis kamu dalam membedah berbagai studi kasus dunia nyata
-                    secara terstruktur.
+                    Platform interaktif untuk melatih logika berpikir kritis
+                    kamu dalam membedah berbagai studi kasus dunia nyata secara
+                    terstruktur.
                   </p>
                 </div>
               )}
@@ -814,9 +845,9 @@ export default function LandingPage() {
                   </h3>
                   <p className="text-[11px] font-semibold text-slate-500 leading-relaxed font-mono max-w-sm">
                     Di sini kamu memecahkan tantangan dengan drag-and-drop kata
-                    kunci kasus ke pilar <strong>Stakeholder</strong>,{" "}
-                    <strong>Action</strong>, dan <strong>Impact</strong> yang
-                    tepat untuk mengasah logika analitismu.
+                    kunci kasus ke pilar <strong>Tujuan</strong>,{" "}
+                    <strong>Masalah</strong>, <strong>Solusi</strong>, dan{" "}
+                    <strong>Stakeholder</strong> yang tepat untuk mengasah logika analitismu.
                   </p>
                 </div>
               )}

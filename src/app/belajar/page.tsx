@@ -174,7 +174,7 @@ export default function TopikSelectionPage() {
                 Pilih Tema Utama Analisis
               </h1>
               <p className="text-xs font-semibold text-black text-slate-650 leading-relaxed max-w-xl font-mono">
-                Tentukan payung masalah yang ingin kamu bedah. Setiap tema
+                Tentukan tema masalah yang ingin kamu bedah. Setiap tema
                 menyediakan jalur petualangan linear dengan studi kasus yang
                 makin menantang di tiap levelnya!
               </p>

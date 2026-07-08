@@ -37,14 +37,16 @@ const repoStudiKasus: Record<
       "Langkah taktis yang harus segera dilakukan adalah penerapan enkripsi end-to-end yang lebih kuat, audit keamanan menyeluruh, serta transparansi penuh kepada publik mengenai insiden tersebut.",
     ],
     pilihanKataKunci: [
-      "Pengguna Platform E-commerce",
+      "Perlindungan Data Pengguna",
+      "Sistem Keamanan Rentan",
       "Audit Keamanan Menyeluruh",
-      "Transparansi Insiden Publik",
+      "Pengguna Platform E-commerce",
     ],
     kunciJawaban: {
+      "Perlindungan Data Pengguna": "tujuan",
+      "Sistem Keamanan Rentan": "masalah",
+      "Audit Keamanan Menyeluruh": "solusi",
       "Pengguna Platform E-commerce": "stakeholder",
-      "Audit Keamanan Menyeluruh": "action",
-      "Transparansi Insiden Publik": "impact",
     },
   },
   politik: {
@@ -54,14 +56,16 @@ const repoStudiKasus: Record<
       "Kondisi ini memerlukan pengawasan ketat dari lembaga swadaya masyarakat dan pembenahan sistem kaderisasi internal partai.",
     ],
     pilihanKataKunci: [
-      "Pengawas Pemilu",
-      "Audit Investigatif LSM",
       "Kesetaraan Hak Politik",
+      "Konsolidasi Kekuasaan Dinasti",
+      "Audit Investigatif LSM",
+      "Pengawas Pemilu",
     ],
     kunciJawaban: {
+      "Kesetaraan Hak Politik": "tujuan",
+      "Konsolidasi Kekuasaan Dinasti": "masalah",
+      "Audit Investigatif LSM": "solusi",
       "Pengawas Pemilu": "stakeholder",
-      "Audit Investigatif LSM": "action",
-      "Kesetaraan Hak Politik": "impact",
     },
   },
   pendidikan: {
@@ -71,14 +75,16 @@ const repoStudiKasus: Record<
       "Distribusi alokasi anggaran yang belum merata menuntut adanya kolaborasi strategis dengan penyedia layanan internet lokal guna mempercepat pemerataan infrastruktur digital.",
     ],
     pilihanKataKunci: [
-      "Siswa Vokasi Daerah",
-      "Kemitraan Provider Lokal",
       "Pemerataan Infrastruktur Digital",
+      "Kesenjangan Fasilitas Teknologi",
+      "Kemitraan Provider Lokal",
+      "Siswa Vokasi Daerah",
     ],
     kunciJawaban: {
+      "Pemerataan Infrastruktur Digital": "tujuan",
+      "Kesenjangan Fasilitas Teknologi": "masalah",
+      "Kemitraan Provider Lokal": "solusi",
       "Siswa Vokasi Daerah": "stakeholder",
-      "Kemitraan Provider Lokal": "action",
-      "Pemerataan Infrastruktur Digital": "impact",
     },
   },
 };
@@ -169,9 +175,10 @@ export default function DynamicStagePage() {
   // Inisialisasi state untuk menampung pembagian zona kartu
   const [items, setItems] = useState({
     pool: [] as string[],
+    tujuan: [] as string[],
+    masalah: [] as string[],
+    solusi: [] as string[],
     stakeholder: [] as string[],
-    action: [] as string[],
-    impact: [] as string[],
   });
 
   const [isAlreadySolved, setIsAlreadySolved] = useState<boolean>(false);
@@ -416,9 +423,10 @@ export default function DynamicStagePage() {
       // 3. Belum selesai - isi pool dan aktifkan play mode
       setItems({
         pool: dynamicCase.pilihanKataKunci,
+        tujuan: [],
+        masalah: [],
+        solusi: [],
         stakeholder: [],
-        action: [],
-        impact: [],
       });
 
       const gameplayGuidedKey = userId
@@ -482,24 +490,30 @@ export default function DynamicStagePage() {
       return {
         ...prev,
         pool: newPool,
+        tujuan:
+          sourceZone === "tujuan"
+            ? newSourceItems
+            : targetZone === "tujuan"
+              ? newTargetItems
+              : prev.tujuan,
+        masalah:
+          sourceZone === "masalah"
+            ? newSourceItems
+            : targetZone === "masalah"
+              ? newTargetItems
+              : prev.masalah,
+        solusi:
+          sourceZone === "solusi"
+            ? newSourceItems
+            : targetZone === "solusi"
+              ? newTargetItems
+              : prev.solusi,
         stakeholder:
           sourceZone === "stakeholder"
             ? newSourceItems
             : targetZone === "stakeholder"
               ? newTargetItems
               : prev.stakeholder,
-        action:
-          sourceZone === "action"
-            ? newSourceItems
-            : targetZone === "action"
-              ? newTargetItems
-              : prev.action,
-        impact:
-          sourceZone === "impact"
-            ? newSourceItems
-            : targetZone === "impact"
-              ? newTargetItems
-              : prev.impact,
       };
     });
   }
@@ -510,7 +524,7 @@ export default function DynamicStagePage() {
     if (isAlreadySolved) return;
 
     const totalDitempatkan =
-      items.stakeholder.length + items.action.length + items.impact.length;
+      items.tujuan.length + items.masalah.length + items.solusi.length + items.stakeholder.length;
     if (totalDitempatkan < 2) {
       showToastNotification(
         "Analisis belum lengkap! Taruh minimal 2 kartu kata kunci untuk mulai verifikasi.",
@@ -566,9 +580,10 @@ export default function DynamicStagePage() {
 
         // Simpan detail logic block ID yang ditempatkan oleh user
         const placedCardIds = [
+          ...items.tujuan.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
+          ...items.masalah.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
+          ...items.solusi.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
           ...items.stakeholder.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
-          ...items.action.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
-          ...items.impact.map((c) => dynamicCase.cardBlockIds?.[c] || 0),
         ].filter((id) => id !== 0);
         setSubmittedCardIds(placedCardIds);
         localStorage.setItem(
@@ -585,20 +600,26 @@ export default function DynamicStagePage() {
             case_id: dynamicCase.id,
             is_public: true,
             details: [
+              ...items.tujuan.map((content) => ({
+                pillar_category: "Tujuan",
+                content: content,
+                text_content: content,
+                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
+              })),
+              ...items.masalah.map((content) => ({
+                pillar_category: "Masalah",
+                content: content,
+                text_content: content,
+                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
+              })),
+              ...items.solusi.map((content) => ({
+                pillar_category: "Solusi",
+                content: content,
+                text_content: content,
+                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
+              })),
               ...items.stakeholder.map((content) => ({
                 pillar_category: "Stakeholder",
-                content: content,
-                text_content: content,
-                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
-              })),
-              ...items.action.map((content) => ({
-                pillar_category: "Action",
-                content: content,
-                text_content: content,
-                logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
-              })),
-              ...items.impact.map((content) => ({
-                pillar_category: "Impact",
                 content: content,
                 text_content: content,
                 logic_block_id: dynamicCase.cardBlockIds?.[content] || 0,
@@ -707,8 +728,8 @@ export default function DynamicStagePage() {
               </h4>
               <p className="text-[11px] font-semibold text-slate-700 leading-relaxed font-mono">
                 Seret kata kunci tersebut dan letakkan (drop) ke dalam salah
-                satu dari 3 kategori pilar di sebelah kanan: Stakeholder,
-                Action, atau Impact.
+                satu dari 4 kategori pilar di sebelah kanan: Tujuan,
+                Masalah, Solusi, atau Stakeholder.
               </p>
             </>
           )}
@@ -978,19 +999,24 @@ export default function DynamicStagePage() {
               }`}
             >
               <DroppableZone
+                id="tujuan"
+                title="1. Tujuan Utama"
+                items={items.tujuan}
+              />
+              <DroppableZone
+                id="masalah"
+                title="2. Inti Masalah"
+                items={items.masalah}
+              />
+              <DroppableZone
+                id="solusi"
+                title="3. Rumusan Solusi"
+                items={items.solusi}
+              />
+              <DroppableZone
                 id="stakeholder"
-                title="1. Stakeholder Utama"
+                title="4. Stakeholder Terdampak"
                 items={items.stakeholder}
-              />
-              <DroppableZone
-                id="action"
-                title="2. Rencana Tindakan (Action)"
-                items={items.action}
-              />
-              <DroppableZone
-                id="impact"
-                title="3. Konsekuensi Capaian (Impact)"
-                items={items.impact}
               />
             </div>
           )}

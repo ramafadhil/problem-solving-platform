@@ -38,22 +38,27 @@ interface RiwayatJawaban {
   snippetArgument: string;
 }
 
-// Fungsi pembongkar teks argumen gabungan 3 pilar
+// Fungsi pembongkar teks argumen gabungan 4 pilar
 const parseCombinedArgument = (text: string) => {
-  const stakeholderMatch = text.match(
-    /\[STAKEHOLDER\]:\s*([\s\S]*?)(?=\n\n\[ACTION\]|$)/i,
+  const tujuanMatch = text.match(
+    /\[TUJUAN\]:\s*([\s\S]*?)(?=\n\n\[MASALAH\]|$)/i,
   );
-  const actionMatch = text.match(
-    /\[ACTION\]:\s*([\s\S]*?)(?=\n\n\[IMPACT\]|$)/i,
+  const masalahMatch = text.match(
+    /\[MASALAH\]:\s*([\s\S]*?)(?=\n\n\[SOLUSI\]|$)/i,
   );
-  const impactMatch = text.match(/\[IMPACT\]:\s*([\s\S]*?)$/i);
+  const solusiMatch = text.match(
+    /\[SOLUSI\]:\s*([\s\S]*?)(?=\n\n\[STAKEHOLDER\]|$)/i,
+  );
+  const stakeholderMatch = text.match(/\[STAKEHOLDER\]:\s*([\s\S]*?)$/i);
 
   return {
-    stakeholder: stakeholderMatch ? stakeholderMatch[1].trim() : "",
-    action: actionMatch ? actionMatch[1].trim() : "",
-    impact: impactMatch ? impactMatch[1].trim() : text,
+    tujuan: tujuanMatch ? tujuanMatch[1].trim() : "",
+    masalah: masalahMatch ? masalahMatch[1].trim() : "",
+    solusi: solusiMatch ? solusiMatch[1].trim() : "",
+    stakeholder: stakeholderMatch ? stakeholderMatch[1].trim() : text,
   };
 };
+
 
 function ProfileContent() {
   const router = useRouter();
@@ -226,40 +231,47 @@ function ProfileContent() {
                       year: "numeric",
                     });
 
+                    const tujuanDetail = myPerspective.details?.find(
+                      (d: any) => d.pillar_category === "Tujuan",
+                    );
+                    const masalahDetail = myPerspective.details?.find(
+                      (d: any) => d.pillar_category === "Masalah",
+                    );
+                    const solusiDetail = myPerspective.details?.find(
+                      (d: any) => d.pillar_category === "Solusi",
+                    );
                     const stakeholderDetail = myPerspective.details?.find(
                       (d: any) =>
                         d.pillar_category === "Stakeholder" ||
                         d.pillar_category === "Teknis",
                     );
-                    const actionDetail = myPerspective.details?.find(
-                      (d: any) =>
-                        d.pillar_category === "Action" ||
-                        d.pillar_category === "Etika",
-                    );
-                    const impactDetail = myPerspective.details?.find(
-                      (d: any) => d.pillar_category === "Impact",
-                    );
 
-                    const sh =
-                      stakeholderDetail?.content ||
-                      stakeholderDetail?.text_content ||
+                    const tu =
+                      tujuanDetail?.content ||
+                      tujuanDetail?.text_content ||
                       myPerspective.details?.[0]?.content ||
                       myPerspective.details?.[0]?.text_content ||
                       "";
-                    const ac =
-                      actionDetail?.content ||
-                      actionDetail?.text_content ||
+                    const ma =
+                      masalahDetail?.content ||
+                      masalahDetail?.text_content ||
                       myPerspective.details?.[1]?.content ||
                       myPerspective.details?.[1]?.text_content ||
                       "";
-                    const im =
-                      impactDetail?.content ||
-                      impactDetail?.text_content ||
+                    const so =
+                      solusiDetail?.content ||
+                      solusiDetail?.text_content ||
                       myPerspective.details?.[2]?.content ||
                       myPerspective.details?.[2]?.text_content ||
                       "";
+                    const st =
+                      stakeholderDetail?.content ||
+                      stakeholderDetail?.text_content ||
+                      myPerspective.details?.[3]?.content ||
+                      myPerspective.details?.[3]?.text_content ||
+                      "";
 
-                    const detailsText = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+                    const detailsText = `[TUJUAN]: ${tu}\n\n[MASALAH]: ${ma}\n\n[SOLUSI]: ${so}\n\n[STAKEHOLDER]: ${st}`;
 
                     userPerspectives.push({
                       id: String(myPerspective.ID),
@@ -328,40 +340,47 @@ function ProfileContent() {
                         },
                       );
 
+                      const tujuanDetail = targetPerspective.details?.find(
+                        (d: any) => d.pillar_category === "Tujuan",
+                      );
+                      const masalahDetail = targetPerspective.details?.find(
+                        (d: any) => d.pillar_category === "Masalah",
+                      );
+                      const solusiDetail = targetPerspective.details?.find(
+                        (d: any) => d.pillar_category === "Solusi",
+                      );
                       const stakeholderDetail = targetPerspective.details?.find(
                         (d: any) =>
                           d.pillar_category === "Stakeholder" ||
                           d.pillar_category === "Teknis",
                       );
-                      const actionDetail = targetPerspective.details?.find(
-                        (d: any) =>
-                          d.pillar_category === "Action" ||
-                          d.pillar_category === "Etika",
-                      );
-                      const impactDetail = targetPerspective.details?.find(
-                        (d: any) => d.pillar_category === "Impact",
-                      );
 
-                      const sh =
-                        stakeholderDetail?.content ||
-                        stakeholderDetail?.text_content ||
+                      const tu =
+                        tujuanDetail?.content ||
+                        tujuanDetail?.text_content ||
                         targetPerspective.details?.[0]?.content ||
                         targetPerspective.details?.[0]?.text_content ||
                         "";
-                      const ac =
-                        actionDetail?.content ||
-                        actionDetail?.text_content ||
+                      const ma =
+                        masalahDetail?.content ||
+                        masalahDetail?.text_content ||
                         targetPerspective.details?.[1]?.content ||
                         targetPerspective.details?.[1]?.text_content ||
                         "";
-                      const im =
-                        impactDetail?.content ||
-                        impactDetail?.text_content ||
+                      const so =
+                        solusiDetail?.content ||
+                        solusiDetail?.text_content ||
                         targetPerspective.details?.[2]?.content ||
                         targetPerspective.details?.[2]?.text_content ||
                         "";
+                      const st =
+                        stakeholderDetail?.content ||
+                        stakeholderDetail?.text_content ||
+                        targetPerspective.details?.[3]?.content ||
+                        targetPerspective.details?.[3]?.text_content ||
+                        "";
 
-                      const detailsText = `[STAKEHOLDER]: ${sh}\n\n[ACTION]: ${ac}\n\n[IMPACT]: ${im}`;
+                      const detailsText = `[TUJUAN]: ${tu}\n\n[MASALAH]: ${ma}\n\n[SOLUSI]: ${so}\n\n[STAKEHOLDER]: ${st}`;
 
                       userPerspectives.push({
                         id: String(targetPerspective.ID),
@@ -698,7 +717,7 @@ function ProfileContent() {
                       const parsed = parseCombinedArgument(
                         riwayat.snippetArgument,
                       );
-                      const hasPillars = parsed.stakeholder || parsed.action;
+                      const hasPillars = parsed.tujuan || parsed.masalah;
 
                       return (
                         <div
@@ -718,29 +737,37 @@ function ProfileContent() {
                               {riwayat.caseTitle}
                             </h3>
                             {hasPillars ? (
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                              <div className="grid grid-cols-2 gap-2 pt-2">
                                 <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
-                                  <span className="block text-[8px] font-black uppercase  tracking-wider">
-                                    1. Stakeholder Utama
+                                  <span className="block text-[8px] font-black uppercase tracking-wider">
+                                    1. Tujuan Utama
+                                  </span>
+                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
+                                    {parsed.tujuan}
+                                  </p>
+                                </div>
+                                <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+                                  <span className="block text-[8px] font-black uppercase tracking-wider">
+                                    2. Inti Masalah
+                                  </span>
+                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
+                                    {parsed.masalah}
+                                  </p>
+                                </div>
+                                <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+                                  <span className="block text-[8px] font-black uppercase tracking-wider">
+                                    3. Rumusan Solusi
+                                  </span>
+                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
+                                    {parsed.solusi}
+                                  </p>
+                                </div>
+                                <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+                                  <span className="block text-[8px] font-black uppercase tracking-wider">
+                                    4. Stakeholder Terdampak
                                   </span>
                                   <p className="text-xs font-semibold text-slate-800 mt-0.5">
                                     {parsed.stakeholder}
-                                  </p>
-                                </div>
-                                <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
-                                  <span className="block text-[8px] font-black uppercase tracking-wider">
-                                    2. Rencana Tindakan
-                                  </span>
-                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
-                                    {parsed.action}
-                                  </p>
-                                </div>
-                                <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
-                                  <span className="block text-[8px] font-black uppercase tracking-wider">
-                                    3. Prediksi Dampak
-                                  </span>
-                                  <p className="text-xs font-semibold text-slate-800 mt-0.5">
-                                    {parsed.impact}
                                   </p>
                                 </div>
                               </div>

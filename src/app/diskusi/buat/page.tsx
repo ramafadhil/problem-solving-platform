@@ -17,10 +17,11 @@ export default function BuatKasusPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // 🌟 State dipecah menjadi 3 kategori sesuai arahan konsep FE
+  // 🌟 State dipecah menjadi 4 kategori sesuai arahan konsep FE
+  const [tujuan, setTujuan] = useState("");
+  const [masalah, setMasalah] = useState("");
+  const [solusi, setSolusi] = useState("");
   const [stakeholder, setStakeholder] = useState("");
-  const [action, setAction] = useState("");
-  const [impact, setImpact] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -73,9 +74,10 @@ export default function BuatKasusPage() {
     if (
       !title.trim() ||
       !description.trim() ||
+      !tujuan.trim() ||
+      !masalah.trim() ||
+      !solusi.trim() ||
       !stakeholder.trim() ||
-      !action.trim() ||
-      !impact.trim() ||
       !selectedTopicId
     )
       return;
@@ -107,19 +109,24 @@ export default function BuatKasusPage() {
             is_public: true, // Perspektif pembuat kasus otomatis publik di awal
             details: [
               {
+                pillar_category: "Tujuan",
+                content: tujuan,
+                text_content: tujuan,
+              },
+              {
+                pillar_category: "Masalah",
+                content: masalah,
+                text_content: masalah,
+              },
+              {
+                pillar_category: "Solusi",
+                content: solusi,
+                text_content: solusi,
+              },
+              {
                 pillar_category: "Stakeholder",
                 content: stakeholder,
                 text_content: stakeholder,
-              },
-              {
-                pillar_category: "Action",
-                content: action,
-                text_content: action,
-              },
-              {
-                pillar_category: "Impact",
-                content: impact,
-                text_content: impact,
               },
             ],
           }),
@@ -261,16 +268,64 @@ export default function BuatKasusPage() {
               />
             </div>
 
-            {/* AREA 3 PILAR ARGUMEN STRUKTUR FE */}
+            {/* AREA 4 PILAR ARGUMEN STRUKTUR FE */}
             <div className="pt-4 border-t-2 border-dashed border-black space-y-4">
               <h4 className="text-xs font-black uppercase tracking-wider text-black border-b-2 border-black pb-1">
                 Kerangka Analisis Awal
               </h4>
 
-              {/* 1. STAKEHOLDER */}
+              {/* 1. TUJUAN */}
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-wide text-slate-500 block">
-                  1. Aktor Utama / Stakeholder Terdampak (Stakeholder)
+                  1. Tujuan Utama yang Ingin Dicapai (Tujuan)
+                </label>
+                <input
+                  type="text"
+                  required
+                  disabled={loading}
+                  value={tujuan}
+                  onChange={(e) => setTujuan(e.target.value)}
+                  placeholder="Apa tujuan atau target yang ingin dicapai dari kasus ini?"
+                  className="w-full px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black placeholder:text-slate-400 focus:outline-none focus:border-[#00BC7D] transition-all shadow-[2px_2px_0px_#000]"
+                />
+              </div>
+
+              {/* 2. MASALAH */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-500 block">
+                  2. Inti Masalah yang Sedang Terjadi (Masalah)
+                </label>
+                <textarea
+                  required
+                  disabled={loading}
+                  value={masalah}
+                  onChange={(e) => setMasalah(e.target.value)}
+                  rows={3}
+                  placeholder="Apa akar masalah atau konflik utama yang perlu diselesaikan?"
+                  className="w-full p-4 bg-white border-2 border-black rounded-2xl text-xs font-bold text-black placeholder:text-slate-400 focus:outline-none focus:border-[#00BC7D] transition-all resize-none leading-relaxed shadow-[2px_2px_0px_#000]"
+                />
+              </div>
+
+              {/* 3. SOLUSI */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-500 block">
+                  3. Rumusan Solusi / Intervensi Strategis (Solusi)
+                </label>
+                <textarea
+                  required
+                  disabled={loading}
+                  value={solusi}
+                  onChange={(e) => setSolusi(e.target.value)}
+                  rows={3}
+                  placeholder="Langkah nyata atau rumusan regulasi apa yang kamu ajukan sebagai solusi?"
+                  className="w-full p-4 bg-white border-2 border-black rounded-2xl text-xs font-bold text-black placeholder:text-slate-400 focus:outline-none focus:border-[#00BC7D] transition-all resize-none leading-relaxed shadow-[2px_2px_0px_#000]"
+                />
+              </div>
+
+              {/* 4. STAKEHOLDER */}
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-wide text-slate-500 block">
+                  4. Aktor Utama / Stakeholder Terdampak (Stakeholder)
                 </label>
                 <input
                   type="text"
@@ -282,38 +337,6 @@ export default function BuatKasusPage() {
                   className="w-full px-4 py-3 bg-white border-2 border-black rounded-xl text-xs font-bold text-black placeholder:text-slate-400 focus:outline-none focus:border-[#00BC7D] transition-all shadow-[2px_2px_0px_#000]"
                 />
               </div>
-
-              {/* 2. ACTION */}
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-wide text-slate-500 block">
-                  2. Solusi Aksi / Intervensi Strategis (Action)
-                </label>
-                <textarea
-                  required
-                  disabled={loading}
-                  value={action}
-                  onChange={(e) => setAction(e.target.value)}
-                  rows={3}
-                  placeholder="Langkah nyata atau rumusan regulasi apa yang kamu ajukan?"
-                  className="w-full p-4 bg-white border-2 border-black rounded-2xl text-xs font-bold text-black placeholder:text-slate-400 focus:outline-none focus:border-[#00BC7D] transition-all resize-none leading-relaxed shadow-[2px_2px_0px_#000]"
-                />
-              </div>
-
-              {/* 3. IMPACT */}
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-wide text-slate-500 block">
-                  3. Dampak Resiko / Output Capaian (Impact)
-                </label>
-                <textarea
-                  required
-                  disabled={loading}
-                  value={impact}
-                  onChange={(e) => setImpact(e.target.value)}
-                  rows={3}
-                  placeholder="Apa konsekuensi logis, keuntungan, maupun trade-off dari aksi tersebut?"
-                  className="w-full p-4 bg-white border-2 border-black rounded-2xl text-xs font-bold text-black placeholder:text-slate-400 focus:outline-none focus:border-[#00BC7D] transition-all resize-none leading-relaxed shadow-[2px_2px_0px_#000]"
-                />
-              </div>
             </div>
 
             <button
@@ -322,24 +345,26 @@ export default function BuatKasusPage() {
                 loading ||
                 !title.trim() ||
                 !description.trim() ||
+                !tujuan.trim() ||
+                !masalah.trim() ||
+                !solusi.trim() ||
                 !stakeholder.trim() ||
-                !action.trim() ||
-                !impact.trim() ||
                 !selectedTopicId
               }
               className={`w-full py-3.5 border-2 border-black rounded-xl text-xs font-black uppercase tracking-widest transition-all mt-4 cursor-pointer select-none ${
                 loading ||
                 !title.trim() ||
                 !description.trim() ||
+                !tujuan.trim() ||
+                !masalah.trim() ||
+                !solusi.trim() ||
                 !stakeholder.trim() ||
-                !action.trim() ||
-                !impact.trim() ||
                 !selectedTopicId
                   ? "bg-slate-200 text-slate-450 border-slate-350 cursor-not-allowed shadow-none"
                   : "bg-[#00BC7D] text-white shadow-[4px_4px_0px_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none"
               }`}
             >
-              {loading ? "Menerbitkan Kasus..." : "Terbitkan Kasus & 3 Pilar Analisis"}
+              {loading ? "Menerbitkan Kasus..." : "Terbitkan Kasus & 4 Pilar Analisis"}
             </button>
           </form>
         </div>

@@ -299,8 +299,8 @@ export default function JawabanUlasanPage({ params }: PageProps) {
       {/* NAVBAR */}
       <nav className="w-full border-b-4 border-black bg-white sticky top-0 z-50 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto rounded-b-2xl shadow-[4px_4px_0px_#000]">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 bg-white border-2 border-black rounded-xl flex items-center justify-center shadow-[2px_2px_0px_#000] shrink-0">
-            <img src="/logo.svg" alt="Logo" className="w-7 h-7" />
+          <div className="w-11 h-11 flex items-center justify-center">
+            <img src="/logo.svg" alt="Logo" className="w-16 h-16" />
           </div>
           <a href="/" className="font-black text-lg tracking-tight text-black">
             Unravel<span className="text-[#00BC7D]"> Discuss</span>

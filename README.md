@@ -20,8 +20,6 @@
 
 Dengan memecah proses analisis masalah ke dalam 4 pilar utama (**Tujuan, Stakeholder, Masalah, dan Solusi**), Unravel membantu pengguna berpikir lebih sistematis sekaligus mereduksi kecenderungan *transformation error* dan beban kognitif saat belajar.
 
-Proyek ini dikembangkan oleh Tim **IPB University** untuk kompetisi **National IT Competition (NIC) - Pekan IT 2026**.
-
 ---
 
 ## ✨ Fitur Utama
